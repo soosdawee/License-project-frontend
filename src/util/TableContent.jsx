@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { HotTable } from "@handsontable/react";
 import "handsontable/dist/handsontable.full.min.css";
-import backend from "../data-access/backend";
-import axios from "axios";
+import backend from "../data-access/Backend";
+import { registerAllModules } from "handsontable/registry";
 
 const TableComponent = () => {
   const [data, setData] = useState([["", "", ""]]);
+
+  registerAllModules();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,29 +32,27 @@ const TableComponent = () => {
   };
 
   return (
-    <div>
+    <div style={{ padding: 0 }}>
       <HotTable
-        data={data.length > 1 ? data.slice(1) : null}
-        colHeaders={data[0]}
+        data={data}
+        colHeaders={false}
         rowHeaders={true}
-        minRows={5}
-        minCols={3}
-        stretchH="all"
+        minRows={15}
+        minCols={5}
         contextMenu={true}
         copyPaste={true}
-        afterPaste={(changes) => {
-          if (changes) {
-            const newData = [...data];
-
-            changes.forEach((rowData, rowIndex) => {
-              if (newData[rowIndex]) {
-                newData[rowIndex] = rowData;
-              } else {
-                newData.push(rowData);
-              }
-            });
-
-            setData(newData);
+        selectionMode="multiple"
+        fillHandle={{
+          direction: "vertical",
+          autoInsertRow: true,
+        }}
+        autoWrapRow={true}
+        autoWrapCol={true}
+        licenseKey="non-commercial-and-evaluation"
+        style={{ padding: 0 }}
+        cells={(row, col) => {
+          if (row === 0) {
+            return { className: "header-row" };
           }
         }}
       />

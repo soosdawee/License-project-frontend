@@ -10,9 +10,8 @@ const backend = axios.create({
 
 backend.interceptors.request.use(
   (config) => {
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMCIsImV4cCI6MTc0MzU1MjEwMH0.3cDjlVVirwbbVpQrSVVdvxCb7eMpmjrMk3ZwosX8Ml4";
-    if (token) {
+    const token = getToken();
+    if (token !== undefined && token !== null) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
     config.headers["Content-Type"] = "application/json";
