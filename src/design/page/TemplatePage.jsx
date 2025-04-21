@@ -1,7 +1,8 @@
 import React from "react";
-import { Button, Stack, Typography } from "@mui/material";
+import { Button, Stack, Typography, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import backend from "../../data-access/Backend";
+import Navbar from "../../common/component/Navbar";
 
 const TemplatePage = () => {
   const vizType = ["Bar Chart", "Pie Chart"];
@@ -22,7 +23,8 @@ const TemplatePage = () => {
   };
 
   return (
-    <div>
+    <>
+      <Navbar />
       <div style={{ padding: "24px" }}>
         <Typography variant="h4" gutterBottom>
           Template Page
@@ -40,7 +42,7 @@ const TemplatePage = () => {
           ))}
         </Stack>
       </div>
-    </div>
+    </>
   );
 };
 
