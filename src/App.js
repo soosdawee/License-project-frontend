@@ -4,7 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const LoginForm = lazy(() => import('./common/component/LoginForm'));
 const TemplatePage = lazy(() => import('./design/page/TemplatePage'));
-const StudioPage = lazy(() => import('./design/page/StudioPage'))
+const StudioPage = lazy(() => import('./design/page/StudioPage'));
+const AdminDashboard = lazy(()=> import('./admin/page/AdminDashboard'));
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route path="/" element={<LoginForm />} />
             <Route path="/charts" element={<TemplatePage />} />
             <Route path="/studio/:id" element={<StudioPage />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
           </Routes>
         </Suspense>
     </Router>

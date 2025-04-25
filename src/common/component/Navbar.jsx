@@ -7,6 +7,7 @@ import Divider from "@mui/material/Divider";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -34,6 +35,16 @@ export default function Navbar() {
         </Typography>
 
         <Box sx={{ display: "flex", alignItems: "center" }}>
+          {localStorage.getItem("userType") === "ADMIN" && (
+            <Button
+              component={Link}
+              to="/admin-dashboard"
+              color="inherit"
+              sx={{ textTransform: "none" }}
+            >
+              Admin Dashboard
+            </Button>
+          )}
           <Button color="inherit" sx={{ textTransform: "none" }}>
             Social Platform
           </Button>

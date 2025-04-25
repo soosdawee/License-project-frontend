@@ -2,10 +2,11 @@ import React from "react";
 import { Button, Box } from "@mui/material";
 import { PropTypes } from "prop-types";
 
-const StageButton = ({ number, text }) => {
+const StageButton = ({ number, text, setState }) => {
   return (
     <Button
       variant="contained"
+      onClick={() => setState(text)}
       sx={{
         px: 4,
         py: 1.5,

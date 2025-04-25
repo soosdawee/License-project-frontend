@@ -1,25 +1,17 @@
 import React, { lazy } from "react";
-import { useParams } from "react-router-dom";
-import backend from "../../../data-access/Backend";
+import { VisualizationIds } from "../../constant/VisualizationTypes";
 
 const BarChartRenderer = lazy(() => import("./BarChartRenderer"));
 const PieChartRenderer = lazy(() => import("./PieChartRenderer"));
 
-const fetchData = async (visualizationId) => {
-  return await backend.get(`visualization/${visualizationId}`);
-};
-
-const RendererFactory = (vizType) => {
-  const { visualizationId } = useParams();
-  const data = fetchData(visualizationId);
-
-  switch (vizType.vizType) {
-    case "BAR_CHART":
-      return <BarChartRenderer data={data} />;
-    case "PIE_CHART":
+const RendererFactory = ({ viz }) => {
+  switch (viz.visualizationModelId) {
+    case VisualizationIds.BAR_CHART:
+      return <BarChartRenderer />;
+    case VisualizationIds.PIE_CHART:
       return <PieChartRenderer />;
     default:
-      console.log(vizType);
+      console.log(viz);
       return (
         <div>
           An error has occured, there is no renderer for this chart type!

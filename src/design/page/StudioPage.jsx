@@ -1,13 +1,11 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
-import RendererFactory from "../component/renderer/RendererFactory";
+import React, { useState } from "react";
 import StageButton from "../component/ui/StageButton";
 import Navbar from "../../common/component/Navbar";
 import { Box } from "@mui/material";
+import StateFactory from "../component/state/StateFactory";
 
 const StudioPage = () => {
-  const location = useLocation();
-  const { vizType } = location.state || {};
+  const [state, setState] = useState("Import Data");
 
   return (
     <>
@@ -20,12 +18,15 @@ const StudioPage = () => {
           justifyContent: "space-between",
         }}
       >
-        <StageButton number={1} text="Choose a visualization" />
-        <StageButton number={1} text="Choose a visualization" />
-        <StageButton number={1} text="Choose a visualization" />
-        <StageButton number={1} text="Choose a visualization" />
+        <StageButton number={1} text="Import Data" setState={setState} />
+        <StageButton
+          number={2}
+          text="Customize Visualization"
+          setState={setState}
+        />
+        <StageButton number={3} text="Share Your Work" setState={setState} />
       </Box>
-      <RendererFactory vizType={vizType} />
+      <StateFactory state={state} />
     </>
   );
 };

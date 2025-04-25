@@ -1,26 +1,30 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Stack, Typography, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import backend from "../../data-access/Backend";
 import Navbar from "../../common/component/Navbar";
 
 const TemplatePage = () => {
-  const vizType = ["Bar Chart", "Pie Chart"];
+  const [vizType, setVizType] = useState([]);
   const navigate = useNavigate();
 
-  const handleClick = async (index) => {
-    const viz = vizType[index].toUpperCase().replace(/\s+/g, "_");
-    try {
-      const response = await backend.post("/visualization", {
-        viz_type: viz,
-      });
-      navigate(`/studio/${response.data.visualizationId}`, {
-        state: { vizType: viz },
-      });
-    } catch (error) {
-      console.log("Error toast placeholder");
-    }
+  const handleClick = (index) => {
+    console.log(index);
+    navigate(`/studio/${index}`);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await backend.get("visualization_model");
+        setVizType(result.data);
+      } catch (error) {
+        console.error("Failed to fetch data", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -30,14 +34,32 @@ const TemplatePage = () => {
           Template Page
         </Typography>
         <Stack direction="row" spacing={2}>
-          {vizType.map((type, index) => (
+          {vizType.map((viz) => (
             <Button
-              key={index}
+              key={viz.visualizationModelId}
               variant="contained"
               color="primary"
-              onClick={() => handleClick(index)}
+              onClick={() => handleClick(viz.visualizationModelId)}
+              sx={{
+                textTransform: "none",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 1,
+                padding: 2,
+              }}
             >
-              {type}
+              <img
+                src={`data:image/jpeg;base64,${viz.cardPhoto}`}
+                alt={viz.name}
+                style={{
+                  width: 100,
+                  height: 100,
+                  objectFit: "cover",
+                  borderRadius: 8,
+                }}
+              />
+              {viz.name}
             </Button>
           ))}
         </Stack>
