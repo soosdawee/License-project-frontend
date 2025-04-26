@@ -26,7 +26,7 @@ const StudioPage = () => {
         />
         <StageButton number={3} text="Share Your Work" setState={setState} />
       </Box>
-      <StateFactory state={state} />
+      <StateFactory state={state} setState={setState} />
     </>
   );
 };

@@ -4,10 +4,10 @@ import { VisualizationIds } from "../../constant/VisualizationTypes";
 const BarChartRenderer = lazy(() => import("./BarChartRenderer"));
 const PieChartRenderer = lazy(() => import("./PieChartRenderer"));
 
-const RendererFactory = ({ viz }) => {
+const RendererFactory = ({ viz, tableData }) => {
   switch (viz.visualizationModelId) {
     case VisualizationIds.BAR_CHART:
-      return <BarChartRenderer />;
+      return <BarChartRenderer tableData={tableData} />;
     case VisualizationIds.PIE_CHART:
       return <PieChartRenderer />;
     default:

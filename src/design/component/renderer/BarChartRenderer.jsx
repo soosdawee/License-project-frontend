@@ -1,16 +1,23 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-const BarChartRenderer = (data, width = 500, height = 300) => {
+const BarChartRenderer = ({ tableData }) => {
   const ref = useRef();
-  const dataAux = [
-    { name: "January", value: 40 },
-    { name: "February", value: 55 },
-    { name: "March", value: 30 },
-    { name: "April", value: 70 },
-  ];
+  const width = 600;
+  const height = 400;
+
+  console.log(tableData);
 
   useEffect(() => {
+    if (!tableData || tableData.length === 0) return;
+
+    const formattedData = tableData
+      .filter((row) => row[0] !== "" && !isNaN(row[1]))
+      .map((row) => ({
+        name: row[0],
+        value: +row[1],
+      }));
+
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
 
@@ -20,13 +27,13 @@ const BarChartRenderer = (data, width = 500, height = 300) => {
 
     const x = d3
       .scaleBand()
-      .domain(dataAux.map((d) => d.name))
+      .domain(formattedData.map((d) => d.name))
       .range([0, innerWidth])
       .padding(0.1);
 
     const y = d3
       .scaleLinear()
-      .domain([0, d3.max(dataAux, (d) => d.value)])
+      .domain([0, d3.max(formattedData, (d) => d.value) || 0])
       .nice()
       .range([innerHeight, 0]);
 
@@ -41,14 +48,14 @@ const BarChartRenderer = (data, width = 500, height = 300) => {
       .call(d3.axisBottom(x));
 
     g.selectAll("rect")
-      .data(dataAux)
+      .data(formattedData)
       .join("rect")
       .attr("x", (d) => x(d.name))
       .attr("y", (d) => y(d.value))
       .attr("width", x.bandwidth())
       .attr("height", (d) => innerHeight - y(d.value))
-      .attr("fill", "#69b3a2");
-  }, [dataAux, width, height]);
+      .attr("fill", "#60002");
+  }, [tableData]);
 
   return <svg ref={ref} width={width} height={height} />;
 };

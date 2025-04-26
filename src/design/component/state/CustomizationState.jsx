@@ -1,10 +1,10 @@
 import React from "react";
 import RendererFactory from "../renderer/RendererFactory";
 
-const CustomizationState = ({ visualizationModel }) => {
+const CustomizationState = ({ visualizationModel, tableData }) => {
   return (
     <div>
-      <RendererFactory viz={visualizationModel} />
+      <RendererFactory viz={visualizationModel} tableData={tableData} />
     </div>
   );
 };
