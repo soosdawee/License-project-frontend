@@ -3,10 +3,9 @@ import DataState from "./DataState";
 import CustomizationState from "./CustomizationState";
 import ShareState from "./ShareState";
 import { useParams } from "react-router-dom";
-import backend from "../../../data-access/Backend";
+import backend from "../../../../data-access/Backend";
 
 const StateFactory = ({ state, setState }) => {
-  const [tableData, setTableData] = useState([["", "", ""]]);
   const { id } = useParams();
   const [visualizationModel, setvisualizationModel] = useState("");
 
@@ -28,18 +27,11 @@ const StateFactory = ({ state, setState }) => {
       return (
         <DataState
           visualizationModel={visualizationModel}
-          tableData={tableData}
-          setTableData={setTableData}
           setState={setState}
         />
       );
     case "Customize Visualization":
-      return (
-        <CustomizationState
-          visualizationModel={visualizationModel}
-          tableData={tableData}
-        />
-      );
+      return <CustomizationState visualizationModel={visualizationModel} />;
     case "Share Your Work":
       return <ShareState />;
     default:

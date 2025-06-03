@@ -21,6 +21,7 @@ const StageButton = ({ number, text, setState }) => {
         "&:hover": {
           backgroundColor: "#b71c1c",
         },
+        strokeLinejoin: "round",
       }}
     >
       <Box component="span" sx={{ mr: 1, fontSize: "1rem" }}>

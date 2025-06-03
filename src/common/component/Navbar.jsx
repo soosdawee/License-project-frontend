@@ -9,7 +9,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 
-export default function Navbar() {
+const Navbar = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -89,4 +89,6 @@ export default function Navbar() {
       </Toolbar>
     </AppBar>
   );
-}
+};
+
+export default React.memo(Navbar);
