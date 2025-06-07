@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Accordion,
   AccordionSummary,
@@ -6,27 +6,32 @@ import {
   Box,
   Typography,
   TextField,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
+
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { VisualizationContext } from "../state/context/VisualizationContext";
-import { HexColorPicker, HexColorInput } from "react-colorful";
-
 import {
-  setBarColor,
   setCustomColors,
   setOpacity,
-  setBarSpacing,
+  setColorPalette,
+  setShowPercentages,
 } from "../state/context/actions";
+import ColorPalettes from "../ui/ColorPalettes";
 
 const clampValue = (val) => Math.max(0, Math.min(100, parseInt(val) || 0));
 
-const BarChartColorAccordion = () => {
+const PieAccordion = () => {
   const { state, dispatch } = useContext(VisualizationContext);
 
-  const [color, setColor] = useState(state.barColor || "#60002");
   const [overrides, setOverrides] = useState(state.customColors || "");
   const [opacity, setLocalOpacity] = useState(state.opacity || 100);
-  const [spacing, setLocalSpacing] = useState(state.barSpacing || 25);
+  const [palette, setPalette] = useState(state.colorPalette || "vibrant");
 
   const confirmOpacity = () => {
     const clamped = clampValue(opacity);
@@ -35,42 +40,49 @@ const BarChartColorAccordion = () => {
     }
   };
 
-  const confirmSpacing = () => {
-    const clamped = clampValue(spacing);
-    if (clamped !== state.barSpacing) {
-      dispatch(setBarSpacing(clamped));
-    }
-  };
-
   const handleKeyPress = (e, confirmFn) => {
     if (e.key === "Enter") confirmFn();
   };
 
-  const commitColorChange = () => {
-    if (state.barColor !== color) {
-      dispatch(setBarColor(color));
+  const handlePaletteChange = (event) => {
+    const selectedLabel = event.target.value;
+
+    const matchedKey = Object.keys(ColorPalettes).find(
+      (key) => ColorPalettes[key].name === selectedLabel
+    );
+
+    if (matchedKey) {
+      setPalette(matchedKey);
+      dispatch(setColorPalette(matchedKey));
     }
+  };
+
+  const handleTogglePercentages = (e) => {
+    dispatch(setShowPercentages(e.target.checked));
   };
 
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography>Bar Appearance</Typography>
+        <Typography>Pie Appearance</Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Box display="flex" flexDirection="column" gap={2}>
-          <Box>
-            <Typography>Default Bar Color:</Typography>
-            <div onMouseUp={commitColorChange}>
-              <HexColorPicker color={color} onChange={setColor} />
-              <HexColorInput
-                color={color}
-                onChange={setColor}
-                style={{ marginTop: "8px" }}
-                onBlur={commitColorChange}
-              />
-            </div>
-          </Box>
+          <FormControl fullWidth>
+            <InputLabel>Color Palette</InputLabel>
+            <Select
+              value={ColorPalettes[palette]?.name || ""}
+              label="Color Palette"
+              onChange={handlePaletteChange}
+              size="small"
+            >
+              {Object.keys(ColorPalettes).map((key) => (
+                <MenuItem key={key} value={ColorPalettes[key].name}>
+                  {ColorPalettes[key].name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           <Box>
             <Typography>Custom Color Overrides (comma-separated):</Typography>
@@ -87,9 +99,9 @@ const BarChartColorAccordion = () => {
             />
           </Box>
 
-          <Box display="flex" gap={2}>
+          <Box display="flex" gap={2} alignItems="center">
             <Box>
-              <Typography>Bar Opacity (0-100):</Typography>
+              <Typography>Opacity (0-100):</Typography>
               <TextField
                 type="number"
                 inputProps={{
@@ -111,30 +123,17 @@ const BarChartColorAccordion = () => {
                 onKeyDown={(e) => handleKeyPress(e, confirmOpacity)}
               />
             </Box>
-
-            <Box>
-              <Typography>Bar Spacing (0-100):</Typography>
-              <TextField
-                type="number"
-                inputProps={{
-                  min: 0,
-                  max: 100,
-                  style: { MozAppearance: "textfield" },
-                }}
-                sx={{
-                  "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-                    {
-                      WebkitAppearance: "auto",
-                      margin: 0,
-                    },
-                  width: "100px",
-                }}
-                value={spacing}
-                onChange={(e) => setLocalSpacing(e.target.value)}
-                onBlur={confirmSpacing}
-                onKeyDown={(e) => handleKeyPress(e, confirmSpacing)}
-              />
-            </Box>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={state.showPercentages}
+                  onChange={handleTogglePercentages}
+                  color="primary"
+                />
+              }
+              label="Show %"
+              sx={{ marginLeft: "auto" }}
+            />
           </Box>
         </Box>
       </AccordionDetails>
@@ -142,4 +141,4 @@ const BarChartColorAccordion = () => {
   );
 };
 
-export default BarChartColorAccordion;
+export default PieAccordion;

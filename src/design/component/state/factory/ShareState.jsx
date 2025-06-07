@@ -9,10 +9,11 @@ const ShareState = () => {
   const { id } = useParams();
 
   const handleShare = async () => {
+    console.log(state.showLegend);
     const payload = {
       title: state.title,
       titleSize: state.titleSize,
-      viz_type: "BAR_CHART",
+      viz_type: state.vizType,
       font: state.font,
       article: state.article,
       articleSize: state.articleSize,
@@ -24,13 +25,17 @@ const ShareState = () => {
       footerText: state.footerText,
       opacity: state.opacity,
       textColor: state.textColor,
-      xaxisLabel: "korte",
-      yaxisLabel: "geci",
+      xAxisLabel: state.xAxisLabel,
+      yXxisLabel: state.yAxisLabel,
       areLabelsVisible: state.areLabelsVisible,
       showGrids: state.showGrids,
       barColor: state.barColor,
-      customBarColors: state.customBarColors,
+      customColors: state.customColors,
       spacing: state.barSpacing,
+      showPercentages: state.showPercentages,
+      colorPalette: state.colorPalette,
+      showLegend: state.showLegend,
+      transitionTime: state.transitionTime,
       visualizationModelId: id,
       tableDatas: [
         {

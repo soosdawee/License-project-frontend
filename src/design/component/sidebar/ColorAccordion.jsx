@@ -32,7 +32,7 @@ const ColorAccordion = () => {
   };
 
   const commitColorChange = () => {
-    if (backgroundType === "custom") {
+    if (backgroundType === "custom" && state.backgroundColor !== color) {
       dispatch(setBackgroundColor(color));
     }
   };

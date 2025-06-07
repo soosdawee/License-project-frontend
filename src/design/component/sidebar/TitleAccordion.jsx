@@ -45,34 +45,24 @@ const TitleAccordion = () => {
 
   const handleBlurTitleFontSize = () => {
     const size = Number(localTitleFontSize);
-    if (
-      !isNaN(size) &&
-      size > 0 &&
-      size <= 100 &&
-      size !== state.titleFontSize
-    ) {
+    if (!isNaN(size) && size > 0 && size <= 100 && size !== state.titleSize) {
       dispatch(setTitleSize(size));
     } else {
-      setLocalTitleFontSize(state.titleFontSize || 40);
+      setLocalTitleFontSize(state.titleSize || 40);
     }
   };
 
   const handleBlurArticleFontSize = () => {
     const size = Number(localArticleFontSize);
-    if (
-      !isNaN(size) &&
-      size > 0 &&
-      size <= 100 &&
-      size !== state.articleFontSize
-    ) {
+    if (!isNaN(size) && size > 0 && size <= 100 && size !== state.articleSize) {
       dispatch(setArticleSize(size));
     } else {
-      setLocalArticleFontSize(state.articleFontSize || 16);
+      setLocalArticleFontSize(state.articleSize || 16);
     }
   };
 
   return (
-    <Accordion defaultExpanded>
+    <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Header</Typography>
       </AccordionSummary>

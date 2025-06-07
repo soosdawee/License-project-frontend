@@ -1,3 +1,6 @@
+import { color } from "d3";
+import ColorPalettes from "../../ui/ColorPalettes";
+
 const visualizationReducer = (state, action) => {
   switch (action.type) {
     case 'SET_TITLE':
@@ -33,7 +36,7 @@ const visualizationReducer = (state, action) => {
     case 'SET_BAR_COLOR':
       return { ...state, barColor: action.payload};
     case 'SET_CUSOTM_BAR_COLORS':
-      return { ...state, customBarColors: action.payload};
+      return { ...state, customColors: action.payload};
     case 'SET_OPACITY':
       return { ...state, opacity: action.payload};
     case 'SET_BAR_SPACING':
@@ -48,6 +51,16 @@ const visualizationReducer = (state, action) => {
       return { ...state, article: action.payload};
     case 'SET_TEXT_COLOR':
       return { ...state, textColor: action.payload};
+    case 'SET_VIZ_TYPE':
+      return { ...state, vizType: action.payload};
+    case 'SET_COLOR_PALETTE':
+      return { ...state, colorPalette: action.payload};
+    case 'SET_SHOW_LEGEND':
+      return { ...state, showLegend: action.payload};
+    case 'SET_SHOW_PERCENTAGES':
+      return { ...state, showPercentages: action.payload};
+    case 'SET_TRANSITION_TIME':
+      return { ...state, transitionTime: action.payload};
     case "INITIALIZE_VISUALIZATION":
       return {
         ...state,

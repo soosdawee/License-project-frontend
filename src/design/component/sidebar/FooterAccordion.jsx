@@ -27,6 +27,7 @@ const FooterAccordion = () => {
   };
 
   const handleBlur = () => {
+    console.log(localFooterText !== state.footerText);
     if (localFooterText !== state.footerText) {
       dispatch(setFooterText(localFooterText));
     }

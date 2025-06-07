@@ -10,6 +10,7 @@ const PieChartRenderer = lazy(() =>
 );
 
 const EmbeddedFactory = ({ viz, state }) => {
+  console.log(state);
   switch (viz) {
     case VisualizationIds.BAR_CHART:
       return (
@@ -28,7 +29,7 @@ const EmbeddedFactory = ({ viz, state }) => {
         </Box>
       );
     case VisualizationIds.PIE_CHART:
-      return <PieChartRenderer />;
+      return <PieChartRenderer state={state} />;
     default:
       console.log(viz);
       return (

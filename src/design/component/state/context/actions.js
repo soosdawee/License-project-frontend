@@ -14,7 +14,7 @@ export const setXAxisLabel = (value) => ({type: 'SET_X_AXIS_LABEL', payload: val
 export const setYAxisLabel = (value) => ({type: 'SET_Y_AXIS_LABEL', payload: value,});
 export const setBackgroundColor = (value) => ({type: 'SET_BACKGROUND_COLOR', payload: value,});
 export const setBarColor = (value) => ({type: 'SET_BAR_COLOR', payload: value,});
-export const setCustomBarColors = (value) => ({type: 'SET_CUSOTM_BAR_COLORS', payload: value,});
+export const setCustomColors = (value) => ({type: 'SET_CUSOTM_BAR_COLORS', payload: value,});
 export const setOpacity = (value) => ({type: 'SET_OPACITY', payload: value,});
 export const setBarSpacing = (value) => ({type: 'SET_BAR_SPACING', payload: value,});
 export const setFont = (value) => ({type: 'SET_FONT', payload: value,});
@@ -23,3 +23,8 @@ export const setArticleSize = (value) => ({type: 'SET_ARTICLE_SIZE', payload: va
 export const setArticle = (value) => ({type: 'SET_ARTICLE', payload: value,});
 export const setTextColor = (value) => ({type: 'SET_TEXT_COLOR', payload: value,});
 export const initializeVisualization = (payload) => ({type: "INITIALIZE_VISUALIZATION", payload,});
+export const setVisualizationType = (payload) => ({type: "SET_VIZ_TYPE", payload,});
+export const setColorPalette = (payload) => ({type: "SET_COLOR_PALETTE", payload,});
+export const setShowLegend = (payload) => ({type: "SET_SHOW_LEGEND", payload,});
+export const setShowPercentages = (payload) => ({type: "SET_SHOW_PERCENTAGES", payload,});
+export const setTransitionTime = (payload) => ({type: "SET_TRANSITION_TIME", payload,});

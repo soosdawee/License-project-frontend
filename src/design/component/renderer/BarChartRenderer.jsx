@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useContext } from "react";
 import * as d3 from "d3";
 import { Box } from "@mui/material";
 
@@ -53,8 +53,9 @@ const BarChartRenderer = ({ state }) => {
       .append("div")
       .attr("class", "tooltip")
       .style("position", "absolute")
-      .style("background", "rgba(0, 0, 0, 0.75)")
-      .style("color", textColor) // use textColor here
+      .style("background", "#ffffff")
+      .style("border", "1px solid #ccc")
+      .style("color", "#000000")
       .style("padding", "8px")
       .style("border-radius", "4px")
       .style("pointer-events", "none")

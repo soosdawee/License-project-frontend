@@ -1,3 +1,5 @@
+import { setShowPercentages } from "../../design/component/state/context/actions";
+
 const mapVisualizationToInitialState = (visualization) => ({
   title: visualization.title || "",
   data: visualization.tableDatas?.[0]?.data || [[], [], []],
@@ -19,7 +21,7 @@ const mapVisualizationToInitialState = (visualization) => ({
   showGrids: visualization.showGrids ?? false,
   backgroundColor: visualization.backgroundColor || "#ffffff",
   barColor: visualization.barColor || "#000000",
-  customBarColors: visualization.customBarColors || "",
+  customColors: visualization.customColors || "",
   opacity: visualization.opacity ?? 100,
   barSpacing: visualization.barSpacing ?? 25,
   font: visualization.font || "Arial",
@@ -27,6 +29,9 @@ const mapVisualizationToInitialState = (visualization) => ({
   articleSize: visualization.articleSize ?? 16,
   article: visualization.article || "",
   textColor: visualization.textColor || "#000000",
+  showPercentages: visualization.showPercentages ?? false,
+  colorPalette: visualization.colorPalette,
+  transitionTime: visualization.transitionTime,
 });
 
 export default mapVisualizationToInitialState;

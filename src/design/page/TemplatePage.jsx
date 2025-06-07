@@ -9,7 +9,6 @@ const TemplatePage = () => {
   const navigate = useNavigate();
 
   const handleClick = (index) => {
-    console.log(index);
     navigate(`/studio/${index}`);
   };
 

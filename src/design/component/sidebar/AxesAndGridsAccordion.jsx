@@ -22,7 +22,6 @@ const AxesAndGridsAccordion = () => {
   const [localXLabel, setLocalXLabel] = useState(state.xAxisLabel);
   const [localYLabel, setLocalYLabel] = useState(state.yAxisLabel);
 
-  // Sync local state with global state when the component mounts or updates
   useEffect(() => {
     setLocalXLabel(state.xAxisLabel);
     setLocalYLabel(state.yAxisLabel);
@@ -49,11 +48,13 @@ const AxesAndGridsAccordion = () => {
   };
 
   return (
-    <Accordion>
+    <Accordion disableGutters square sx={{ boxShadow: "none", mb: 1 }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Axes & Grids</Typography>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+      >
         <TextField
           label="X Axis Label"
           fullWidth

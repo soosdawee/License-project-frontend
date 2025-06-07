@@ -3,6 +3,7 @@ import { VisualizationIds } from "../../constant/VisualizationTypes";
 import { Box } from "@mui/material";
 import Sidebar from "../sidebar/Sidebar";
 import AnnotationAccordion from "../sidebar/AnnotationAccordion";
+import {} from "../../constant/VisualizationTypes";
 
 const BarChartRenderer = lazy(() => import("./BarChartRenderer"));
 const PieChartRenderer = lazy(() => import("./PieChartRenderer"));
@@ -11,10 +12,24 @@ const ColorAccordion = lazy(() => import("../sidebar/ColorAccordion"));
 const BarAccordion = lazy(() => import("../sidebar/BarAccordion"));
 const FooterAccordion = lazy(() => import("../sidebar/FooterAccordion"));
 const TextAccordion = lazy(() => import("../sidebar/TextAccordion"));
-
 const AxesAndGridsAccordion = lazy(() =>
   import("../sidebar/AxesAndGridsAccordion")
 );
+const PieAccordion = lazy(() => import("../sidebar/PieAccordion"));
+const LegendAccordion = lazy(() => import("../sidebar/LegendAccordion"));
+
+const sidebarSx = {
+  padding: 2,
+  flex: 3,
+  overflowY: "auto",
+  boxSizing: "border-box",
+  backgroundColor: "#fafafa",
+};
+
+const chartSx = {
+  flex: 7,
+  overflow: "hidden",
+};
 
 const RendererFactory = ({ viz, state }) => {
   switch (viz) {
@@ -29,7 +44,7 @@ const RendererFactory = ({ viz, state }) => {
           }}
         >
           <BarChartRenderer state={state} />
-          <Sidebar>
+          <Sidebar look={sidebarSx}>
             <TitleAccordion />
             <FooterAccordion />
             <TextAccordion />
@@ -41,7 +56,27 @@ const RendererFactory = ({ viz, state }) => {
         </Box>
       );
     case VisualizationIds.PIE_CHART:
-      return <PieChartRenderer />;
+      return (
+        <Box
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <PieChartRenderer state={state} look={chartSx} />
+          <Sidebar>
+            <TitleAccordion />
+            <FooterAccordion />
+            <TextAccordion />
+            <ColorAccordion />
+            <PieAccordion />
+            <AnnotationAccordion />
+            <LegendAccordion />
+          </Sidebar>
+        </Box>
+      );
     default:
       console.log(viz);
       return (

@@ -31,7 +31,9 @@ const TextColorAccordion = () => {
   const [localFont, setLocalFont] = useState(state.font || "Arial");
 
   const commitColorChange = () => {
-    dispatch(setTextColor(color));
+    if (state.textColor !== color) {
+      dispatch(setTextColor(color));
+    }
   };
 
   const handleFontChange = (e) => {

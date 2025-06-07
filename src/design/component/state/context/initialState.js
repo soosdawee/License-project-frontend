@@ -1,10 +1,11 @@
 const initialState = {
   title: '',
-  chartType: 'bar',
-  colorScheme: 'default',
+  vizType: '',
+  colorPalette: 'vibrant',
   xAxisLabel: '',
   yAxisLabel: '',
   showLegend: false,
+  showPercentages: false,
   showAnnotations: false,
   data: [[], [], []], 
   filters: [],
@@ -12,12 +13,12 @@ const initialState = {
   isAnnotationCustom: false,
   customAnnotation: '',
   isFooter: false,
-  footerText: '',
+  footerText: 'Source: ',
   areLabelsVisible: true,
   showGrids: false,
   backgroundColor: "#ffffff",
   barColor: "#000000",
-  customBarColors: "",
+  customColors: "",
   opacity: 100,
   barSpacing: 25,
   font: "Arial",
@@ -25,6 +26,7 @@ const initialState = {
   articleSize: 16,
   article: "",
   textColor: "#000000",
+  transitionTime: 750,
 };
 
 export default initialState;
