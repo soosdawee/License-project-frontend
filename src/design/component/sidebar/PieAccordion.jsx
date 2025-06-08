@@ -64,7 +64,9 @@ const PieAccordion = () => {
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography>Pie Appearance</Typography>
+        <Typography>
+          {state.vizType === "PIE_CHART" ? "Pie Appearance" : "Line Appearance"}
+        </Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Box display="flex" flexDirection="column" gap={2}>
@@ -98,43 +100,44 @@ const PieAccordion = () => {
               }
             />
           </Box>
-
-          <Box display="flex" gap={2} alignItems="center">
-            <Box>
-              <Typography>Opacity (0-100):</Typography>
-              <TextField
-                type="number"
-                inputProps={{
-                  min: 0,
-                  max: 100,
-                  style: { MozAppearance: "textfield" },
-                }}
-                sx={{
-                  "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
-                    {
-                      WebkitAppearance: "auto",
-                      margin: 0,
-                    },
-                  width: "100px",
-                }}
-                value={opacity}
-                onChange={(e) => setLocalOpacity(e.target.value)}
-                onBlur={confirmOpacity}
-                onKeyDown={(e) => handleKeyPress(e, confirmOpacity)}
+          {state.vizType === "PIE_CHART" && (
+            <Box display="flex" gap={2} alignItems="center">
+              <Box>
+                <Typography>Opacity (0-100):</Typography>
+                <TextField
+                  type="number"
+                  inputProps={{
+                    min: 0,
+                    max: 100,
+                    style: { MozAppearance: "textfield" },
+                  }}
+                  sx={{
+                    "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                      {
+                        WebkitAppearance: "auto",
+                        margin: 0,
+                      },
+                    width: "100px",
+                  }}
+                  value={opacity}
+                  onChange={(e) => setLocalOpacity(e.target.value)}
+                  onBlur={confirmOpacity}
+                  onKeyDown={(e) => handleKeyPress(e, confirmOpacity)}
+                />
+              </Box>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={state.showPercentages}
+                    onChange={handleTogglePercentages}
+                    color="primary"
+                  />
+                }
+                label="Show %"
+                sx={{ marginLeft: "auto" }}
               />
             </Box>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={state.showPercentages}
-                  onChange={handleTogglePercentages}
-                  color="primary"
-                />
-              }
-              label="Show %"
-              sx={{ marginLeft: "auto" }}
-            />
-          </Box>
+          )}
         </Box>
       </AccordionDetails>
     </Accordion>

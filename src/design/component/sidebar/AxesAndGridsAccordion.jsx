@@ -48,7 +48,7 @@ const AxesAndGridsAccordion = () => {
   };
 
   return (
-    <Accordion disableGutters square sx={{ boxShadow: "none", mb: 1 }}>
+    <Accordion disableGutters square sx={{ boxShadow: "none" }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Axes & Grids</Typography>
       </AccordionSummary>

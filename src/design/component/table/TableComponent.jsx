@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useContext } from "react";
 import { HotTable } from "@handsontable/react";
+import Handsontable from "handsontable";
 import "handsontable/dist/handsontable.full.min.css";
 import { registerAllModules } from "handsontable/registry";
 import { VisualizationContext } from "../state/context/VisualizationContext";
@@ -7,7 +8,7 @@ import { setData } from "../state/context/actions";
 
 const TableComponent = ({ visualizationModel }) => {
   const { state, dispatch } = useContext(VisualizationContext);
-  const hotTableRef = useRef(null); // ✅ Create ref
+  const hotTableRef = useRef(null);
 
   useEffect(() => {
     registerAllModules();
@@ -40,6 +41,13 @@ const TableComponent = ({ visualizationModel }) => {
         const rawData = hotInstance.getData();
 
         dispatch(setData(rawData));
+      }}
+      cells={(row, col) => {
+        const cellProperties = {};
+        if (visualizationModel.visualizationModelId === 25 && row === 0) {
+          cellProperties.className = "header-row-style";
+        }
+        return cellProperties;
       }}
     />
   );

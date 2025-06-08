@@ -14,7 +14,7 @@ const initialState = {
   customAnnotation: '',
   isFooter: false,
   footerText: 'Source: ',
-  areLabelsVisible: true,
+  areLabelsVisible: false,
   showGrids: false,
   backgroundColor: "#ffffff",
   barColor: "#000000",

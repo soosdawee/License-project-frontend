@@ -2,7 +2,7 @@ import { EmbeddedContext } from "../context/EmbeddedContext";
 import { useEffect, useContext, useState } from "react";
 import { Box } from "@mui/material";
 import axios from "axios";
-import EmbeddedFactory from "./EmbeddedFactory";
+import RendererFactory from "../../design/component/renderer/RendererFactory";
 import mapVisualizationToInitialState from "../context/Mapper";
 import { initializeVisualization } from "../../design/component/state/context/actions";
 
@@ -31,7 +31,11 @@ const EmbeddedComponent = ({ visualizationId }) => {
   return (
     <Box>
       {state?.visualizationModelId != null ? (
-        <EmbeddedFactory viz={state.visualizationModelId} state={state} />
+        <RendererFactory
+          viz={state.visualizationModelId}
+          state={state}
+          showSidebar={false}
+        />
       ) : (
         <p>Loading visualization...</p>
       )}

@@ -12,6 +12,7 @@ const CustomizationState = ({ visualizationModel }) => {
       <RendererFactory
         viz={visualizationModel.visualizationModelId}
         state={state}
+        showSidebar={true}
       />
     </div>
   );
