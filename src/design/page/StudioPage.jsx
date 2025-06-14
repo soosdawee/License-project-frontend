@@ -19,25 +19,36 @@ const StudioPage = () => {
       <Navbar />
       <Box
         sx={{
-          padding: "0 5%",
+          padding: "2% 3%",
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
         }}
       >
-        <StageButton number={1} text="Import Data" setState={setState} />
+        <StageButton
+          number={1}
+          text="Import Data"
+          state={state}
+          setState={setState}
+        />
         <StageButton
           number={2}
           text="Customize Visualization"
+          state={state}
           setState={setState}
         />
-        <StageButton number={3} text="Share Your Work" setState={setState} />
+        <StageButton
+          number={3}
+          text="Share Your Work"
+          state={state}
+          setState={setState}
+        />
       </Box>
       <VisualizationProvider>
         <StateFactory
           state={state}
           setState={setState}
-          style={{ height: "100%", padding: "10% 0" }}
+          style={{ height: "100%", width: "100%", padding: "10% 0" }}
         />
       </VisualizationProvider>
     </Box>

@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 
 const BarChartRenderer = ({ state }) => {
   const ref = useRef();
-  const width = 600;
+  const width = 800;
   const height = 400;
 
   const interpolateAnnotation = (template, d) =>

@@ -6,7 +6,6 @@ import {
   Typography,
   TextField,
   Stack,
-  MenuItem,
   Box,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -14,7 +13,6 @@ import {
   setTitle,
   setTitleSize,
   setArticleSize,
-  setFont,
   setArticle,
 } from "../state/context/actions";
 import { VisualizationContext } from "../state/context/VisualizationContext";
@@ -62,7 +60,7 @@ const TitleAccordion = () => {
   };
 
   return (
-    <Accordion>
+    <Accordion disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Header</Typography>
       </AccordionSummary>

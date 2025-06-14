@@ -28,6 +28,7 @@ const Navbar = () => {
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
+          backgroundColor: "#001318",
         }}
       >
         <Typography variant="h6" sx={{ flexGrow: 0, alignItems: "start" }}>

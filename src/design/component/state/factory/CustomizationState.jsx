@@ -8,7 +8,7 @@ const CustomizationState = ({ visualizationModel }) => {
   console.log(state);
 
   return (
-    <div style={{ height: "100%", width: "100%" }}>
+    <div style={{ height: "100%", width: "100%", overflow: "auto" }}>
       <RendererFactory
         viz={visualizationModel.visualizationModelId}
         state={state}

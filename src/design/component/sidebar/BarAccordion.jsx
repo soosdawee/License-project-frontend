@@ -53,7 +53,7 @@ const BarChartColorAccordion = () => {
   };
 
   return (
-    <Accordion>
+    <Accordion disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography>Bar Appearance</Typography>
       </AccordionSummary>

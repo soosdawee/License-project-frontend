@@ -47,7 +47,7 @@ const TextColorAccordion = () => {
   };
 
   return (
-    <Accordion>
+    <Accordion disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Text</Typography>
       </AccordionSummary>

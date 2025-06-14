@@ -62,7 +62,7 @@ const PieAccordion = () => {
   };
 
   return (
-    <Accordion>
+    <Accordion disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography>
           {state.vizType === "PIE_CHART" ? "Pie Appearance" : "Line Appearance"}

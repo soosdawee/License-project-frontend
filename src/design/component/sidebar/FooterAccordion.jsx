@@ -34,7 +34,7 @@ const FooterAccordion = () => {
   };
 
   return (
-    <Accordion>
+    <Accordion disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Footer</Typography>
       </AccordionSummary>

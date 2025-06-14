@@ -30,7 +30,7 @@ const TemplatePage = () => {
       <Navbar />
       <div style={{ padding: "24px" }}>
         <Typography variant="h4" gutterBottom>
-          Template Page
+          Choose from the visualizations above!
         </Typography>
         <Stack direction="row" spacing={2}>
           {vizType.map((viz) => (

@@ -36,7 +36,7 @@ const AnnotationAccordion = () => {
   };
 
   return (
-    <Accordion>
+    <Accordion disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Annotations</Typography>
       </AccordionSummary>

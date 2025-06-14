@@ -22,7 +22,6 @@ const LegendAccordion = lazy(() => import("../sidebar/LegendAccordion"));
 
 const sidebarSx = {
   padding: 2,
-  flex: 3,
   overflowY: "auto",
   boxSizing: "border-box",
   backgroundColor: "#fafafa",
@@ -43,6 +42,7 @@ const RendererFactory = ({ viz, state, showSidebar }) => {
             flexDirection: "row",
             width: "100%",
             height: "100%",
+            overflowY: "auto",
           }}
         >
           <BarChartRenderer state={state} />
