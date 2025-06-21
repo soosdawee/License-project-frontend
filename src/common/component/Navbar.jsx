@@ -1,13 +1,14 @@
 import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
+import Logo from "../image/datavuelogo.svg";
+import DehazeIcon from "@mui/icons-material/Dehaze";
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -28,12 +29,10 @@ const Navbar = () => {
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
-          backgroundColor: "#001318",
+          backgroundColor: "#001f47",
         }}
       >
-        <Typography variant="h6" sx={{ flexGrow: 0, alignItems: "start" }}>
-          MyApp
-        </Typography>
+        <img src={Logo} style={{ width: "12%", height: "auto" }} />
 
         <Box sx={{ display: "flex", alignItems: "center" }}>
           {localStorage.getItem("userType") === "ADMIN" && (
@@ -57,7 +56,7 @@ const Navbar = () => {
             orientation="vertical"
             flexItem
             sx={{
-              mx: 2,
+              mx: 1,
               height: 28,
               alignSelf: "center",
               borderColor: "rgba(255,255,255,0.5)",
@@ -66,7 +65,7 @@ const Navbar = () => {
 
           <Box>
             <Button color="inherit" onClick={handleMenuClick}>
-              More
+              <DehazeIcon />
             </Button>
             <Menu
               anchorEl={anchorEl}

@@ -28,3 +28,9 @@ export const setColorPalette = (payload) => ({type: "SET_COLOR_PALETTE", payload
 export const setShowLegend = (payload) => ({type: "SET_SHOW_LEGEND", payload,});
 export const setShowPercentages = (payload) => ({type: "SET_SHOW_PERCENTAGES", payload,});
 export const setTransitionTime = (payload) => ({type: "SET_TRANSITION_TIME", payload,});
+export const setSaved = (payload) => ({type: "SET_SAVED", payload,});
+export const setModified = (payload) => ({type: "SET_MODIFIED", payload,});
+export const setVisualizationId = (payload) => ({type: "SET_VISUALIZATION_ID", payload,});
+export const setShared = (payload) => ({type: "SET_SHARED", payload,});
+export const setPublished = (payload) => ({type: "SET_PUBLISHED", payload,});
+export const setSheetsLink = (payload) => ({type: "SET_SHEETS_LINK", payload,});

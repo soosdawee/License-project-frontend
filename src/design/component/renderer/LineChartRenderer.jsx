@@ -355,7 +355,7 @@ const LineChartRenderer = ({ state, look }) => {
 
   return (
     <Box sx={look}>
-      <svg ref={ref} />
+      <svg ref={ref} style={{ border: "1px solid #001f47" }} />
     </Box>
   );
 };

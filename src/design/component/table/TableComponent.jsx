@@ -9,7 +9,7 @@ const estimateTextWidth = (text, font = "14px Arial") => {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
   context.font = font;
-  return context.measureText(text).width + 20; // add padding
+  return context.measureText(text).width + 20;
 };
 
 const calculateColWidths = (data, columnHeaders) => {
@@ -21,7 +21,6 @@ const calculateColWidths = (data, columnHeaders) => {
   for (let col = 0; col < numCols; col++) {
     let maxWidth = 0;
 
-    // Consider column header width if headers exist
     if (columnHeaders && columnHeaders[col]) {
       const headerText = String(columnHeaders[col]);
       maxWidth = Math.max(
@@ -30,7 +29,6 @@ const calculateColWidths = (data, columnHeaders) => {
       );
     }
 
-    // Consider data cell widths
     for (let row = 0; row < data.length; row++) {
       const cellText = String(data[row]?.[col] ?? "");
       maxWidth = Math.max(maxWidth, estimateTextWidth(cellText));
@@ -39,11 +37,9 @@ const calculateColWidths = (data, columnHeaders) => {
     widths[col] = Math.ceil(maxWidth);
   }
 
-  // Make columns uniform by using the average width
   const totalWidth = widths.reduce((sum, width) => sum + width, 0);
   const avgWidth = totalWidth / numCols;
 
-  // Return uniform widths
   return new Array(numCols).fill(Math.ceil(avgWidth));
 };
 
@@ -59,6 +55,34 @@ const TableComponent = ({ visualizationModel }) => {
     () => calculateColWidths(state.data, visualizationModel.columnNames),
     [state.data, visualizationModel.columnNames]
   );
+
+  const columnSettings = useMemo(() => {
+    if (!visualizationModel.columnNames) return [];
+
+    return visualizationModel.columnNames.map((header) => {
+      const lower = header.toLowerCase();
+      if (lower.includes("name") || lower.includes("note")) {
+        return {
+          type: "text",
+          allowInvalid: false,
+        };
+      } else if (lower.includes("value") || lower.includes("label")) {
+        return {
+          type: "numeric",
+          numericFormat: {
+            pattern: "0.[000]",
+          },
+          allowInvalid: false,
+        };
+      } else {
+        return {
+          type: "text",
+        };
+      }
+    });
+  }, [visualizationModel.columnNames]);
+
+  const isReadOnly = !!state.sheetsLink;
 
   return (
     <HotTable
@@ -78,20 +102,37 @@ const TableComponent = ({ visualizationModel }) => {
       manualColumnResize={true}
       stretchH="all"
       licenseKey="non-commercial-and-evaluation"
-      style={{ width: "100%", height: "100%", overflow: "hidden" }}
+      style={{
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
+      }}
       afterChange={(changes, source) => {
-        if (source === "loadData" || !changes) return;
+        if (source === "loadData" || !changes || isReadOnly) return;
         const hotInstance = hotTableRef.current?.hotInstance;
         if (!hotInstance) return;
         const rawData = hotInstance.getData();
         dispatch(setData(rawData));
       }}
       cells={(row, col) => {
-        const cellProperties = {};
-        if (visualizationModel.visualizationModelId === 25 && row === 0) {
-          cellProperties.className = "header-row-style";
+        const props = {};
+
+        if (isReadOnly) {
+          props.readOnly = true;
+          return props;
         }
-        return cellProperties;
+
+        if (visualizationModel.visualizationModelId === 33 && row === 0) {
+          props.readOnly = false;
+        } else if (columnSettings[col]) {
+          Object.assign(props, columnSettings[col]);
+        }
+
+        if (visualizationModel.visualizationModelId === 32 && row === 0) {
+          props.className = "header-row-style";
+        }
+
+        return props;
       }}
     />
   );

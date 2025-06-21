@@ -38,7 +38,7 @@ const ColorAccordion = () => {
   };
 
   return (
-    <Accordion disableGutters>
+    <Accordion disableGutters sx={{ borderBottom: "1px solid #e0dcdc" }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Background</Typography>
       </AccordionSummary>
@@ -48,6 +48,7 @@ const ColorAccordion = () => {
           display: "flex",
           flexDirection: "column",
           gap: "16px",
+          alignItems: "center",
         }}
       >
         <ToggleButtonGroup
@@ -68,7 +69,10 @@ const ColorAccordion = () => {
             <HexColorInput
               color={color}
               onChange={setColor}
-              style={{ marginTop: "8px" }}
+              style={{
+                marginTop: "5%",
+                outlineColor: "#007393",
+              }}
               onBlur={commitColorChange}
             />
           </div>

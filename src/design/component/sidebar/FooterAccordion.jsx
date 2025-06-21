@@ -34,7 +34,7 @@ const FooterAccordion = () => {
   };
 
   return (
-    <Accordion disableGutters>
+    <Accordion disableGutters sx={{ borderBottom: "1px solid #e0dcdc" }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Footer</Typography>
       </AccordionSummary>
@@ -44,6 +44,12 @@ const FooterAccordion = () => {
             <Checkbox
               checked={state.isFooter}
               onChange={handleCheckboxChange}
+              sx={{
+                color: "#007393",
+                "&.Mui-checked": {
+                  color: "#007393",
+                },
+              }}
             />
           }
           label="Show footer"
@@ -57,6 +63,16 @@ const FooterAccordion = () => {
             onChange={handleLocalChange}
             onBlur={handleBlur}
             placeholder="e.g. Source"
+            sx={{
+              "& label.Mui-focused": {
+                color: "#007393",
+              },
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: "#007393",
+                },
+              },
+            }}
           />
         )}
       </AccordionDetails>

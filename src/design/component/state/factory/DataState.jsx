@@ -1,4 +1,4 @@
-import { useContext, useState, useCallback } from "react";
+import { useContext, useState, useCallback, useEffect } from "react";
 import TableComponent from "../../table/TableComponent";
 import {
   Button,
@@ -9,7 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 import { VisualizationContext } from "../context/VisualizationContext";
-import { setData } from "../context/actions";
+import { setData, setSheetsLink } from "../context/actions";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 
@@ -18,7 +18,17 @@ const DataState = ({ visualizationModel, setState }) => {
   const [inputMethod, setInputMethod] = useState("manual");
   const [dragOver, setDragOver] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
-  const [googleSheetURL, setGoogleSheetURL] = useState("");
+  const [googleSheetURL, setGoogleSheetURL] = useState(state.sheetsLink);
+
+  useEffect(() => {
+    if (
+      state.sheetsLink !== null &&
+      state.sheetsLink !== "" &&
+      state.sheetsLink !== undefined
+    ) {
+      setInputMethod("link");
+    }
+  }, [state.sheetsLink]);
 
   const fetchGoogleSheetData = async (sheetUrl) => {
     try {
@@ -57,6 +67,7 @@ const DataState = ({ visualizationModel, setState }) => {
     const data = await fetchGoogleSheetData(googleSheetURL);
     if (data) {
       dispatch(setData(data));
+      dispatch(setSheetsLink(googleSheetURL));
     }
   };
 
@@ -112,6 +123,8 @@ const DataState = ({ visualizationModel, setState }) => {
     e.preventDefault();
     setDragOver(false);
     const file = e.dataTransfer.files[0];
+    dispatch(setSheetsLink(""));
+    dispatch(setData([[], [], []]));
     handleFileUpload(file);
   };
 
@@ -137,11 +150,10 @@ const DataState = ({ visualizationModel, setState }) => {
           sx={{
             height: "100%",
             width: "70%",
-            pr: 2,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            overflow: "auto",
+            pr: "1%",
           }}
         >
           <TableComponent
@@ -189,7 +201,7 @@ const DataState = ({ visualizationModel, setState }) => {
               }}
             >
               <ToggleButton value="manual">Input data manually</ToggleButton>
-              <ToggleButton value="upload">Upload Excel</ToggleButton>
+              <ToggleButton value="upload">Upload From Excel</ToggleButton>
               <ToggleButton value="link">Link Google Sheets</ToggleButton>
             </ToggleButtonGroup>
 
@@ -276,7 +288,14 @@ const DataState = ({ visualizationModel, setState }) => {
                 <Button
                   onClick={handleLoadGoogleSheet}
                   variant="outlined"
-                  sx={{ mt: 1 }}
+                  sx={{
+                    mt: 1,
+                    outlineColor: "#007fa7",
+                    border: "1px solid #007fa7",
+                    color: "#007fa7",
+                    width: "35%",
+                    height: "auto",
+                  }}
                 >
                   Load Data
                 </Button>

@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useContext } from "react";
+import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { Box } from "@mui/material";
 
-const BarChartRenderer = ({ state }) => {
+const BarChartRenderer = ({ state, look }) => {
   const ref = useRef();
   const width = 800;
   const height = 400;
@@ -29,7 +29,7 @@ const BarChartRenderer = ({ state }) => {
     const fontFamily = state.font || "Arial, sans-serif";
     const titleFontSize = state.titleSize || 40;
     const articleFontSize = state.articleSize || 16;
-    const textColor = state.textColor || "#000000"; // fallback to black
+    const textColor = state.textColor || "#000000";
 
     const formattedData = state.data
       .filter((row) => row[0] !== "" && row[0] !== null && !isNaN(row[1]))
@@ -218,7 +218,7 @@ const BarChartRenderer = ({ state }) => {
         .append("xhtml:div")
         .style("font-size", `${articleFontSize}px`)
         .style("font-family", fontFamily)
-        .style("color", textColor) // article text color
+        .style("color", textColor)
         .style("line-height", `${lineHeight}px`)
         .style("display", "block")
         .style("text-align", "left")
@@ -233,7 +233,7 @@ const BarChartRenderer = ({ state }) => {
         .attr("text-anchor", "start")
         .style("font-size", "12px")
         .style("font-family", fontFamily)
-        .style("fill", textColor) // footer color
+        .style("fill", textColor)
         .text(state.footerText);
     }
 
@@ -243,7 +243,7 @@ const BarChartRenderer = ({ state }) => {
   }, [state]);
 
   return (
-    <Box sx={{ flex: 7 }}>
+    <Box sx={look}>
       <svg ref={ref} width={width} height={height} />
     </Box>
   );

@@ -42,7 +42,7 @@ const StateFactory = ({ state, setState }) => {
     case "Customize Visualization":
       return <CustomizationState visualizationModel={visualizationModel} />;
     case "Share Your Work":
-      return <ShareState />;
+      return <ShareState visualizationModel={visualizationModel} />;
     default:
       console.log(state);
       return <div>An error has occured, there is no state!</div>;

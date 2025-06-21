@@ -47,7 +47,7 @@ const TextColorAccordion = () => {
   };
 
   return (
-    <Accordion disableGutters>
+    <Accordion disableGutters sx={{ borderBottom: "1px solid #e0dcdc" }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Text</Typography>
       </AccordionSummary>
@@ -57,6 +57,7 @@ const TextColorAccordion = () => {
           display: "flex",
           flexDirection: "column",
           gap: "16px",
+          alignItems: "center",
         }}
       >
         <div onMouseUp={commitColorChange}>
@@ -64,7 +65,7 @@ const TextColorAccordion = () => {
           <HexColorInput
             color={color}
             onChange={setColor}
-            style={{ marginTop: "8px" }}
+            style={{ marginTop: "8px", outlineColor: "#007393" }}
             onBlur={commitColorChange}
           />
         </div>
@@ -75,6 +76,16 @@ const TextColorAccordion = () => {
           onChange={handleFontChange}
           onBlur={handleBlurFont}
           fullWidth
+          sx={{
+            "& label.Mui-focused": {
+              color: "#007393",
+            },
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused fieldset": {
+                borderColor: "#007393",
+              },
+            },
+          }}
         >
           {webSafeFonts.map((font) => (
             <MenuItem key={font} value={font} style={{ fontFamily: font }}>

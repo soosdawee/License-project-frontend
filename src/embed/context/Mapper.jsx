@@ -32,6 +32,11 @@ const mapVisualizationToInitialState = (visualization) => ({
   showPercentages: visualization.showPercentages ?? false,
   colorPalette: visualization.colorPalette,
   transitionTime: visualization.transitionTime,
+  saved: true,
+  modified: false,
+  shared: visualization.isSaved,
+  published: visualization.isPublished,
+  sheetsLink: visualization.tableDatas?.[0]?.sheetsLink || "",
 });
 
 export default mapVisualizationToInitialState;

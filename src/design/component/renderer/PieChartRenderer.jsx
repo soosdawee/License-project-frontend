@@ -77,11 +77,10 @@ const PieChartRenderer = ({ state, look }) => {
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
 
-    // Compute top margin based on content
     let topMargin = 20;
     if (state.title) topMargin += titleFontSize + 10;
     if (state.article) topMargin += articleFontSize * 2 + 10;
-    if (state.showLegend) topMargin += 30; // Allocate space for legend
+    if (state.showLegend) topMargin += 30;
 
     const footerHeight = state.isFooter && state.footerText ? 30 : 0;
     const availableChartHeight = height - topMargin - footerHeight;
@@ -343,7 +342,7 @@ const PieChartRenderer = ({ state, look }) => {
 
   return (
     <Box sx={look}>
-      <svg ref={ref} />
+      <svg ref={ref} style={{ border: "1px solid #001f47" }} />
     </Box>
   );
 };

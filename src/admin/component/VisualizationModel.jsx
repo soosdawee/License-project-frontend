@@ -47,8 +47,8 @@ const VisualizationModel = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await backend.get("visualization_model/14");
-        setImageSrc(`data:image/png;base64,${result.data.cardPhoto}`);
+        const result = await backend.get("visualization_model/26");
+        setImageSrc(`data:image/svg+xml;base64,${result.data.cardPhoto}`);
       } catch (error) {
         console.error("Failed to fetch data", error);
       }

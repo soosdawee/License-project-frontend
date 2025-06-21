@@ -29,7 +29,7 @@ const LegendAccordion = () => {
   };
 
   return (
-    <Accordion disableGutters sx={{ overflow: "hidden" }}>
+    <Accordion disableGutters sx={{ borderBottom: "1px solid #e0dcdc" }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Legend</Typography>
       </AccordionSummary>

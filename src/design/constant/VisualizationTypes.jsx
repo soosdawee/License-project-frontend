@@ -1,7 +1,7 @@
 export const VisualizationIds = {
-  BAR_CHART: 23,
-  PIE_CHART: 24,
-  LINE_CHART: 25,
+  BAR_CHART: 30,
+  PIE_CHART: 31,
+  LINE_CHART: 32,
 };
 
 export const VisualizationNames = Object.fromEntries(

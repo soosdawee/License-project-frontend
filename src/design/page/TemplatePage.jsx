@@ -37,7 +37,6 @@ const TemplatePage = () => {
             <Button
               key={viz.visualizationModelId}
               variant="contained"
-              color="primary"
               onClick={() => handleClick(viz.visualizationModelId)}
               sx={{
                 textTransform: "none",
@@ -46,16 +45,18 @@ const TemplatePage = () => {
                 alignItems: "center",
                 gap: 1,
                 padding: 2,
+                backgroundColor: "white",
+                color: "#001f47",
+                fontWeight: "bold",
               }}
             >
               <img
-                src={`data:image/jpeg;base64,${viz.cardPhoto}`}
+                src={`data:image/svg+xml;base64,${viz.cardPhoto}`}
                 alt={viz.name}
                 style={{
                   width: 100,
                   height: 100,
                   objectFit: "cover",
-                  borderRadius: 8,
                 }}
               />
               {viz.name}

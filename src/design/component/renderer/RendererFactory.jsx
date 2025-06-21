@@ -3,7 +3,6 @@ import { VisualizationIds } from "../../constant/VisualizationTypes";
 import { Box } from "@mui/material";
 import Sidebar from "../sidebar/Sidebar";
 import AnnotationAccordion from "../sidebar/AnnotationAccordion";
-import {} from "../../constant/VisualizationTypes";
 
 const BarChartRenderer = lazy(() => import("./BarChartRenderer"));
 const PieChartRenderer = lazy(() => import("./PieChartRenderer"));
@@ -21,14 +20,20 @@ const PieAccordion = lazy(() => import("../sidebar/PieAccordion"));
 const LegendAccordion = lazy(() => import("../sidebar/LegendAccordion"));
 
 const sidebarSx = {
-  padding: 2,
-  overflowY: "auto",
-  boxSizing: "border-box",
-  backgroundColor: "#fafafa",
+  flex: 4,
+  overflowY: "scroll",
 };
 
 const chartSx = {
-  flex: 7,
+  flex: 6,
+  position: "relative",
+};
+
+const boxXs = {
+  display: "flex",
+  flexDirection: "row",
+  width: "100%",
+  height: "100%",
   overflow: "hidden",
 };
 
@@ -36,16 +41,8 @@ const RendererFactory = ({ viz, state, showSidebar }) => {
   switch (viz) {
     case VisualizationIds.BAR_CHART:
       return (
-        <Box
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            height: "100%",
-            overflowY: "auto",
-          }}
-        >
-          <BarChartRenderer state={state} />
+        <Box style={boxXs}>
+          <BarChartRenderer state={state} look={chartSx} />
           {showSidebar && (
             <Sidebar look={sidebarSx}>
               <TitleAccordion />
@@ -62,17 +59,10 @@ const RendererFactory = ({ viz, state, showSidebar }) => {
 
     case VisualizationIds.PIE_CHART:
       return (
-        <Box
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            height: "100%",
-          }}
-        >
+        <Box style={boxXs}>
           <PieChartRenderer state={state} look={chartSx} />
           {showSidebar && (
-            <Sidebar>
+            <Sidebar look={sidebarSx}>
               <TitleAccordion />
               <FooterAccordion />
               <TextAccordion />
@@ -87,17 +77,10 @@ const RendererFactory = ({ viz, state, showSidebar }) => {
 
     case VisualizationIds.LINE_CHART:
       return (
-        <Box
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            height: "100%",
-          }}
-        >
+        <Box style={boxXs}>
           <LineChartRenderer state={state} look={chartSx} />
           {showSidebar && (
-            <Sidebar>
+            <Sidebar look={sidebarSx}>
               <TitleAccordion />
               <FooterAccordion />
               <TextAccordion />

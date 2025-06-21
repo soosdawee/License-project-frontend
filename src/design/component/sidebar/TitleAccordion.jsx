@@ -16,6 +16,7 @@ import {
   setArticle,
 } from "../state/context/actions";
 import { VisualizationContext } from "../state/context/VisualizationContext";
+import { text } from "d3";
 
 const TitleAccordion = () => {
   const { state, dispatch } = useContext(VisualizationContext);
@@ -59,8 +60,22 @@ const TitleAccordion = () => {
     }
   };
 
+  const textSx = {
+    "& label.Mui-focused": {
+      color: "#007393",
+    },
+    "& .MuiOutlinedInput-root": {
+      "&.Mui-focused fieldset": {
+        borderColor: "#007393",
+      },
+    },
+  };
+
   return (
-    <Accordion disableGutters>
+    <Accordion
+      disableGutters
+      sx={{ borderBottom: "1px solid #e0dcdc", borderTop: "1px solid #e0dcdc" }}
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Header</Typography>
       </AccordionSummary>
@@ -72,6 +87,7 @@ const TitleAccordion = () => {
             onChange={(e) => setLocalTitle(e.target.value)}
             fullWidth
             onBlur={handleBlurTitle}
+            sx={textSx}
           />
           <TextField
             label="Article"
@@ -79,6 +95,7 @@ const TitleAccordion = () => {
             onChange={(e) => setLocalArticle(e.target.value)}
             fullWidth
             onBlur={handleBlurArticle}
+            sx={textSx}
           />
           <Box sx={{ display: "flex", gap: 2 }}>
             <TextField
@@ -88,7 +105,7 @@ const TitleAccordion = () => {
               onChange={(e) => setLocalTitleFontSize(e.target.value)}
               onBlur={handleBlurTitleFontSize}
               inputProps={{ min: 8, max: 100 }}
-              sx={{ flex: 1 }}
+              sx={{ flex: 1, ...textSx }}
             />
             <TextField
               label="Article Font Size (px)"
@@ -97,7 +114,7 @@ const TitleAccordion = () => {
               onChange={(e) => setLocalArticleFontSize(e.target.value)}
               onBlur={handleBlurArticleFontSize}
               inputProps={{ min: 8, max: 100 }}
-              sx={{ flex: 1 }}
+              sx={{ flex: 1, ...textSx }}
             />
           </Box>
         </Stack>

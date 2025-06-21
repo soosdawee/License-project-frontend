@@ -5,7 +5,7 @@ const initialState = {
   xAxisLabel: '',
   yAxisLabel: '',
   showLegend: false,
-  showPercentages: false,
+  showPercentages: true,
   showAnnotations: false,
   data: [[], [], []], 
   filters: [],
@@ -27,6 +27,12 @@ const initialState = {
   article: "",
   textColor: "#000000",
   transitionTime: 750,
+  saved: false,
+  modified: false,
+  shared: false,
+  published: false,
+  visualizationId: 0,
+  sheetsLink: '',
 };
 
 export default initialState;

@@ -48,7 +48,7 @@ const AxesAndGridsAccordion = () => {
   };
 
   return (
-    <Accordion disableGutters sx={{ overflowY: "auto" }}>
+    <Accordion disableGutters sx={{ borderBottom: "1px solid #e0dcdc" }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Axes & Grids</Typography>
       </AccordionSummary>
@@ -62,6 +62,16 @@ const AxesAndGridsAccordion = () => {
           value={localXLabel}
           onChange={(e) => setLocalXLabel(e.target.value)}
           onBlur={handleBlurX}
+          sx={{
+            "& label.Mui-focused": {
+              color: "#007393",
+            },
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused fieldset": {
+                borderColor: "#007393",
+              },
+            },
+          }}
         />
         <TextField
           label="Y Axis Label"
@@ -70,19 +80,44 @@ const AxesAndGridsAccordion = () => {
           value={localYLabel}
           onChange={(e) => setLocalYLabel(e.target.value)}
           onBlur={handleBlurY}
+          sx={{
+            "& label.Mui-focused": {
+              color: "#007393",
+            },
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused fieldset": {
+                borderColor: "#007393",
+              },
+            },
+          }}
         />
         <FormControlLabel
           control={
             <Checkbox
               checked={state.areLabelsVisible}
               onChange={handleToggleLabels}
+              sx={{
+                color: "#007393",
+                "&.Mui-checked": {
+                  color: "#007393",
+                },
+              }}
             />
           }
           label="Show axis labels"
         />
         <FormControlLabel
           control={
-            <Checkbox checked={state.showGrids} onChange={handleToggleGrids} />
+            <Checkbox
+              checked={state.showGrids}
+              onChange={handleToggleGrids}
+              sx={{
+                color: "#007393",
+                "&.Mui-checked": {
+                  color: "#007393",
+                },
+              }}
+            />
           }
           label="Show grid lines"
         />

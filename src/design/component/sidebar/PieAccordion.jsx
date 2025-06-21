@@ -62,7 +62,7 @@ const PieAccordion = () => {
   };
 
   return (
-    <Accordion disableGutters>
+    <Accordion disableGutters sx={{ borderBottom: "1px solid #e0dcdc" }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography>
           {state.vizType === "PIE_CHART" ? "Pie Appearance" : "Line Appearance"}
@@ -130,7 +130,12 @@ const PieAccordion = () => {
                   <Checkbox
                     checked={state.showPercentages}
                     onChange={handleTogglePercentages}
-                    color="primary"
+                    sx={{
+                      color: "#007393",
+                      "&.Mui-checked": {
+                        color: "#007393",
+                      },
+                    }}
                   />
                 }
                 label="Show %"

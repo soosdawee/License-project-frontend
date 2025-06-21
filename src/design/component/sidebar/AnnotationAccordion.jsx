@@ -36,7 +36,7 @@ const AnnotationAccordion = () => {
   };
 
   return (
-    <Accordion disableGutters>
+    <Accordion disableGutters sx={{ borderBottom: "1px solid #e0dcdc" }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Annotations</Typography>
       </AccordionSummary>
@@ -46,6 +46,12 @@ const AnnotationAccordion = () => {
             <Checkbox
               checked={state.showAnnotations}
               onChange={handleCheckboxChange}
+              sx={{
+                color: "#007393",
+                "&.Mui-checked": {
+                  color: "#007393",
+                },
+              }}
             />
           }
           label="Show annotations"
@@ -59,6 +65,16 @@ const AnnotationAccordion = () => {
             onChange={handleLocalChange}
             onBlur={handleBlur}
             placeholder="e.g. {name}: {value} ({note})"
+            sx={{
+              "& label.Mui-focused": {
+                color: "#007393",
+              },
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: "#007393",
+                },
+              },
+            }}
           />
         )}
       </AccordionDetails>
