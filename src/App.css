@@ -7,3 +7,59 @@
 .header-row-style {
   background-color: #f0f0f0 !important;
 }
+
+.typing {
+  width: 5em;
+  height: 2em;
+  position: relative;
+  margin-left: 5px;
+  /* Remove background and padding */
+  background: transparent;
+  padding: 0;
+
+  /* Use flexbox to center dots */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.typing__dot {
+  /* Remove float */
+  /* float: left; */
+  width: 8px;
+  height: 8px;
+  /* margin removed since gap is used in parent */
+  background: #8d8c91;
+  border-radius: 50%;
+  opacity: 0;
+  animation: loadingFade 1s infinite;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.typing__dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing__dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing__dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes loadingFade {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+  }
+}

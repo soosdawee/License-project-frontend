@@ -7,6 +7,7 @@ const TemplatePage = lazy(() => import('./design/page/TemplatePage'));
 const StudioPage = lazy(() => import('./design/page/StudioPage'));
 const AdminDashboard = lazy(()=> import('./admin/page/AdminDashboard'));
 const EmbeddedPage = lazy(() => import('./embed/page/EmbeddedPage'))
+const SocialPage = lazy(() => import("./social/page/SocialPage"))
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/studio/:id" element={<StudioPage />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/visualization/:id/embed" element={<EmbeddedPage />} />
+            <Route path="/social" element={<SocialPage />} />
           </Routes>
         </Suspense>
     </Router>

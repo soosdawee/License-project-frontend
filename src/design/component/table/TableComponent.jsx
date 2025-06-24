@@ -122,7 +122,7 @@ const TableComponent = ({ visualizationModel }) => {
           return props;
         }
 
-        if (visualizationModel.visualizationModelId === 33 && row === 0) {
+        if (visualizationModel.visualizationModelId === 32 && row === 0) {
           props.readOnly = false;
         } else if (columnSettings[col]) {
           Object.assign(props, columnSettings[col]);

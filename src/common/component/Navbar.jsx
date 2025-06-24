@@ -23,13 +23,14 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ height: "10%" }}>
       <Toolbar
         style={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
           backgroundColor: "#001f47",
+          height: "100%",
         }}
       >
         <img src={Logo} style={{ width: "12%", height: "auto" }} />
@@ -45,10 +46,20 @@ const Navbar = () => {
               Admin Dashboard
             </Button>
           )}
-          <Button color="inherit" sx={{ textTransform: "none" }}>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/social"
+            sx={{ textTransform: "none" }}
+          >
             Social Platform
           </Button>
-          <Button color="inherit" sx={{ textTransform: "none" }}>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/charts"
+            sx={{ textTransform: "none" }}
+          >
             Create New Visualization
           </Button>
 

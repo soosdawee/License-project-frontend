@@ -7,6 +7,7 @@ import backend from "../../../../data-access/Backend";
 import { VisualizationNames } from "../../../constant/VisualizationTypes";
 import { setVisualizationType } from "../context/actions";
 import { VisualizationContext } from "../context/VisualizationContext";
+import { resetState } from "../context/actions";
 
 const StateFactory = ({ state, setState }) => {
   const { id } = useParams();
@@ -30,6 +31,10 @@ const StateFactory = ({ state, setState }) => {
 
     fetchData();
   }, [id]);
+
+  useEffect(() => {
+    dispatch(resetState());
+  }, []);
 
   switch (state) {
     case "Import Data":

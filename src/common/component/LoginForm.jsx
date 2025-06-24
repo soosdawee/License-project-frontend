@@ -19,7 +19,7 @@ const LoginForm = () => {
 
       localStorage.setItem("jwt", response.data.jwt);
       localStorage.setItem("userType", response.data.userType);
-      localStorage.setItem("enail", response.data.email);
+      localStorage.setItem("email", response.data.email);
       localStorage.setItem("userId", response.data.userId);
       navigate("/charts");
     } catch (error) {

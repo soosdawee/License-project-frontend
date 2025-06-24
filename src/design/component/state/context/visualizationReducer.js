@@ -1,3 +1,4 @@
+import initialState from "./initialState";
 const visualizationReducer = (state, action) => {
   switch (action.type) {
     case 'SET_TITLE':
@@ -7,7 +8,7 @@ const visualizationReducer = (state, action) => {
     case 'SET_DATA':
       return { ...state, data: action.payload, modified: true };
     case 'RESET_STATE':
-      return action.payload;
+      return {...initialState, data: [[], [], []]};
     case 'SET_SHOW_ANNOTATIONS':
       return { ...state, showAnnotations: action.payload, modified: true};
     case 'SET_VISUALIZATION_MODEL_ID':

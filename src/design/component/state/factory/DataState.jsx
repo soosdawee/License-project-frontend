@@ -1,4 +1,4 @@
-import { useContext, useState, useCallback, useEffect } from "react";
+import { useContext, useState, useCallback, useEffect, Suspense } from "react";
 import TableComponent from "../../table/TableComponent";
 import {
   Button,
@@ -156,10 +156,12 @@ const DataState = ({ visualizationModel, setState }) => {
             pr: "1%",
           }}
         >
-          <TableComponent
-            visualizationModel={visualizationModel}
-            sx={{ width: "100%", height: "100%", flexGrow: 1 }}
-          />
+          <Suspense fallback={<div></div>}>
+            <TableComponent
+              visualizationModel={visualizationModel}
+              sx={{ width: "100%", height: "100%", flexGrow: 1 }}
+            />
+          </Suspense>
         </Box>
 
         <Box
