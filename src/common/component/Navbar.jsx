@@ -22,6 +22,14 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    localStorage.setItem("jwt", "");
+    localStorage.setItem("userId", "");
+    localStorage.setItem("email", "");
+    localStorage.setItem("userType", "");
+    setAnchorEl(null);
+  };
+
   return (
     <AppBar position="static" sx={{ height: "10%" }}>
       <Toolbar
@@ -91,9 +99,19 @@ const Navbar = () => {
                 horizontal: "right",
               }}
             >
-              <MenuItem onClick={handleClose}>Settings</MenuItem>
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>Logout</MenuItem>
+              <MenuItem component={Link} to={"/settings"} onClick={handleClose}>
+                Settings
+              </MenuItem>
+              <MenuItem
+                component={Link}
+                to={`/profile/${localStorage.getItem("userId")}`}
+                onClick={handleClose}
+              >
+                Profile
+              </MenuItem>
+              <MenuItem component={Link} to="/" onClick={handleLogout}>
+                Logout
+              </MenuItem>
             </Menu>
           </Box>
         </Box>

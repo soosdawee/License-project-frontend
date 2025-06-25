@@ -16,6 +16,7 @@ import {
   setModified,
   setPublished,
   setSaved,
+  setShared,
   setVisualizationId,
 } from "../context/actions";
 
@@ -99,6 +100,13 @@ const ShareState = ({ visualizationModel }) => {
     dispatch(setPublished(!state.published));
     await backend.put(`visualization/${state.visualizationId}/published`);
   };
+
+  const handleSharing = async () => {
+    dispatch(setShared(!state.shared));
+    await backend.put(`visualization/${state.visualizationId}/shared`);
+  };
+
+  console.log(state);
 
   return (
     <Box
@@ -231,7 +239,7 @@ const ShareState = ({ visualizationModel }) => {
           <Button
             variant="outlined"
             disabled={!state.saved}
-            onClick={handleDownload}
+            onClick={handleSharing}
             sx={{
               height: "100%",
               width: "40%",
@@ -248,7 +256,7 @@ const ShareState = ({ visualizationModel }) => {
             }}
           >
             <ShareIcon />
-            Share
+            {state.shared ? "Shared" : "Share"}
           </Button>
         </Box>
         <Box
