@@ -33,7 +33,14 @@ const LegendAccordion = () => {
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">Legend</Typography>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "6%",
+        }}
+      >
         <FormControlLabel
           control={
             <Checkbox

@@ -109,6 +109,13 @@ const Navbar = () => {
               >
                 Profile
               </MenuItem>
+              <MenuItem
+                component={Link}
+                to={`/my-visualizations/${localStorage.getItem("userId")}`}
+                onClick={handleClose}
+              >
+                My Visualizations
+              </MenuItem>
               <MenuItem component={Link} to="/" onClick={handleLogout}>
                 Logout
               </MenuItem>

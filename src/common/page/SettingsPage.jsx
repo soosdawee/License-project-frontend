@@ -213,17 +213,27 @@ const SettingsPage = () => {
                 <Typography variant="h6" sx={{ margin: "2% 0" }}>
                   Edit Profile
                 </Typography>
-                <Avatar
-                  src={getAvatarSrc()}
+                <Box
                   sx={{
-                    width: 130,
-                    height: 130,
-                    margin: "2%",
-                    fontSize: "4rem",
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
-                  {!user.profilePicture && getInitials()}
-                </Avatar>
+                  <Avatar
+                    src={getAvatarSrc()}
+                    sx={{
+                      width: 130,
+                      height: 130,
+                      margin: "2%",
+                      fontSize: "4rem",
+                    }}
+                  >
+                    {!user.profilePicture && getInitials()}
+                  </Avatar>
+                </Box>
+
                 <TextField
                   label="First Name"
                   value={user.firstname}

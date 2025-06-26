@@ -3,12 +3,12 @@ import * as d3 from "d3";
 import { Box } from "@mui/material";
 import ColorPalettes from "../ui/ColorPalettes";
 
-const LineChartRenderer = ({ state }) => {
+const AreaChartRenderer = ({ state }) => {
   const ref = useRef();
   const containerRef = useRef();
   const [containerWidth, setContainerWidth] = useState(600);
   const [containerHeight, setContainerHeight] = useState(400);
-  const [disabledLines, setDisabledLines] = useState(new Set());
+  const [disabledAreas, setDisabledAreas] = useState(new Set());
 
   const interpolateAnnotation = (template, d, context = {}) =>
     template
@@ -16,8 +16,8 @@ const LineChartRenderer = ({ state }) => {
       .replace(/{value}/g, d.data?.value ?? d.value)
       .replace(/{title}/g, context.title || "");
 
-  const toggleLine = (name) => {
-    setDisabledLines((prev) => {
+  const toggleArea = (name) => {
+    setDisabledAreas((prev) => {
       const updated = new Set(prev);
       updated.has(name) ? updated.delete(name) : updated.add(name);
       return updated;
@@ -36,7 +36,6 @@ const LineChartRenderer = ({ state }) => {
 
   useEffect(() => {
     if (!containerRef.current) return;
-
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
         if (entry.contentRect) {
@@ -45,7 +44,6 @@ const LineChartRenderer = ({ state }) => {
         }
       }
     });
-
     resizeObserver.observe(containerRef.current);
     return () => resizeObserver.disconnect();
   }, []);
@@ -59,19 +57,20 @@ const LineChartRenderer = ({ state }) => {
     const textColor = state.textColor || "#000000";
     const opacity = Math.min(Math.max(state.opacity / 100, 0), 1);
 
-    // Calculate dynamic margins based on presence of title, article, legend, and labels
     const margin = {
       top:
-        30 +
+        0.05 * containerHeight +
         (state.title ? titleFontSize + 10 : 0) +
         (state.article ? articleFontSize * 2 + 10 : 0) +
         (state.showLegend ? 40 : 0),
-      right: 20,
-      bottom: 50 + (state.areLabelsVisible ? 20 : 0),
-      left: 60 + (state.areLabelsVisible ? 20 : 0),
+      right: 0.05 * containerWidth,
+      bottom:
+        0.1 * containerHeight +
+        (state.areLabelsVisible ? 20 : 0) +
+        (state.isFooter ? 40 : 0),
+      left: 0.13 * containerWidth + (state.areLabelsVisible ? 30 : 0),
     };
 
-    // Inner width and height based on container size and margins
     const innerWidth = containerWidth - margin.left - margin.right;
     const innerHeight = containerHeight - margin.top - margin.bottom;
 
@@ -95,18 +94,21 @@ const LineChartRenderer = ({ state }) => {
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
     const headers = state.data[0];
-    const lines = headers.slice(1);
+    const series = headers.slice(1);
 
-    const data = state.data.slice(1).map((row) => {
-      const obj = { label: row[0] };
-      lines.forEach((line, i) => {
-        obj[line] = +row[i + 1];
+    const data = state.data
+      .slice(1)
+      .filter((row) => row.length > 1)
+      .map((row) => {
+        const obj = { label: row[0] };
+        series.forEach((line, i) => {
+          obj[line] = +row[i + 1];
+        });
+        return obj;
       });
-      return obj;
-    });
 
     const filteredData = data.filter((d) =>
-      lines.some((line) => !disabledLines.has(line) && d[line] !== 0)
+      series.some((key) => !disabledAreas.has(key) && d[key] !== 0)
     );
 
     const x = d3
@@ -116,7 +118,7 @@ const LineChartRenderer = ({ state }) => {
 
     const y = d3
       .scaleLinear()
-      .domain([0, d3.max(data, (d) => d3.max(lines, (line) => d[line]))])
+      .domain([0, d3.max(data, (d) => d3.max(series, (key) => d[key]))])
       .nice()
       .range([innerHeight, 0]);
 
@@ -125,13 +127,7 @@ const LineChartRenderer = ({ state }) => {
       ColorPalettes[state.colorPalette] || ColorPalettes.vibrant;
     const fallbackColorScale = d3
       .scaleOrdinal(selectedPalette.colors)
-      .domain(lines);
-
-    const lineGenerator = (key) =>
-      d3
-        .line()
-        .x((d) => x(d.label))
-        .y((d) => y(d[key]));
+      .domain(series);
 
     const yAxis = d3
       .axisLeft(y)
@@ -139,7 +135,6 @@ const LineChartRenderer = ({ state }) => {
       .tickPadding(10);
 
     g.append("g")
-      .attr("class", "y-axis")
       .call(yAxis)
       .call((g) => {
         g.select(".domain").attr("stroke", textColor);
@@ -149,12 +144,9 @@ const LineChartRenderer = ({ state }) => {
         g.selectAll(".tick text").attr("fill", textColor);
       });
 
-    const xAxis = d3.axisBottom(x).tickPadding(10);
-
     g.append("g")
-      .attr("class", "x-axis")
       .attr("transform", `translate(0,${innerHeight})`)
-      .call(xAxis)
+      .call(d3.axisBottom(x).tickPadding(10))
       .call((g) => {
         g.select(".domain").attr("stroke", textColor);
         g.selectAll(".tick line").attr("stroke", textColor);
@@ -163,7 +155,6 @@ const LineChartRenderer = ({ state }) => {
 
     if (state.areLabelsVisible) {
       g.append("text")
-        .attr("class", "x-axis-label")
         .attr("text-anchor", "middle")
         .attr("x", innerWidth / 2)
         .attr("y", innerHeight + 45)
@@ -173,7 +164,6 @@ const LineChartRenderer = ({ state }) => {
         .text(state.xAxisLabel || "X Axis");
 
       g.append("text")
-        .attr("class", "y-axis-label")
         .attr("text-anchor", "middle")
         .attr(
           "transform",
@@ -188,7 +178,6 @@ const LineChartRenderer = ({ state }) => {
     const tooltip = d3
       .select("body")
       .append("div")
-      .attr("class", "tooltip")
       .style("position", "absolute")
       .style("background", "#ffffff")
       .style("border", "1px solid #ccc")
@@ -200,31 +189,85 @@ const LineChartRenderer = ({ state }) => {
       .style("display", "none")
       .style("font-family", fontFamily);
 
-    lines.forEach((key) => {
-      if (disabledLines.has(key)) return;
-
+    series.forEach((key) => {
+      if (disabledAreas.has(key)) return;
       const filteredData = data.filter((d) => d[key] !== 0);
       if (filteredData.length === 0) return;
 
       const color = colorMap[key] || fallbackColorScale(key);
-      const line = lineGenerator(key);
+
+      const area = d3
+        .area()
+        .x((d) => x(d.label))
+        .y0(innerHeight)
+        .y1((d) => y(d[key]));
 
       const path = g
         .append("path")
         .datum(filteredData)
-        .attr("fill", "none")
-        .attr("stroke", color)
-        .attr("stroke-opacity", opacity)
-        .attr("stroke-width", 2)
-        .attr("d", line);
+        .attr("fill", color)
+        .attr("fill-opacity", opacity * 0.6)
+        .attr("d", area);
 
       const totalLength = path.node().getTotalLength();
       path
+        .attr("stroke", color)
+        .attr("stroke-width", 2)
+        .attr("stroke-opacity", opacity)
         .attr("stroke-dasharray", totalLength + " " + totalLength)
         .attr("stroke-dashoffset", totalLength)
         .transition()
         .duration(state.transitionTime || 750)
         .attr("stroke-dashoffset", 0);
+
+      if (state.showLegend) {
+        const legend = svg
+          .append("g")
+          .attr("transform", `translate(${margin.left}, ${margin.top - 30})`);
+
+        const legendItems = series
+          .filter((key) => {
+            return data.some((d) => d[key] !== 0 && d[key] !== undefined);
+          })
+          .map((key) => ({
+            name: key,
+            color: colorMap[key] || fallbackColorScale(key),
+          }));
+
+        let xOffset = -90;
+        const padding = 0;
+        const fontSize = 12;
+
+        legendItems.forEach((item) => {
+          const group = legend
+            .append("g")
+            .attr("transform", `translate(${xOffset}, 0)`)
+            .style("cursor", "pointer")
+            .on("click", () => toggleArea(item.name));
+
+          group
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", -fontSize + 2)
+            .attr("width", 12)
+            .attr("height", 12)
+            .attr("fill", item.color)
+            .attr("opacity", disabledAreas.has(item.name) ? 0.3 : 1);
+
+          const text = group
+            .append("text")
+            .attr("x", 16)
+            .attr("y", 2)
+            .style("fill", textColor)
+            .style("font-family", fontFamily)
+            .style("font-size", `${fontSize}px`)
+            .text(item.name)
+            .attr("opacity", disabledAreas.has(item.name) ? 0.3 : 1);
+
+          const textWidth = text.node().getComputedTextLength();
+          xOffset += textWidth + 12 + padding + 8;
+        });
+      }
 
       filteredData.forEach((d) => {
         g.append("circle")
@@ -263,8 +306,9 @@ const LineChartRenderer = ({ state }) => {
     if (state.title) {
       svg
         .append("text")
-        .attr("x", 20)
+        .attr("x", 50)
         .attr("y", titleFontSize)
+        .attr("text-anchor", "middle")
         .style("font-size", `${titleFontSize}px`)
         .style("font-weight", "bold")
         .style("font-family", fontFamily)
@@ -293,62 +337,20 @@ const LineChartRenderer = ({ state }) => {
         .html(state.article);
     }
 
-    if (state.showLegend) {
-      let legendY = 20;
-      if (state.title) legendY += titleFontSize + 10;
-      if (state.article) legendY += articleFontSize * 2 + 10;
-
-      const legend = svg
-        .append("g")
-        .attr("transform", `translate(20, ${legendY})`);
-
-      let xOffset = 0;
-      let yOffset = 0;
-      const maxLegendWidth = containerWidth - 40;
-
-      lines.forEach((lineName) => {
-        if (lineName === null) return;
-        const isActive = !disabledLines.has(lineName);
-        const color = colorMap[lineName] || fallbackColorScale(lineName);
-        const textWidth = lineName?.length * (articleFontSize * 0.6) + 7;
-
-        if (xOffset + textWidth > maxLegendWidth) {
-          xOffset = 0;
-          yOffset += 20;
-        }
-
-        const legendItem = legend
-          .append("g")
-          .attr("transform", `translate(${xOffset}, ${yOffset})`);
-
-        legendItem
-          .append("rect")
-          .attr("width", 12)
-          .attr("height", 12)
-          .attr("fill", color)
-          .attr("stroke", isActive ? "black" : "none")
-          .attr("cursor", "pointer")
-          .on("click", () => toggleLine(lineName));
-
-        legendItem
-          .append("text")
-          .attr("x", 18)
-          .attr("y", 10)
-          .text(lineName)
-          .style("font-size", `${articleFontSize - 4}px`)
-          .style("font-family", fontFamily)
-          .style("cursor", "pointer")
-          .style("fill", isActive ? textColor : "#ccc")
-          .on("click", () => toggleLine(lineName));
-
-        xOffset += textWidth + 15;
-      });
+    if (state.isFooter && state.footerText) {
+      svg
+        .append("text")
+        .attr("x", 35)
+        .attr("y", containerHeight - 10)
+        .attr("text-anchor", "middle")
+        .style("font-size", "12px")
+        .style("font-family", fontFamily)
+        .style("fill", textColor)
+        .text(state.footerText);
     }
 
-    return () => {
-      tooltip.remove();
-    };
-  }, [state, containerWidth, containerHeight, disabledLines]);
+    return () => tooltip.remove();
+  }, [state, containerWidth, containerHeight, disabledAreas]);
 
   return (
     <Box
@@ -363,4 +365,4 @@ const LineChartRenderer = ({ state }) => {
   );
 };
 
-export default LineChartRenderer;
+export default AreaChartRenderer;

@@ -7,6 +7,8 @@ import AnnotationAccordion from "../sidebar/AnnotationAccordion";
 const BarChartRenderer = lazy(() => import("./BarChartRenderer"));
 const PieChartRenderer = lazy(() => import("./PieChartRenderer"));
 const LineChartRenderer = lazy(() => import("./LineChartRenderer"));
+const ScatterPlotRenderer = lazy(() => import("./ScatterPlotRenderer"));
+const AreaChartRenderer = lazy(() => import("./AreaChartRenderer"));
 
 const TitleAccordion = lazy(() => import("../sidebar/TitleAccordion"));
 const ColorAccordion = lazy(() => import("../sidebar/ColorAccordion"));
@@ -18,31 +20,50 @@ const AxesAndGridsAccordion = lazy(() =>
 );
 const PieAccordion = lazy(() => import("../sidebar/PieAccordion"));
 const LegendAccordion = lazy(() => import("../sidebar/LegendAccordion"));
+const ScatterAccordion = lazy(() => import("../sidebar/ScatterAccordion"));
+const AreaAccordion = lazy(() => import("../sidebar/AreaAccordion"));
 
-const sidebarSx = {
-  flex: 4,
-  overflowY: "scroll",
-};
+const RendererFactory = ({ viz, state, showSidebar, isEmbed }) => {
+  const sidebarSx = {
+    width: "40%",
+    overflowY: "scroll",
+  };
 
-const chartSx = {
-  flex: 6,
-  position: "relative",
-};
+  const boxXs = {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    height: "100%",
+    overflow: "hidden",
+  };
 
-const boxXs = {
-  display: "flex",
-  flexDirection: "row",
-  width: "100%",
-  height: "100%",
-  overflow: "hidden",
-};
+  const chartSx = {
+    width: isEmbed ? "100%" : "80%",
+    height: isEmbed ? "100%" : "80%",
+    position: "absolute",
+    top: 0,
+    border: isEmbed ? "" : "2px solid #001f47",
+  };
 
-const RendererFactory = ({ viz, state, showSidebar }) => {
+  const containerSx = {
+    width: showSidebar ? "60%" : "100%",
+    height: "100%",
+    position: "relative",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  };
+
   switch (viz) {
     case VisualizationIds.BAR_CHART:
       return (
         <Box style={boxXs}>
-          <BarChartRenderer state={state} look={chartSx} />
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <BarChartRenderer state={state} />
+            </Box>
+          </Box>
           {showSidebar && (
             <Sidebar look={sidebarSx}>
               <TitleAccordion />
@@ -60,7 +81,11 @@ const RendererFactory = ({ viz, state, showSidebar }) => {
     case VisualizationIds.PIE_CHART:
       return (
         <Box style={boxXs}>
-          <PieChartRenderer state={state} look={chartSx} />
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <PieChartRenderer state={state} />
+            </Box>
+          </Box>
           {showSidebar && (
             <Sidebar look={sidebarSx}>
               <TitleAccordion />
@@ -78,7 +103,11 @@ const RendererFactory = ({ viz, state, showSidebar }) => {
     case VisualizationIds.LINE_CHART:
       return (
         <Box style={boxXs}>
-          <LineChartRenderer state={state} look={chartSx} />
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <LineChartRenderer state={state} />
+            </Box>
+          </Box>
           {showSidebar && (
             <Sidebar look={sidebarSx}>
               <TitleAccordion />
@@ -86,6 +115,52 @@ const RendererFactory = ({ viz, state, showSidebar }) => {
               <TextAccordion />
               <ColorAccordion />
               <PieAccordion />
+              <AnnotationAccordion />
+              <AxesAndGridsAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.SCATTER_PLOT:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <ScatterPlotRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <ScatterAccordion />
+              <AnnotationAccordion />
+              <AxesAndGridsAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.AREA_CHART:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <AreaChartRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <AreaAccordion />
               <AnnotationAccordion />
               <AxesAndGridsAccordion />
               <LegendAccordion />

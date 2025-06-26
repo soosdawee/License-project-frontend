@@ -3,13 +3,12 @@ import * as d3 from "d3";
 import { Box } from "@mui/material";
 import ColorPalettes from "../ui/ColorPalettes";
 
-const PieChartRenderer = ({ state, look }) => {
+const PieChartRenderer = ({ state, chartRef }) => {
   const ref = useRef();
+  const containerRef = useRef();
   const prevArcsRef = useRef();
   const [disabledCategories, setDisabledCategories] = useState(new Set());
-
-  const width = 600;
-  const height = 400;
+  const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
 
   const interpolateAnnotation = (template, d) =>
     template
@@ -45,25 +44,39 @@ const PieChartRenderer = ({ state, look }) => {
   const toggleCategory = (name) => {
     setDisabledCategories((prev) => {
       const updated = new Set(prev);
-      if (updated.has(name)) {
-        updated.delete(name);
-      } else {
-        updated.add(name);
-      }
+      updated.has(name) ? updated.delete(name) : updated.add(name);
       return updated;
     });
   };
 
+  // Resize observer
   useEffect(() => {
-    if (!state.data || state.data.length === 0) return;
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        const { width, height } = entry.contentRect;
+        setDimensions({ width, height });
+      }
+    });
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const { width, height } = dimensions;
+
+    if (!state.data || state.data.length === 0 || !width || !height) return;
 
     const fontFamily = state.font || "Arial, sans-serif";
     const titleFontSize = state.titleSize || 40;
     const articleFontSize = state.articleSize || 16;
     const textColor = state.textColor || "#000000";
     const opacity = Math.min(Math.max(state.opacity / 100, 0), 1);
-
     const cornerRadius = 0;
+
     const rawData = state.data
       .filter((row) => row[0] !== "" && !isNaN(row[1]))
       .map((row) => ({ name: row[0], value: +row[1], note: row[2] || "" }))
@@ -86,7 +99,9 @@ const PieChartRenderer = ({ state, look }) => {
     const availableChartHeight = height - topMargin - footerHeight;
     const radius = Math.min(width, availableChartHeight) / 2 - 10;
 
-    svg.attr("width", width).attr("height", height);
+    svg
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("preserveAspectRatio", "xMidYMid meet");
 
     svg
       .append("rect")
@@ -131,16 +146,12 @@ const PieChartRenderer = ({ state, look }) => {
       .cornerRadius(cornerRadius);
 
     const newArcs = pie(filteredData);
-
     const colorMap = parseCustomColors(state.customColors);
     const selectedPalette =
       ColorPalettes[state.colorPalette] || ColorPalettes.vibrant;
     const fallbackColorScale = d3
       .scaleOrdinal(selectedPalette.colors)
       .domain(rawData.map((d) => d.name));
-
-    const findPrevArc = (name) =>
-      prevArcsRef.current?.find((d) => d.data.name === name);
 
     const paths = g.selectAll("path").data(newArcs, (d) => d.data.name);
 
@@ -248,7 +259,6 @@ const PieChartRenderer = ({ state, look }) => {
         .append("text")
         .attr("x", 20)
         .attr("y", titleFontSize)
-        .attr("text-anchor", "start")
         .style("font-size", `${titleFontSize}px`)
         .style("font-weight", "bold")
         .style("font-family", fontFamily)
@@ -278,7 +288,6 @@ const PieChartRenderer = ({ state, look }) => {
     }
 
     if (state.showLegend) {
-      // Legend should be placed right under article
       let legendY = 20;
       if (state.title) legendY += titleFontSize + 10;
       if (state.article) legendY += articleFontSize * 2 + 10;
@@ -294,7 +303,7 @@ const PieChartRenderer = ({ state, look }) => {
 
         const isActive = !disabledCategories.has(item.name);
         const color = colorMap[item.name] || fallbackColorScale(item.name);
-        const label = item.name || "";
+        const label = item.name;
         const textWidth = label.length * (articleFontSize * 0.6) + 20;
 
         const legendItem = legend
@@ -330,7 +339,6 @@ const PieChartRenderer = ({ state, look }) => {
         .append("text")
         .attr("x", 10)
         .attr("y", height - 10)
-        .attr("text-anchor", "start")
         .style("font-size", "12px")
         .style("font-family", fontFamily)
         .style("fill", textColor)
@@ -338,11 +346,14 @@ const PieChartRenderer = ({ state, look }) => {
     }
 
     return () => tooltip.remove();
-  }, [state, disabledCategories]);
+  }, [state, disabledCategories, dimensions]);
 
   return (
-    <Box sx={look}>
-      <svg ref={ref} style={{ border: "1px solid #001f47" }} />
+    <Box sx={{ width: "100%", height: "100%" }} ref={chartRef ?? containerRef}>
+      <svg
+        ref={ref}
+        style={{ width: dimensions.width, height: dimensions.height }}
+      />
     </Box>
   );
 };

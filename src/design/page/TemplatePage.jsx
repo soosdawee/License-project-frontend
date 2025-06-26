@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Stack, Typography, Box } from "@mui/material";
+import { Button, Typography, Box, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import backend from "../../data-access/Backend";
 import Navbar from "../../common/component/Navbar";
@@ -28,42 +28,56 @@ const TemplatePage = () => {
   return (
     <>
       <Navbar />
-      <div style={{ padding: "24px" }}>
+      <Box sx={{ padding: "0 10%" }}>
         <Typography variant="h4" gutterBottom>
           Choose from the visualizations above!
         </Typography>
-        <Stack direction="row" spacing={2}>
+
+        <Grid container spacing={2} alignItems="flex-start">
           {vizType.map((viz) => (
-            <Button
+            <Grid
+              item
               key={viz.visualizationModelId}
-              variant="contained"
-              onClick={() => handleClick(viz.visualizationModelId)}
-              sx={{
-                textTransform: "none",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 1,
-                padding: 2,
-                backgroundColor: "white",
-                color: "#001f47",
-                fontWeight: "bold",
-              }}
+              xs={12}
+              sm={6}
+              md={4}
+              lg={2.4} // 100 / 5 = 20, so 2.4 to evenly distribute across 5 columns (MUI hack)
+              sx={{ display: "flex", justifyContent: "flex-start" }}
             >
-              <img
-                src={`data:image/svg+xml;base64,${viz.cardPhoto}`}
-                alt={viz.name}
-                style={{
-                  width: 100,
-                  height: 100,
-                  objectFit: "cover",
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={() => handleClick(viz.visualizationModelId)}
+                sx={{
+                  height: "180px",
+                  width: "auto",
+                  aspectRatio: 1,
+                  textTransform: "none",
+                  flexDirection: "column",
+                  gap: 1,
+                  padding: 1,
+                  backgroundColor: "white",
+                  color: "#001f47",
+                  fontWeight: "bold",
+                  display: "flex",
+                  alignItems: "center",
                 }}
-              />
-              {viz.name}
-            </Button>
+              >
+                <img
+                  src={`data:image/svg+xml;base64,${viz.cardPhoto}`}
+                  alt={viz.name}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    objectFit: "contain",
+                  }}
+                />
+                {viz.name}
+              </Button>
+            </Grid>
           ))}
-        </Stack>
-      </div>
+        </Grid>
+      </Box>
     </>
   );
 };

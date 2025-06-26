@@ -1,4 +1,4 @@
-import React, { useContext, useRef, Suspense } from "react";
+import React, { useContext, useState, Suspense, useRef } from "react";
 import { VisualizationContext } from "../context/VisualizationContext";
 import { Box, Button, Typography } from "@mui/material";
 import backend from "../../../../data-access/Backend";
@@ -23,6 +23,7 @@ import {
 const ShareState = ({ visualizationModel }) => {
   const { state, dispatch } = useContext(VisualizationContext);
   const { id } = useParams();
+  const { visualizationId } = useParams();
   const chartRef = useRef();
 
   const handleShare = async () => {
@@ -69,7 +70,12 @@ const ShareState = ({ visualizationModel }) => {
         dispatch(setVisualizationId(response.data.visualizationId));
         dispatch(setSaved(true));
       } else {
-        await backend.put(`/visualization/${state.visualizationId}`, payload);
+        await backend.put(
+          `/visualization/${
+            state.visualizationId == 0 ? visualizationId : state.visualizationId
+          }`,
+          payload
+        );
         dispatch(setModified(false));
       }
     } catch (error) {
@@ -98,12 +104,16 @@ const ShareState = ({ visualizationModel }) => {
 
   const handlePublish = async () => {
     dispatch(setPublished(!state.published));
-    await backend.put(`visualization/${state.visualizationId}/published`);
+    await backend.put(
+      `visualization/${visualizationId ?? state.visualizationId}/published`
+    );
   };
 
   const handleSharing = async () => {
     dispatch(setShared(!state.shared));
-    await backend.put(`visualization/${state.visualizationId}/shared`);
+    await backend.put(
+      `visualization/${visualizationId ?? state.visualizationId}/shared`
+    );
   };
 
   console.log(state);
@@ -123,6 +133,10 @@ const ShareState = ({ visualizationModel }) => {
           height: "100%",
           width: "60%",
           overflow: "hidden",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
         }}
         ref={chartRef}
       >
@@ -131,6 +145,7 @@ const ShareState = ({ visualizationModel }) => {
             viz={visualizationModel.visualizationModelId}
             state={state}
             showSidebar={false}
+            isEmbed={false}
           />
         </Suspense>
       </div>

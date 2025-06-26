@@ -7,10 +7,12 @@ import backend from "../../../../data-access/Backend";
 import { VisualizationNames } from "../../../constant/VisualizationTypes";
 import { setVisualizationType } from "../context/actions";
 import { VisualizationContext } from "../context/VisualizationContext";
-import { resetState } from "../context/actions";
+import { resetState, initializeVisualization } from "../context/actions";
+import mapVisualizationToInitialState from "../../../../embed/context/Mapper";
 
 const StateFactory = ({ state, setState }) => {
   const { id } = useParams();
+  const { visualizationId } = useParams();
   const [visualizationModel, setvisualizationModel] = useState("");
   const { dispatch } = useContext(VisualizationContext);
 
@@ -19,6 +21,7 @@ const StateFactory = ({ state, setState }) => {
       try {
         const result = await backend.get(`visualization_model/${id}`);
         setvisualizationModel(result.data);
+        console.log(VisualizationNames[result.data.visualizationModelId]);
         dispatch(
           setVisualizationType(
             VisualizationNames[result.data.visualizationModelId]
@@ -33,7 +36,22 @@ const StateFactory = ({ state, setState }) => {
   }, [id]);
 
   useEffect(() => {
-    dispatch(resetState());
+    const fetchData = async () => {
+      try {
+        const response = await backend.get(`visualization/${visualizationId}`);
+        dispatch(
+          initializeVisualization(mapVisualizationToInitialState(response.data))
+        );
+      } catch (error) {
+        console.error("Failed to fetch data", error);
+      }
+    };
+
+    if (visualizationId) {
+      fetchData();
+    } else {
+      dispatch(resetState());
+    }
   }, []);
 
   switch (state) {

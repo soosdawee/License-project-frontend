@@ -122,13 +122,21 @@ const TableComponent = ({ visualizationModel }) => {
           return props;
         }
 
-        if (visualizationModel.visualizationModelId === 32 && row === 0) {
+        const editableHeaderIds = new Set([32, 33, 34]);
+
+        if (
+          editableHeaderIds.has(visualizationModel.visualizationModelId) &&
+          row === 0
+        ) {
           props.readOnly = false;
         } else if (columnSettings[col]) {
           Object.assign(props, columnSettings[col]);
         }
 
-        if (visualizationModel.visualizationModelId === 32 && row === 0) {
+        if (
+          editableHeaderIds.has(visualizationModel.visualizationModelId) &&
+          row === 0
+        ) {
           props.className = "header-row-style";
         }
 

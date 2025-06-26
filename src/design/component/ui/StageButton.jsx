@@ -37,7 +37,7 @@ const StageButton = ({ number, text, setState, state }) => {
           alignItems: "center",
           fontWeight: "bold",
           clipPath:
-            "polygon(1.5px 1.5px, calc(90% - 1px) 1px, calc(100% - 2px) 50%, calc(90% - 0.5px) calc(100% - 1.5px), 1.5px calc(100% - 1.5px))",
+            "polygon(1.5px 1.5px, calc(90% - 0.5px) 1.5px, calc(100% - 2px) 50%, calc(90% - 0.5px) calc(100% - 1px), 1.5px calc(100% - 1px))",
           textTransform: "none",
           zIndex: 1,
           "&:hover": {

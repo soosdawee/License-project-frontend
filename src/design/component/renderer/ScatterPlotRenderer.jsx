@@ -3,23 +3,25 @@ import * as d3 from "d3";
 import { Box } from "@mui/material";
 import ColorPalettes from "../ui/ColorPalettes";
 
-const LineChartRenderer = ({ state }) => {
+const ScatterPlotRenderer = ({ state }) => {
   const ref = useRef();
   const containerRef = useRef();
   const [containerWidth, setContainerWidth] = useState(600);
   const [containerHeight, setContainerHeight] = useState(400);
-  const [disabledLines, setDisabledLines] = useState(new Set());
+  const [disabledGroups, setDisabledGroups] = useState(new Set());
 
   const interpolateAnnotation = (template, d, context = {}) =>
     template
-      .replace(/{name}/g, d.data?.name ?? d.label)
-      .replace(/{value}/g, d.data?.value ?? d.value)
+      .replace(/{name}/g, d.name ?? "")
+      .replace(/{x-axis}/g, d.x ?? "")
+      .replace(/{y-axis}/g, d.y ?? "")
+      .replace(/{filter}/g, d.group ?? "")
       .replace(/{title}/g, context.title || "");
 
-  const toggleLine = (name) => {
-    setDisabledLines((prev) => {
+  const toggleGroup = (group) => {
+    setDisabledGroups((prev) => {
       const updated = new Set(prev);
-      updated.has(name) ? updated.delete(name) : updated.add(name);
+      updated.has(group) ? updated.delete(group) : updated.add(group);
       return updated;
     });
   };
@@ -36,7 +38,6 @@ const LineChartRenderer = ({ state }) => {
 
   useEffect(() => {
     if (!containerRef.current) return;
-
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
         if (entry.contentRect) {
@@ -45,21 +46,21 @@ const LineChartRenderer = ({ state }) => {
         }
       }
     });
-
     resizeObserver.observe(containerRef.current);
     return () => resizeObserver.disconnect();
   }, []);
 
   useEffect(() => {
-    if (!state.data || state.data?.length < 2) return;
+    if (!state.data || state.data.length < 2) return;
 
     const fontFamily = state.font || "Arial, sans-serif";
     const titleFontSize = state.titleSize || 40;
     const articleFontSize = state.articleSize || 16;
+    const footerFontSize = 12;
     const textColor = state.textColor || "#000000";
     const opacity = Math.min(Math.max(state.opacity / 100, 0), 1);
+    const transitionTime = state.transitionTime || 500;
 
-    // Calculate dynamic margins based on presence of title, article, legend, and labels
     const margin = {
       top:
         30 +
@@ -67,17 +68,18 @@ const LineChartRenderer = ({ state }) => {
         (state.article ? articleFontSize * 2 + 10 : 0) +
         (state.showLegend ? 40 : 0),
       right: 20,
-      bottom: 50 + (state.areLabelsVisible ? 20 : 0),
+      bottom:
+        50 +
+        (state.areLabelsVisible ? 20 : 0) +
+        (state.footer ? footerFontSize * 2 + 10 : 0),
       left: 60 + (state.areLabelsVisible ? 20 : 0),
     };
 
-    // Inner width and height based on container size and margins
     const innerWidth = containerWidth - margin.left - margin.right;
     const innerHeight = containerHeight - margin.top - margin.bottom;
 
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
-
     svg.attr("width", containerWidth).attr("height", containerHeight);
 
     svg
@@ -94,29 +96,25 @@ const LineChartRenderer = ({ state }) => {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const headers = state.data[0];
-    const lines = headers.slice(1);
+    const [_, xHeader, yHeader, groupHeader] = state.data[0];
+    const data = state.data.slice(1).map((row) => ({
+      name: row[0],
+      x: +row[1],
+      y: +row[2],
+      group: row[3],
+    }));
 
-    const data = state.data.slice(1).map((row) => {
-      const obj = { label: row[0] };
-      lines.forEach((line, i) => {
-        obj[line] = +row[i + 1];
-      });
-      return obj;
-    });
-
-    const filteredData = data.filter((d) =>
-      lines.some((line) => !disabledLines.has(line) && d[line] !== 0)
-    );
+    const groups = [...new Set(data.map((d) => d.group))];
+    const filteredData = data.filter((d) => !disabledGroups.has(d.group));
 
     const x = d3
-      .scalePoint()
-      .domain(filteredData.map((d) => d.label))
+      .scaleLinear()
+      .domain(d3.extent(filteredData, (d) => d.x))
+      .nice()
       .range([0, innerWidth]);
-
     const y = d3
       .scaleLinear()
-      .domain([0, d3.max(data, (d) => d3.max(lines, (line) => d[line]))])
+      .domain(d3.extent(filteredData, (d) => d.y))
       .nice()
       .range([innerHeight, 0]);
 
@@ -125,21 +123,24 @@ const LineChartRenderer = ({ state }) => {
       ColorPalettes[state.colorPalette] || ColorPalettes.vibrant;
     const fallbackColorScale = d3
       .scaleOrdinal(selectedPalette.colors)
-      .domain(lines);
+      .domain(groups);
 
-    const lineGenerator = (key) =>
-      d3
-        .line()
-        .x((d) => x(d.label))
-        .y((d) => y(d[key]));
-
+    const xAxis = d3.axisBottom(x).tickPadding(10);
     const yAxis = d3
       .axisLeft(y)
       .tickSize(state.showGrids ? -innerWidth : 0)
       .tickPadding(10);
 
     g.append("g")
-      .attr("class", "y-axis")
+      .attr("transform", `translate(0,${innerHeight})`)
+      .call(xAxis)
+      .call((g) => {
+        g.select(".domain").attr("stroke", textColor);
+        g.selectAll(".tick line").attr("stroke", textColor);
+        g.selectAll(".tick text").attr("fill", textColor);
+      });
+
+    g.append("g")
       .call(yAxis)
       .call((g) => {
         g.select(".domain").attr("stroke", textColor);
@@ -149,31 +150,17 @@ const LineChartRenderer = ({ state }) => {
         g.selectAll(".tick text").attr("fill", textColor);
       });
 
-    const xAxis = d3.axisBottom(x).tickPadding(10);
-
-    g.append("g")
-      .attr("class", "x-axis")
-      .attr("transform", `translate(0,${innerHeight})`)
-      .call(xAxis)
-      .call((g) => {
-        g.select(".domain").attr("stroke", textColor);
-        g.selectAll(".tick line").attr("stroke", textColor);
-        g.selectAll(".tick text").attr("fill", textColor);
-      });
-
     if (state.areLabelsVisible) {
       g.append("text")
-        .attr("class", "x-axis-label")
         .attr("text-anchor", "middle")
         .attr("x", innerWidth / 2)
         .attr("y", innerHeight + 45)
         .style("font-size", "14px")
         .style("fill", textColor)
         .style("font-family", fontFamily)
-        .text(state.xAxisLabel || "X Axis");
+        .text(state.xAxisLabel || xHeader);
 
       g.append("text")
-        .attr("class", "y-axis-label")
         .attr("text-anchor", "middle")
         .attr(
           "transform",
@@ -182,13 +169,12 @@ const LineChartRenderer = ({ state }) => {
         .style("font-size", "14px")
         .style("fill", textColor)
         .style("font-family", fontFamily)
-        .text(state.yAxisLabel || "Y Axis");
+        .text(state.yAxisLabel || yHeader);
     }
 
     const tooltip = d3
       .select("body")
       .append("div")
-      .attr("class", "tooltip")
       .style("position", "absolute")
       .style("background", "#ffffff")
       .style("border", "1px solid #ccc")
@@ -200,65 +186,57 @@ const LineChartRenderer = ({ state }) => {
       .style("display", "none")
       .style("font-family", fontFamily);
 
-    lines.forEach((key) => {
-      if (disabledLines.has(key)) return;
-
-      const filteredData = data.filter((d) => d[key] !== 0);
-      if (filteredData.length === 0) return;
-
-      const color = colorMap[key] || fallbackColorScale(key);
-      const line = lineGenerator(key);
-
-      const path = g
-        .append("path")
-        .datum(filteredData)
-        .attr("fill", "none")
-        .attr("stroke", color)
-        .attr("stroke-opacity", opacity)
-        .attr("stroke-width", 2)
-        .attr("d", line);
-
-      const totalLength = path.node().getTotalLength();
-      path
-        .attr("stroke-dasharray", totalLength + " " + totalLength)
-        .attr("stroke-dashoffset", totalLength)
-        .transition()
-        .duration(state.transitionTime || 750)
-        .attr("stroke-dashoffset", 0);
-
-      filteredData.forEach((d) => {
-        g.append("circle")
-          .attr("cx", x(d.label))
-          .attr("cy", y(d[key]))
-          .attr("r", 3)
-          .attr("fill", color)
-          .attr("opacity", opacity)
-          .on("mouseover", (event) => {
-            if (state.showAnnotations) {
-              tooltip
-                .html(
-                  `<div>${interpolateAnnotation(
-                    state.customAnnotation || "{name}: {value}",
-                    {
-                      data: {
-                        name: d.label,
-                        value: d[key],
-                      },
-                    },
-                    { title: key }
-                  )}</div>`
-                )
-                .style("display", "block");
-            }
-          })
-          .on("mousemove", (event) => {
-            tooltip
-              .style("left", event.pageX + 10 + "px")
-              .style("top", event.pageY + 10 + "px");
-          })
-          .on("mouseout", () => tooltip.style("display", "none"));
-      });
-    });
+    g.selectAll(".point")
+      .data(filteredData)
+      .join(
+        (enter) =>
+          enter
+            .append("circle")
+            .attr("class", "point")
+            .attr("cx", (d) => x(d.x))
+            .attr("cy", (d) => y(d.y))
+            .attr("r", 0)
+            .attr(
+              "fill",
+              (d) => colorMap[d.group] || fallbackColorScale(d.group)
+            )
+            .attr("opacity", opacity)
+            .transition()
+            .duration(transitionTime)
+            .attr("r", 4),
+        (update) =>
+          update
+            .transition()
+            .duration(transitionTime)
+            .attr("cx", (d) => x(d.x))
+            .attr("cy", (d) => y(d.y))
+            .attr(
+              "fill",
+              (d) => colorMap[d.group] || fallbackColorScale(d.group)
+            )
+            .attr("opacity", opacity),
+        (exit) =>
+          exit.transition().duration(transitionTime).attr("r", 0).remove()
+      )
+      .on("mouseover", (event, d) => {
+        if (state.showAnnotations) {
+          tooltip
+            .html(
+              `<div>${interpolateAnnotation(
+                state.customAnnotation || "<b>{name}:</b> {x-axis}, {y-axis}",
+                d,
+                { title: d.group }
+              )}</div>`
+            )
+            .style("display", "block");
+        }
+      })
+      .on("mousemove", (event) => {
+        tooltip
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY + 10 + "px");
+      })
+      .on("mouseout", () => tooltip.style("display", "none"));
 
     if (state.title) {
       svg
@@ -293,6 +271,16 @@ const LineChartRenderer = ({ state }) => {
         .html(state.article);
     }
 
+    if (state.isFooter) {
+      g.append("text")
+        .attr("x", -60)
+        .attr("y", innerHeight + margin.bottom - 10)
+        .style("font-size", `${footerFontSize}px`)
+        .style("fill", textColor)
+        .style("font-family", fontFamily)
+        .text(state.footerText);
+    }
+
     if (state.showLegend) {
       let legendY = 20;
       if (state.title) legendY += titleFontSize + 10;
@@ -301,16 +289,14 @@ const LineChartRenderer = ({ state }) => {
       const legend = svg
         .append("g")
         .attr("transform", `translate(20, ${legendY})`);
-
       let xOffset = 0;
       let yOffset = 0;
       const maxLegendWidth = containerWidth - 40;
 
-      lines.forEach((lineName) => {
-        if (lineName === null) return;
-        const isActive = !disabledLines.has(lineName);
-        const color = colorMap[lineName] || fallbackColorScale(lineName);
-        const textWidth = lineName?.length * (articleFontSize * 0.6) + 7;
+      groups.forEach((group) => {
+        const isActive = !disabledGroups.has(group);
+        const color = colorMap[group] || fallbackColorScale(group);
+        const textWidth = group.length * (articleFontSize * 0.6) + 7;
 
         if (xOffset + textWidth > maxLegendWidth) {
           xOffset = 0;
@@ -328,27 +314,25 @@ const LineChartRenderer = ({ state }) => {
           .attr("fill", color)
           .attr("stroke", isActive ? "black" : "none")
           .attr("cursor", "pointer")
-          .on("click", () => toggleLine(lineName));
+          .on("click", () => toggleGroup(group));
 
         legendItem
           .append("text")
           .attr("x", 18)
           .attr("y", 10)
-          .text(lineName)
+          .text(group)
           .style("font-size", `${articleFontSize - 4}px`)
           .style("font-family", fontFamily)
           .style("cursor", "pointer")
           .style("fill", isActive ? textColor : "#ccc")
-          .on("click", () => toggleLine(lineName));
+          .on("click", () => toggleGroup(group));
 
         xOffset += textWidth + 15;
       });
     }
 
-    return () => {
-      tooltip.remove();
-    };
-  }, [state, containerWidth, containerHeight, disabledLines]);
+    return () => tooltip.remove();
+  }, [state, containerWidth, containerHeight, disabledGroups]);
 
   return (
     <Box
@@ -363,4 +347,4 @@ const LineChartRenderer = ({ state }) => {
   );
 };
 
-export default LineChartRenderer;
+export default ScatterPlotRenderer;

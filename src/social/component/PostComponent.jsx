@@ -146,15 +146,32 @@ const PostComponent = ({ visualization, setVizList }) => {
           </Toolbar>
         </AppBar>
 
-        <CardContent sx={{ flex: "1 1 85%", overflow: "hidden", p: 0 }}>
-          <Box sx={{ height: "100%", width: "100%" }}>
+        <CardContent
+          sx={{
+            flex: "1 1 85%",
+            overflow: "hidden",
+            p: 0,
+          }}
+        >
+          <Box
+            sx={{
+              height: "100%",
+              width: "100%",
+              position: "relative",
+            }}
+          >
             <iframe
-              src={`http://localhost:3000/visualization/${visualization.visualizationId}/embed`}
-              title={`Visualization ${visualization.visualizationId}`}
-              width="100%"
-              height="100%"
-              style={{ border: "none" }}
-            />
+              src={`http://localhost:3000/visualization/${visualization.visualizationId}/shared`}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                border: "none",
+              }}
+              allowfullscreen
+            ></iframe>
           </Box>
         </CardContent>
 

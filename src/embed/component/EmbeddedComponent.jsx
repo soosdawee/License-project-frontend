@@ -9,8 +9,9 @@ import {
   setData,
 } from "../../design/component/state/context/actions";
 import Papa from "papaparse";
+import backend from "../../data-access/Backend";
 
-const EmbeddedComponent = ({ visualizationId }) => {
+const EmbeddedComponent = ({ visualizationId, type }) => {
   const { state, dispatch } = useContext(EmbeddedContext);
 
   const fetchGoogleSheetData = async (sheetUrl) => {
@@ -63,12 +64,34 @@ const EmbeddedComponent = ({ visualizationId }) => {
   useEffect(() => {
     const fetchVisualization = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8080/visualization/${visualizationId}`
-        );
-        dispatch(
-          initializeVisualization(mapVisualizationToInitialState(response.data))
-        );
+        if (type == "shared") {
+          const response = await backend.get(
+            `visualization/shared/${visualizationId}`
+          );
+          dispatch(
+            initializeVisualization(
+              mapVisualizationToInitialState(response.data)
+            )
+          );
+        } else if (type == "published") {
+          const response = await axios.get(
+            `http://localhost:8080/visualization/published/${visualizationId}`
+          );
+          dispatch(
+            initializeVisualization(
+              mapVisualizationToInitialState(response.data)
+            )
+          );
+        } else {
+          const response = await backend.get(
+            `visualization/${visualizationId}`
+          );
+          dispatch(
+            initializeVisualization(
+              mapVisualizationToInitialState(response.data)
+            )
+          );
+        }
       } catch (err) {
         console.log("GECIFASZ");
       }
@@ -89,12 +112,21 @@ const EmbeddedComponent = ({ visualizationId }) => {
   }, [state.sheetsLink]);
 
   return (
-    <Box>
+    <Box
+      sx={{
+        width: "100vw",
+        height: "100vh",
+        m: 0,
+        p: 0,
+        overflow: "hidden",
+      }}
+    >
       {state?.visualizationModelId != null ? (
         <RendererFactory
           viz={state.visualizationModelId}
           state={state}
           showSidebar={false}
+          isEmbed={true}
         />
       ) : (
         <p>Loading visualization...</p>

@@ -15,6 +15,7 @@ const CustomizationState = ({ visualizationModel }) => {
           viz={visualizationModel.visualizationModelId}
           state={state}
           showSidebar={true}
+          isEmbed={false}
         />
       </Suspense>
     </div>

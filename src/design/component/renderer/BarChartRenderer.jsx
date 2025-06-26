@@ -1,11 +1,24 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { Box } from "@mui/material";
 
-const BarChartRenderer = ({ state, look }) => {
-  const ref = useRef();
-  const width = 800;
-  const height = 400;
+const BarChartRenderer = ({ state }) => {
+  const wrapperRef = useRef();
+  const svgRef = useRef();
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  // Responsive resize handling
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        const { width, height } = entry.contentRect;
+        setDimensions({ width, height });
+      }
+    });
+    observer.observe(wrapperRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const interpolateAnnotation = (template, d) =>
     template
@@ -24,7 +37,11 @@ const BarChartRenderer = ({ state, look }) => {
   };
 
   useEffect(() => {
-    if (!state.data || state.data.length === 0) return;
+    const width = Math.max(dimensions.width, 300);
+    const height = Math.max(dimensions.height, 200);
+
+    if (!state.data || state.data.length === 0 || width === 0 || height === 0)
+      return;
 
     const fontFamily = state.font || "Arial, sans-serif";
     const titleFontSize = state.titleSize || 40;
@@ -35,7 +52,7 @@ const BarChartRenderer = ({ state, look }) => {
       .filter((row) => row[0] !== "" && row[0] !== null && !isNaN(row[1]))
       .map((row) => ({ name: row[0], value: +row[1], note: row[2] || "" }));
 
-    const svg = d3.select(ref.current);
+    const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
     svg
@@ -106,7 +123,7 @@ const BarChartRenderer = ({ state, look }) => {
       .call(yAxis)
       .selectAll("text")
       .style("font-family", fontFamily)
-      .style("fill", textColor); // y axis tick labels
+      .style("fill", textColor);
 
     if (state.showGrids) {
       const yTicks = y.ticks(5);
@@ -128,7 +145,7 @@ const BarChartRenderer = ({ state, look }) => {
       .call(d3.axisBottom(x))
       .selectAll("text")
       .style("font-family", fontFamily)
-      .style("fill", textColor); // x axis tick labels
+      .style("fill", textColor);
 
     if (state.areLabelsVisible) {
       if (state.yAxisLabel)
@@ -140,7 +157,7 @@ const BarChartRenderer = ({ state, look }) => {
           .attr("text-anchor", "middle")
           .style("font-size", "12px")
           .style("font-family", fontFamily)
-          .style("fill", textColor) // y axis label
+          .style("fill", textColor)
           .text(state.yAxisLabel);
       if (state.xAxisLabel)
         svg
@@ -150,7 +167,7 @@ const BarChartRenderer = ({ state, look }) => {
           .attr("text-anchor", "middle")
           .style("font-size", "12px")
           .style("font-family", fontFamily)
-          .style("fill", textColor) // x axis label
+          .style("fill", textColor)
           .text(state.xAxisLabel);
     }
 
@@ -200,7 +217,7 @@ const BarChartRenderer = ({ state, look }) => {
         .style("font-size", `${titleFontSize}px`)
         .style("font-weight", "bold")
         .style("font-family", fontFamily)
-        .style("fill", textColor) // title color
+        .style("fill", textColor)
         .text(state.title);
     }
 
@@ -240,11 +257,11 @@ const BarChartRenderer = ({ state, look }) => {
     return () => {
       tooltip.remove();
     };
-  }, [state]);
+  }, [state, dimensions]);
 
   return (
-    <Box sx={look}>
-      <svg ref={ref} width={width} height={height} />
+    <Box sx={{ width: "100%", height: "100%" }} ref={wrapperRef}>
+      <svg ref={svgRef} width={dimensions.width} height={dimensions.height} />
     </Box>
   );
 };
