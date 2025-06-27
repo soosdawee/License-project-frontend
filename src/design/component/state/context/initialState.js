@@ -8,6 +8,7 @@ const initialState = {
   showPercentages: true,
   showAnnotations: false,
   data: [[], [], []], 
+  historical: [[], [], []],
   filters: [],
   visualizationModelId: null,
   isAnnotationCustom: false,

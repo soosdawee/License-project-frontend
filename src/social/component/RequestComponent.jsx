@@ -8,8 +8,8 @@ import {
   Button,
   Stack,
   Box,
-  Divider,
 } from "@mui/material";
+import friendsImage from "../../common/image/friends.svg";
 
 const RequestComponent = () => {
   const [requests, setRequests] = useState([]);
@@ -28,8 +28,6 @@ const RequestComponent = () => {
   }, []);
 
   const handleAction = async (requestId, action) => {
-    console.log(requestId);
-    console.log(action);
     try {
       await backend.put(`/friend_request/${requestId}`, {
         status: action,
@@ -41,7 +39,28 @@ const RequestComponent = () => {
   };
 
   if (requests.length === 0) {
-    return <Typography sx={{ p: 2 }}>No pending friend requests.</Typography>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          height: "100%",
+          width: "80%",
+        }}
+      >
+        <img
+          src={friendsImage}
+          alt="No friend requests"
+          style={{ width: "200px", marginBottom: "20px" }}
+        />
+        <Typography variant="h6" color="textSecondary">
+          No pending friend requests.
+        </Typography>
+      </Box>
+    );
   }
 
   return (

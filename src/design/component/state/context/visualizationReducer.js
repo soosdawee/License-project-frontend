@@ -7,6 +7,8 @@ const visualizationReducer = (state, action) => {
       return { ...state, chartType: action.payload, modified: true };
     case 'SET_DATA':
       return { ...state, data: action.payload, modified: true };
+    case 'SET_HISTORICAL':
+      return { ...state, historical: action.payload, modified: true };
     case 'RESET_STATE':
       return {...initialState, data: [[], [], []]};
     case 'SET_SHOW_ANNOTATIONS':

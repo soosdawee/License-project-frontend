@@ -28,11 +28,22 @@ const SocialPage = () => {
               display: "none",
             },
             flex: 1,
+            backgroundColor: "white",
+            borderRadius: "5px",
+            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
           }}
         >
           <SocialComponent />
         </Box>
-        <Box sx={{ width: "20%", overflow: "hidden" }}>
+        <Box
+          sx={{
+            width: "20%",
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <RequestComponent />
         </Box>
       </Box>

@@ -7,7 +7,11 @@ import backend from "../../../../data-access/Backend";
 import { VisualizationNames } from "../../../constant/VisualizationTypes";
 import { setVisualizationType } from "../context/actions";
 import { VisualizationContext } from "../context/VisualizationContext";
-import { resetState, initializeVisualization } from "../context/actions";
+import {
+  resetState,
+  initializeVisualization,
+  setHistorical,
+} from "../context/actions";
 import mapVisualizationToInitialState from "../../../../embed/context/Mapper";
 
 const StateFactory = ({ state, setState }) => {
@@ -39,6 +43,9 @@ const StateFactory = ({ state, setState }) => {
     const fetchData = async () => {
       try {
         const response = await backend.get(`visualization/${visualizationId}`);
+        if (response.data.visualizationModelId === 36) {
+          dispatch(setHistorical(response.data.tableDatas[1].data));
+        }
         dispatch(
           initializeVisualization(mapVisualizationToInitialState(response.data))
         );

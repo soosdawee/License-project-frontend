@@ -3,7 +3,7 @@ import { HotTable } from "@handsontable/react";
 import "handsontable/dist/handsontable.full.min.css";
 import { registerAllModules } from "handsontable/registry";
 import { VisualizationContext } from "../state/context/VisualizationContext";
-import { setData } from "../state/context/actions";
+import { setData, setHistorical } from "../state/context/actions";
 
 const estimateTextWidth = (text, font = "14px Arial") => {
   const canvas = document.createElement("canvas");
@@ -43,7 +43,7 @@ const calculateColWidths = (data, columnHeaders) => {
   return new Array(numCols).fill(Math.ceil(avgWidth));
 };
 
-const TableComponent = ({ visualizationModel }) => {
+const TableComponent = ({ visualizationModel, isFirst }) => {
   const { state, dispatch } = useContext(VisualizationContext);
   const hotTableRef = useRef(null);
 
@@ -87,7 +87,7 @@ const TableComponent = ({ visualizationModel }) => {
   return (
     <HotTable
       ref={hotTableRef}
-      data={state.data}
+      data={isFirst ? state.data : state.historical}
       colHeaders={visualizationModel.columnNames || true}
       colWidths={colWidths}
       rowHeaders={true}
@@ -112,7 +112,11 @@ const TableComponent = ({ visualizationModel }) => {
         const hotInstance = hotTableRef.current?.hotInstance;
         if (!hotInstance) return;
         const rawData = hotInstance.getData();
-        dispatch(setData(rawData));
+        if (isFirst) {
+          dispatch(setData(rawData));
+        } else {
+          dispatch(setHistorical(rawData));
+        }
       }}
       cells={(row, col) => {
         const props = {};
@@ -122,7 +126,7 @@ const TableComponent = ({ visualizationModel }) => {
           return props;
         }
 
-        const editableHeaderIds = new Set([32, 33, 34]);
+        const editableHeaderIds = new Set([32, 33, 34, 35, 36, 37]);
 
         if (
           editableHeaderIds.has(visualizationModel.visualizationModelId) &&

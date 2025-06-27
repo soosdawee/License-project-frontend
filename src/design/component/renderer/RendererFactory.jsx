@@ -9,6 +9,9 @@ const PieChartRenderer = lazy(() => import("./PieChartRenderer"));
 const LineChartRenderer = lazy(() => import("./LineChartRenderer"));
 const ScatterPlotRenderer = lazy(() => import("./ScatterPlotRenderer"));
 const AreaChartRenderer = lazy(() => import("./AreaChartRenderer"));
+const RaceRenderer = lazy(() => import("./RaceRenderer"));
+const ElectionResultsRenderer = lazy(() => import("./ElectionResultsRenderer"));
+const ElectionDonutRenderer = lazy(() => import("./ElectionDonutRenderer"));
 
 const TitleAccordion = lazy(() => import("../sidebar/TitleAccordion"));
 const ColorAccordion = lazy(() => import("../sidebar/ColorAccordion"));
@@ -22,6 +25,10 @@ const PieAccordion = lazy(() => import("../sidebar/PieAccordion"));
 const LegendAccordion = lazy(() => import("../sidebar/LegendAccordion"));
 const ScatterAccordion = lazy(() => import("../sidebar/ScatterAccordion"));
 const AreaAccordion = lazy(() => import("../sidebar/AreaAccordion"));
+const RaceAccordion = lazy(() => import("../sidebar/RaceAccordion"));
+const ElectionResultsAccordion = lazy(() =>
+  import("../sidebar/ElectionResultsAccordion")
+);
 
 const RendererFactory = ({ viz, state, showSidebar, isEmbed }) => {
   const sidebarSx = {
@@ -163,6 +170,70 @@ const RendererFactory = ({ viz, state, showSidebar, isEmbed }) => {
               <AreaAccordion />
               <AnnotationAccordion />
               <AxesAndGridsAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.RACE_CHART:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <RaceRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <RaceAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.ELECTION_RESULT:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <ElectionResultsRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <ElectionResultsAccordion />
+              <AnnotationAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.ELECTION_DONUT:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <ElectionDonutRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <ElectionResultsAccordion />
+              <AnnotationAccordion />
               <LegendAccordion />
             </Sidebar>
           )}

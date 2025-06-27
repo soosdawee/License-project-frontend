@@ -159,9 +159,20 @@ const DataState = ({ visualizationModel, setState }) => {
           <Suspense fallback={<div></div>}>
             <TableComponent
               visualizationModel={visualizationModel}
+              isFirst={true}
               sx={{ width: "100%", height: "100%", flexGrow: 1 }}
             />
           </Suspense>
+
+          {state.vizType === "ELECTION_RESULT" && (
+            <Suspense fallback={<div></div>}>
+              <TableComponent
+                visualizationModel={visualizationModel}
+                isFirst={false}
+                sx={{ width: "100%", height: "100%", flexGrow: 1 }}
+              />
+            </Suspense>
+          )}
         </Box>
 
         <Box

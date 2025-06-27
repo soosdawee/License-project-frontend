@@ -11,7 +11,7 @@ import Navbar from "../component/Navbar";
 import backend from "../../data-access/Backend";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import backgroundImage from "../image/profile_background.svg";
+import { useNavigate } from "react-router-dom";
 
 const textSx = {
   "& label.Mui-focused": {
@@ -25,6 +25,7 @@ const textSx = {
 };
 
 const SettingsPage = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [editingProfile, setEditingProfile] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
@@ -46,9 +47,9 @@ const SettingsPage = () => {
     fetchData();
   }, []);
 
-  const handleDelete = () => {
-    // trigger delete logic
-    alert("Account deleted.");
+  const handleDelete = async () => {
+    await backend.put("user/delete");
+    navigate("/");
   };
 
   const getInitials = () => {

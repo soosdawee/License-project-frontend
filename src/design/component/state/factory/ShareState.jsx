@@ -27,6 +27,7 @@ const ShareState = ({ visualizationModel }) => {
   const chartRef = useRef();
 
   const handleShare = async () => {
+    console.log(state.showLegend);
     const payload = {
       title: state.title,
       titleSize: state.titleSize,
@@ -60,6 +61,9 @@ const ShareState = ({ visualizationModel }) => {
         {
           data: state.data,
           sheetsLink: state.sheetsLink,
+        },
+        {
+          data: state.historical,
         },
       ],
     };
@@ -364,7 +368,9 @@ const ShareState = ({ visualizationModel }) => {
             >
               <input
                 readOnly
-                value={`<iframe src="http://localhost:3000/visualization/${state.visualizationId}/embed" title="D3 Visualization"></iframe>`}
+                value={`<iframe src="http://localhost:3000/visualization/${
+                  visualizationId ?? state.visualizationId
+                }/embed" title="D3 Visualization"></iframe>`}
                 style={{
                   width: "100%",
                   border: "1px solid #ccc",
@@ -381,7 +387,9 @@ const ShareState = ({ visualizationModel }) => {
               <Button
                 onClick={() =>
                   navigator.clipboard.writeText(
-                    `<iframe src="http://localhost:3000/visualization/${state.visualizationId}/embed" title="D3 Visualization"></iframe>`
+                    `<iframe src="http://localhost:3000/visualization/${
+                      visualizationId ?? state.visualizationId
+                    }/embed" title="D3 Visualization"></iframe>`
                   )
                 }
                 variant="contained"
@@ -408,7 +416,9 @@ const ShareState = ({ visualizationModel }) => {
             >
               <input
                 readOnly
-                value={`<script src="http://localhost:3000/embed.js" data-id="${state.visualizationId}"></script>`}
+                value={`<script src="http://localhost:3000/embed.js" data-id="${
+                  visualizationId ?? state.visualizationId
+                }"></script>`}
                 style={{
                   width: "100%",
                   border: "1px solid #ccc",
@@ -425,7 +435,9 @@ const ShareState = ({ visualizationModel }) => {
               <Button
                 onClick={() =>
                   navigator.clipboard.writeText(
-                    `<script src="http://localhost:3000/embed.js" data-id="${state.visualizationId}"></script>`
+                    `<script src="http://localhost:3000/embed.js" data-id="${
+                      visualizationId ?? state.visualizationId
+                    }"></script>`
                   )
                 }
                 variant="contained"

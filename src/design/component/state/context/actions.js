@@ -1,6 +1,7 @@
 export const setTitle = (payload) => ({ type: 'SET_TITLE', payload });
 export const setChartType = (payload) => ({ type: 'SET_CHART_TYPE', payload });
 export const setData = (payload) => ({ type: 'SET_DATA', payload });
+export const setHistorical = (payload) => ({ type: 'SET_HISTORICAL', payload });
 export const resetState = () => ({ type: 'RESET_STATE' });
 export const setShowAnnotations = (value) => ({type: 'SET_SHOW_ANNOTATIONS', payload: value,});
 export const setVisualizationModelId = (value) => ({type: 'SET_VISUALIZATION_MODEL_ID', payload: value,});
