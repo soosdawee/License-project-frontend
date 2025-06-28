@@ -20,7 +20,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ReportIcon from "@mui/icons-material/Report";
 import { useNavigate } from "react-router-dom";
 
-const PostComponent = ({ visualization, setVizList }) => {
+const PostComponent = ({ visualization, setVizList, isUnderReview }) => {
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [activeViz, setActiveViz] = useState(null);
@@ -112,11 +112,40 @@ const PostComponent = ({ visualization, setVizList }) => {
     }
   };
 
+  const handleUnreport = async (visualizationId) => {
+    try {
+      await backend.put(`visualization/unreport/${visualizationId}`);
+      // Remove the visualization from the list
+      setVizList((prevList) =>
+        prevList.filter((viz) => viz.visualizationId !== visualizationId)
+      );
+    } catch (error) {
+      console.log("TZEAPA");
+    }
+  };
+
+  const handleNegativeReview = async (visualizationId) => {
+    try {
+      await backend.put(`visualization/review_negatively/${visualizationId}`);
+      // Remove the visualization from the list
+      setVizList((prevList) =>
+        prevList.filter((viz) => viz.visualizationId !== visualizationId)
+      );
+    } catch (error) {
+      console.log("TZEAPA");
+    }
+  };
+
   return (
     <>
       <Card
         key={visualization.visualizationId}
-        sx={{ height: "70vh", display: "flex", flexDirection: "column" }}
+        sx={{
+          height: "70vh",
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+        }}
       >
         <AppBar
           position="static"
@@ -186,92 +215,150 @@ const PostComponent = ({ visualization, setVizList }) => {
             padding: 0,
           }}
         >
-          <Button
-            variant="outlined"
-            sx={{
-              width: "33.3%",
-              border: "1px solid black",
-              textTransform: "none",
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "12px",
-              margin: "0 !important",
-              backgroundColor: visualization.likedByUsers.some(
-                (u) => u.userId.toString() === localStorage.getItem("userId")
-              )
-                ? "#c62828"
-                : "white",
-              color: visualization.likedByUsers.some(
-                (u) => u.userId.toString() === localStorage.getItem("userId")
-              )
-                ? "white"
-                : "#b2b4b9",
-              "&:hover": {
-                backgroundColor: visualization.likedByUsers.some(
+          {isUnderReview ? (
+            <>
+              <Button
+                variant="outlined"
+                sx={{
+                  width: "50%",
+                  backgroundColor: "white",
+                  color: "#b2b4b9",
+                  border: "1px solid black",
+                  textTransform: "none",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "12px",
+                  margin: "0 !important",
+                  "&:hover": {
+                    backgroundColor: "#f0f0f0",
+                  },
+                }}
+                onClick={() => handleUnreport(visualization.visualizationId)}
+              >
+                <ReportIcon />
+                Unreport
+              </Button>
+              <Button
+                variant="outlined"
+                sx={{
+                  width: "50%",
+                  backgroundColor: "white",
+                  color: "#b2b4b9",
+                  border: "1px solid black",
+                  textTransform: "none",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "12px",
+                  margin: "0 !important",
+                  "&:hover": {
+                    backgroundColor: "#f0f0f0",
+                  },
+                }}
+                onClick={() =>
+                  handleNegativeReview(visualization.visualizationId)
+                }
+              >
+                ❌ Review Negatively
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="outlined"
+                sx={{
+                  width: "33.3%",
+                  border: "1px solid black",
+                  textTransform: "none",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "12px",
+                  margin: "0 !important",
+                  backgroundColor: visualization.likedByUsers.some(
+                    (u) =>
+                      u.userId.toString() === localStorage.getItem("userId")
+                  )
+                    ? "#c62828"
+                    : "white",
+                  color: visualization.likedByUsers.some(
+                    (u) =>
+                      u.userId.toString() === localStorage.getItem("userId")
+                  )
+                    ? "white"
+                    : "#b2b4b9",
+                  "&:hover": {
+                    backgroundColor: visualization.likedByUsers.some(
+                      (u) =>
+                        u.userId.toString() === localStorage.getItem("userId")
+                    )
+                      ? "#9b262e"
+                      : "#e0e0e0",
+                  },
+                }}
+                onClick={() => handleLike(visualization.visualizationId)}
+              >
+                {visualization.likedByUsers.some(
                   (u) => u.userId.toString() === localStorage.getItem("userId")
-                )
-                  ? "#9b262e"
-                  : "#e0e0e0",
-              },
-            }}
-            onClick={() => handleLike(visualization.visualizationId)}
-          >
-            {visualization.likedByUsers.some(
-              (u) => u.userId.toString() === localStorage.getItem("userId")
-            ) ? (
-              <FavoriteIcon />
-            ) : (
-              <FavoriteBorderIcon />
-            )}
-            Like
-          </Button>
+                ) ? (
+                  <FavoriteIcon />
+                ) : (
+                  <FavoriteBorderIcon />
+                )}
+                Like
+              </Button>
 
-          <Button
-            variant="outlined"
-            sx={{
-              width: "33.3%",
-              backgroundColor: "white",
-              color: "#b2b4b9",
-              border: "1px solid black",
-              textTransform: "none",
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: "12px",
-              margin: "0 !important",
-              "&:hover": {
-                backgroundColor: "#f0f0f0",
-              },
-            }}
-            onClick={() => handleOpenModal(visualization)}
-          >
-            <CommentIcon />
-            Comment
-          </Button>
-          <Button
-            variant="outlined"
-            sx={{
-              width: "33.3%",
-              backgroundColor: "white",
-              color: "#b2b4b9",
-              border: "1px solid black",
-              textTransform: "none",
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: "12px",
-              margin: "0 !important",
-              "&:hover": {
-                backgroundColor: "#f0f0f0",
-              },
-            }}
-            onClick={() => handleOpenReport(visualization)}
-          >
-            <ReportIcon />
-            Report
-          </Button>
+              <Button
+                variant="outlined"
+                sx={{
+                  width: "33.3%",
+                  backgroundColor: "white",
+                  color: "#b2b4b9",
+                  border: "1px solid black",
+                  textTransform: "none",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "12px",
+                  margin: "0 !important",
+                  "&:hover": {
+                    backgroundColor: "#f0f0f0",
+                  },
+                }}
+                onClick={() => handleOpenModal(visualization)}
+              >
+                <CommentIcon />
+                Comment
+              </Button>
+
+              <Button
+                variant="outlined"
+                sx={{
+                  width: "33.3%",
+                  backgroundColor: "white",
+                  color: "#b2b4b9",
+                  border: "1px solid black",
+                  textTransform: "none",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "12px",
+                  margin: "0 !important",
+                  "&:hover": {
+                    backgroundColor: "#f0f0f0",
+                  },
+                }}
+                onClick={() => handleOpenReport(visualization)}
+              >
+                <ReportIcon />
+                Report
+              </Button>
+            </>
+          )}
         </CardActions>
       </Card>
       <CommentModal

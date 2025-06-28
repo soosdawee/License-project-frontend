@@ -1,13 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { Button, TextField } from "@mui/material";
-import backend from "../../data-access/Backend";
+import {
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  Stack,
+  Box,
+} from "@mui/material";
+import VisualizationModelsComponent from "./VisualizationModelsComponent";
 
 const VisualizationModel = () => {
   const [file, setFile] = useState(null);
   const [columns, setColumns] = useState("");
   const [name, setName] = useState("");
-  const [imageSrc, setImageSrc] = useState("");
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -44,45 +50,93 @@ const VisualizationModel = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await backend.get("visualization_model/26");
-        setImageSrc(`data:image/svg+xml;base64,${result.data.cardPhoto}`);
-      } catch (error) {
-        console.error("Failed to fetch data", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   return (
-    <div>
-      <input type="file" accept="*/*" onChange={handleFileChange} />
-      <TextField
-        label="Column names (comma-separated)"
-        value={columns}
-        onChange={(e) => setColumns(e.target.value)}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        fullWidth
-        margin="normal"
-      />
-      <Button variant="contained" onClick={handleUpload}>
-        Upload Model
-      </Button>
-      {imageSrc ? (
-        <img src={imageSrc} alt="Card preview" style={{ maxWidth: "100%" }} />
-      ) : (
-        <p>Loading image...</p>
-      )}
-    </div>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        backgroundColor: "#f4f6f8",
+        display: "flex",
+        alignItems: "center",
+        flexDirection: "column",
+        justifyContent: "center",
+        overflowY: "auto",
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          width: "100%",
+          maxWidth: 600,
+          borderRadius: 3,
+          backgroundColor: "white",
+        }}
+      >
+        <Stack spacing={3}>
+          <Typography variant="h5" fontWeight="bold" color="#001f47">
+            Upload Visualization Model
+          </Typography>
+
+          <Button
+            variant="outlined"
+            component="label"
+            sx={{ color: "#007fa7", border: "1px solid #007fa7" }}
+          >
+            {file ? file.name : "Choose File"}
+            <input
+              type="file"
+              accept="*/*"
+              hidden
+              onChange={handleFileChange}
+            />
+          </Button>
+
+          <TextField
+            label="Model Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            fullWidth
+            sx={{
+              "& label.Mui-focused": {
+                color: "#007393",
+              },
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: "#007393",
+                },
+              },
+            }}
+          />
+
+          <TextField
+            label="Column names (comma-separated)"
+            value={columns}
+            onChange={(e) => setColumns(e.target.value)}
+            fullWidth
+            sx={{
+              "& label.Mui-focused": {
+                color: "#007393",
+              },
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: "#007393",
+                },
+              },
+            }}
+          />
+
+          <Button
+            variant="contained"
+            onClick={handleUpload}
+            disabled={!file || !name || !columns}
+            backgroundColor="#001f47"
+          >
+            Upload Model
+          </Button>
+        </Stack>
+      </Paper>
+      <VisualizationModelsComponent />
+    </Box>
   );
 };
 

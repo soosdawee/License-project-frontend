@@ -7,6 +7,10 @@ export const VisualizationIds = {
   RACE_CHART: 35,
   ELECTION_RESULT: 36,
   ELECTION_DONUT: 37,
+  EUROPE_FILTER: 39,
+  ASIA_FILTER: 40,
+  NORTH_AMERICA_FILTER: 41,
+  SOUTH_AMERICA_FILTER: 42,
 };
 
 export const VisualizationNames = Object.fromEntries(

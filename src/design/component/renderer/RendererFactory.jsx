@@ -12,6 +12,7 @@ const AreaChartRenderer = lazy(() => import("./AreaChartRenderer"));
 const RaceRenderer = lazy(() => import("./RaceRenderer"));
 const ElectionResultsRenderer = lazy(() => import("./ElectionResultsRenderer"));
 const ElectionDonutRenderer = lazy(() => import("./ElectionDonutRenderer"));
+const FilterMapRenderer = lazy(() => import("./FilterMapRenderer"));
 
 const TitleAccordion = lazy(() => import("../sidebar/TitleAccordion"));
 const ColorAccordion = lazy(() => import("../sidebar/ColorAccordion"));
@@ -224,6 +225,94 @@ const RendererFactory = ({ viz, state, showSidebar, isEmbed }) => {
           <Box sx={containerSx}>
             <Box sx={chartSx}>
               <ElectionDonutRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <ElectionResultsAccordion />
+              <AnnotationAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.EUROPE_FILTER:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <FilterMapRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <ElectionResultsAccordion />
+              <AnnotationAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.ASIA_FILTER:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <FilterMapRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <ElectionResultsAccordion />
+              <AnnotationAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.NORTH_AMERICA_FILTER:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <FilterMapRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <ElectionResultsAccordion />
+              <AnnotationAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.SOUTH_AMERICA_FILTER:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <FilterMapRenderer state={state} />
             </Box>
           </Box>
           {showSidebar && (

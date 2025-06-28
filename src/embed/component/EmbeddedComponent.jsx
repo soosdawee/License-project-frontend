@@ -1,6 +1,6 @@
 import { EmbeddedContext } from "../context/EmbeddedContext";
-import { useEffect, useContext } from "react";
-import { Box } from "@mui/material";
+import { useEffect, useContext, useState } from "react";
+import { Box, Typography } from "@mui/material";
 import axios from "axios";
 import RendererFactory from "../../design/component/renderer/RendererFactory";
 import mapVisualizationToInitialState from "../context/Mapper";
@@ -10,9 +10,11 @@ import {
 } from "../../design/component/state/context/actions";
 import Papa from "papaparse";
 import backend from "../../data-access/Backend";
+import RenderingFailed from "../../common/image/rendering_failed.svg";
 
 const EmbeddedComponent = ({ visualizationId, type }) => {
   const { state, dispatch } = useContext(EmbeddedContext);
+  const [hasError, setHasError] = useState(false);
 
   const fetchGoogleSheetData = async (sheetUrl) => {
     if (
@@ -64,36 +66,24 @@ const EmbeddedComponent = ({ visualizationId, type }) => {
   useEffect(() => {
     const fetchVisualization = async () => {
       try {
-        if (type == "shared") {
-          const response = await backend.get(
+        let response;
+        if (type === "shared") {
+          response = await backend.get(
             `visualization/shared/${visualizationId}`
           );
-          dispatch(
-            initializeVisualization(
-              mapVisualizationToInitialState(response.data)
-            )
-          );
-        } else if (type == "published") {
-          const response = await axios.get(
+        } else if (type === "published") {
+          response = await axios.get(
             `http://localhost:8080/visualization/published/${visualizationId}`
           );
-          dispatch(
-            initializeVisualization(
-              mapVisualizationToInitialState(response.data)
-            )
-          );
         } else {
-          const response = await backend.get(
-            `visualization/${visualizationId}`
-          );
-          dispatch(
-            initializeVisualization(
-              mapVisualizationToInitialState(response.data)
-            )
-          );
+          response = await backend.get(`visualization/${visualizationId}`);
         }
+        dispatch(
+          initializeVisualization(mapVisualizationToInitialState(response.data))
+        );
       } catch (err) {
-        console.log("GECIFASZ");
+        console.error("Failed to load visualization:", err);
+        setHasError(true);
       }
     };
 
@@ -119,9 +109,24 @@ const EmbeddedComponent = ({ visualizationId, type }) => {
         m: 0,
         p: 0,
         overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
       }}
     >
-      {state?.visualizationModelId != null ? (
+      {hasError ? (
+        <>
+          <img
+            src={RenderingFailed}
+            alt="Visualization failed to load"
+            style={{ maxWidth: "500px", width: "80%" }}
+          />
+          <Typography variant="h6" mt={2}>
+            There was an error loading the visualization.
+          </Typography>
+        </>
+      ) : state?.visualizationModelId != null ? (
         <RendererFactory
           viz={state.visualizationModelId}
           state={state}
@@ -129,7 +134,7 @@ const EmbeddedComponent = ({ visualizationId, type }) => {
           isEmbed={true}
         />
       ) : (
-        <p>Loading visualization...</p>
+        <Typography variant="body1">Loading visualization...</Typography>
       )}
     </Box>
   );

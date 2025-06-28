@@ -58,6 +58,8 @@ const ProfilePage = () => {
     }
   };
 
+  console.log(likedList);
+
   return (
     <Box
       sx={{

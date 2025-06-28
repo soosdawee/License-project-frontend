@@ -45,8 +45,6 @@ const ProfileComponent = ({ user, viewMode, setViewMode, id }) => {
     }
   };
 
-  console.log(isFriend);
-
   return (
     <>
       <Typography

@@ -38,8 +38,6 @@ const VisualizationsPage = () => {
     }
   };
 
-  console.log(visualizations);
-
   return (
     <Box
       sx={{

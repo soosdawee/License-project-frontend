@@ -54,6 +54,16 @@ const Navbar = () => {
               Admin Dashboard
             </Button>
           )}
+          {localStorage.getItem("userType") === "FACTCHECKER" && (
+            <Button
+              component={Link}
+              to="/factchecker-dashboard"
+              color="inherit"
+              sx={{ textTransform: "none" }}
+            >
+              Fact-checker Dashboard
+            </Button>
+          )}
           <Button
             color="inherit"
             component={Link}
