@@ -29,27 +29,32 @@ const TemplatePage = () => {
     <>
       <Navbar />
       <Box sx={{ padding: "0 10%" }}>
-        <Typography variant="h4" gutterBottom>
-          Choose from the visualizations above!
+        <Typography
+          variant="h4"
+          sx={{
+            textAlign: "left",
+            fontSize: "2.5rem",
+            margin: "1% 0",
+            fontWeight: "bold",
+            color: "#001f47",
+          }}
+        >
+          Choose a chart or a map!
         </Typography>
 
-        <Grid container spacing={2} alignItems="flex-start">
+        <Grid container spacing={4.5} alignItems="space-between">
           {vizType.map((viz) => (
             <Grid
               item
               key={viz.visualizationModelId}
-              xs={12}
-              sm={6}
-              md={4}
-              lg={2.4} // 100 / 5 = 20, so 2.4 to evenly distribute across 5 columns (MUI hack)
-              sx={{ display: "flex", justifyContent: "flex-start" }}
+              sx={{ display: "flex", justifyContent: "space-between" }}
             >
               <Button
                 fullWidth
                 variant="contained"
                 onClick={() => handleClick(viz.visualizationModelId)}
                 sx={{
-                  height: "180px",
+                  height: "170px",
                   width: "auto",
                   aspectRatio: 1,
                   textTransform: "none",

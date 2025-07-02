@@ -13,6 +13,7 @@ const RaceRenderer = lazy(() => import("./RaceRenderer"));
 const ElectionResultsRenderer = lazy(() => import("./ElectionResultsRenderer"));
 const ElectionDonutRenderer = lazy(() => import("./ElectionDonutRenderer"));
 const FilterMapRenderer = lazy(() => import("./FilterMapRenderer"));
+const BubbleMapRenderer = lazy(() => import("./BubbleMapRenderer"));
 
 const TitleAccordion = lazy(() => import("../sidebar/TitleAccordion"));
 const ColorAccordion = lazy(() => import("../sidebar/ColorAccordion"));
@@ -30,6 +31,7 @@ const RaceAccordion = lazy(() => import("../sidebar/RaceAccordion"));
 const ElectionResultsAccordion = lazy(() =>
   import("../sidebar/ElectionResultsAccordion")
 );
+const BubbleAccordion = lazy(() => import("../sidebar/BubbleAccordion"));
 
 const RendererFactory = ({ viz, state, showSidebar, isEmbed }) => {
   const sidebarSx = {
@@ -322,6 +324,138 @@ const RendererFactory = ({ viz, state, showSidebar, isEmbed }) => {
               <TextAccordion />
               <ColorAccordion />
               <ElectionResultsAccordion />
+              <AnnotationAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.AFRICA_FILTER:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <FilterMapRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <ElectionResultsAccordion />
+              <AnnotationAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.EUROPE_BUBBLE:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <BubbleMapRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <BubbleAccordion />
+              <AnnotationAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.ASIA_BUBBLE:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <BubbleMapRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <BubbleAccordion />
+              <AnnotationAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.NORTH_AMERICA_BUBBLE:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <BubbleMapRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <BubbleAccordion />
+              <AnnotationAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.SOUTH_AMERICA_BUBBLE:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <BubbleMapRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <BubbleAccordion />
+              <AnnotationAccordion />
+              <LegendAccordion />
+            </Sidebar>
+          )}
+        </Box>
+      );
+
+    case VisualizationIds.AFRICA_BUBBLE:
+      return (
+        <Box style={boxXs}>
+          <Box sx={containerSx}>
+            <Box sx={chartSx}>
+              <BubbleMapRenderer state={state} />
+            </Box>
+          </Box>
+          {showSidebar && (
+            <Sidebar look={sidebarSx}>
+              <TitleAccordion />
+              <FooterAccordion />
+              <TextAccordion />
+              <ColorAccordion />
+              <BubbleAccordion />
               <AnnotationAccordion />
               <LegendAccordion />
             </Sidebar>

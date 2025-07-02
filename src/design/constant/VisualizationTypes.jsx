@@ -11,6 +11,12 @@ export const VisualizationIds = {
   ASIA_FILTER: 40,
   NORTH_AMERICA_FILTER: 41,
   SOUTH_AMERICA_FILTER: 42,
+  AFRICA_FILTER: 43,
+  EUROPE_BUBBLE: 44,
+  ASIA_BUBBLE: 45,
+  NORTH_AMERICA_BUBBLE: 46,
+  SOUTH_AMERICA_BUBBLE: 47,
+  AFRICA_BUBBLE: 48,
 };
 
 export const VisualizationNames = Object.fromEntries(

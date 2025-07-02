@@ -129,7 +129,7 @@ const VisualizationModel = () => {
             variant="contained"
             onClick={handleUpload}
             disabled={!file || !name || !columns}
-            backgroundColor="#001f47"
+            sx={{ backgroundColor: "#007393", color: "white" }}
           >
             Upload Model
           </Button>

@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import LoginForm from "../component/LoginForm";
-import LandinIllustration from "../image/landing_illustration.svg";
+import LandinIllustration from "../image/login_illustration.svg";
 
 const LoginPage = () => {
   return (
@@ -52,8 +52,8 @@ const LoginPage = () => {
               src={LandinIllustration}
               alt="Landing Illustration"
               style={{
-                width: "70%",
-                height: "70%",
+                width: "85%",
+                height: "85%",
                 objectFit: "contain",
               }}
             />

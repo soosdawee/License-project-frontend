@@ -20,6 +20,7 @@ const SocialPage = lazy(() => import("./social/page/SocialPage"));
 const ProfilePage = lazy(() => import("./common/page/ProfilePage"));
 const SettingsPage = lazy(() => import("./common/page/SettingsPage"));
 const VisualizationsPage = lazy(() => import("./common/page/VisualizationsPage"));
+const LandingPage = lazy(() => import("./common/page/LandingPage"));
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
       <Router>
         <Suspense>
           <Routes>
-            <Route path="/" element={<LoginForm />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/reset-password/:token" element={<ResetPasswordPage />} />

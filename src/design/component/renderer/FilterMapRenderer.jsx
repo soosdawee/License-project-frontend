@@ -27,6 +27,11 @@ const FilterMapRenderer = ({ state }) => {
       state.visualizationModelId === 42
     ) {
       return southAmericaGeoData;
+    } else if (
+      state.vizType === "AFRICA_FILTER" ||
+      state.visualizationModelId === 43
+    ) {
+      return africaGeoData;
     }
     return europeGeoData;
   };

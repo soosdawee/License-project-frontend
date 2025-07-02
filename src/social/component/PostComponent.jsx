@@ -11,6 +11,7 @@ import {
   Button,
   Stack,
   Box,
+  Skeleton,
 } from "@mui/material";
 import CommentModal from "./CommentModal";
 import ReportModal from "./ReportModal";
@@ -25,7 +26,33 @@ const PostComponent = ({ visualization, setVizList, isUnderReview }) => {
   const [openModal, setOpenModal] = useState(false);
   const [activeViz, setActiveViz] = useState(null);
   const [openReport, setOpenReport] = useState(false);
-  if (!visualization) return null;
+
+  console.log(visualization);
+
+  const loading = !visualization || !visualization.visualizationId;
+
+  if (loading) {
+    console.log("wavws");
+    return (
+      <Card
+        sx={{
+          height: "70vh",
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          backgroundColor: "red",
+        }}
+      >
+        <Skeleton variant="rectangular" height={64} animation="wave" />
+        <Skeleton
+          variant="rectangular"
+          sx={{ flex: "1 1 85%" }}
+          animation="wave"
+        />
+        <Skeleton variant="rectangular" height={50} animation="wave" />
+      </Card>
+    );
+  }
 
   const handleOpenReport = (viz) => {
     setActiveViz(viz);
@@ -101,7 +128,6 @@ const PostComponent = ({ visualization, setVizList, isUnderReview }) => {
   };
 
   const getAvatarSrc = (user) => {
-    console.log(user);
     if (!user) return null;
     return `data:image/png;base64,${user.profilePicture}`;
   };
@@ -115,7 +141,6 @@ const PostComponent = ({ visualization, setVizList, isUnderReview }) => {
   const handleUnreport = async (visualizationId) => {
     try {
       await backend.put(`visualization/unreport/${visualizationId}`);
-      // Remove the visualization from the list
       setVizList((prevList) =>
         prevList.filter((viz) => viz.visualizationId !== visualizationId)
       );
@@ -127,7 +152,6 @@ const PostComponent = ({ visualization, setVizList, isUnderReview }) => {
   const handleNegativeReview = async (visualizationId) => {
     try {
       await backend.put(`visualization/review_negatively/${visualizationId}`);
-      // Remove the visualization from the list
       setVizList((prevList) =>
         prevList.filter((viz) => viz.visualizationId !== visualizationId)
       );
@@ -199,7 +223,7 @@ const PostComponent = ({ visualization, setVizList, isUnderReview }) => {
                 height: "100%",
                 border: "none",
               }}
-              allowfullscreen
+              allowFullScreen
             ></iframe>
           </Box>
         </CardContent>

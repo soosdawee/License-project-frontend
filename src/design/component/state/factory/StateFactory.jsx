@@ -25,7 +25,6 @@ const StateFactory = ({ state, setState }) => {
       try {
         const result = await backend.get(`visualization_model/${id}`);
         setvisualizationModel(result.data);
-        console.log(VisualizationNames[result.data.visualizationModelId]);
         dispatch(
           setVisualizationType(
             VisualizationNames[result.data.visualizationModelId]

@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Paper, Stack, TextField, Typography, Button } from "@mui/material";
+import {
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+  Button,
+  Box,
+} from "@mui/material";
 import backend from "../../data-access/Backend"; // Adjust path as needed
 
 const VisualizationModelCard = ({ model, onUpdated }) => {
@@ -26,6 +33,14 @@ const VisualizationModelCard = ({ model, onUpdated }) => {
       onUpdated(); // notify parent to refetch data
     } catch (error) {
       console.error("Failed to update model", error);
+    }
+  };
+
+  const handleDelete = async (visualizationModelId) => {
+    try {
+      await backend.delete(`/visualization_model/${visualizationModelId}`);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -98,13 +113,38 @@ const VisualizationModelCard = ({ model, onUpdated }) => {
             <Typography variant="body2" color="text.secondary">
               Columns: {model.columnNames.join(", ")}
             </Typography>
-            <Button
-              variant="outlined"
-              sx={{ color: "#001f47", border: "1px solid #001f47" }}
-              onClick={() => setIsEditing(true)}
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
             >
-              Edit
-            </Button>
+              <Button
+                variant="outlined"
+                sx={{
+                  color: "#001f47",
+                  border: "1px solid #001f47",
+                  width: "49%",
+                }}
+                onClick={() => setIsEditing(true)}
+              >
+                Edit
+              </Button>
+
+              <Button
+                variant="contained"
+                sx={{
+                  color: "white",
+                  backgroundColor: "#c82c2c",
+                  width: "49%",
+                }}
+                onClick={() => handleDelete(model.visualizationModelId)}
+              >
+                Delete
+              </Button>
+            </Box>
           </>
         )}
       </Stack>
