@@ -5,7 +5,6 @@ import { Protector } from './data-access/Protector';
 import { AdminProtector } from './data-access/AdminProtector';
 import { FactcheckerProtector } from './data-access/FactcheckerProtector';
 
-const LoginForm = lazy(() => import('./common/component/LoginForm'));
 const LoginPage = lazy(() => import('./common/page/LoginPage'));
 const ResetPasswordPage = lazy(() => import('./common/page/ResetPasswordPage'));
 const RegisterPage = lazy(() => import('./common/page/RegisterPage'));

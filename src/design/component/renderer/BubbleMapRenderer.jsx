@@ -138,18 +138,15 @@ const BubbleMapRenderer = ({ state }) => {
       }))
       .filter((d) => d.value > 0 && d.latitude && d.longitude);
 
-    // Create size scale for bubbles with more compressed range for uniformity
     const valueExtent = d3.extent(bubbleData, (d) => d.value);
     const maxValue = valueExtent[1];
 
-    // Use a more compressed scale that makes all bubbles more similar in size
     const radiusScale = d3
       .scalePow()
-      .exponent(0.3) // Lower exponent makes sizes more uniform
-      .domain([0, maxValue]) // Always use 0 to max for consistent relative sizing
+      .exponent(0.3)
+      .domain([0, maxValue])
       .range([minBubbleRadius, maxBubbleRadius]);
 
-    // Parse custom colors
     const parseCustomColors = (input) => {
       const result = {};
       if (!input) return result;
@@ -164,15 +161,12 @@ const BubbleMapRenderer = ({ state }) => {
 
     const customColorOverrides = parseCustomColors(customColors);
 
-    // Get default color palette
     const colors = ColorPalettes[paletteKey]?.colors || fallbackColorScale;
 
-    // Create color scale based on values
     const colorScale = d3
       .scaleSequential(d3.interpolateBlues)
       .domain(valueExtent);
 
-    // Create tooltip
     let tooltip = d3.select(containerRef.current).select(".tooltip");
     if (tooltip.empty()) {
       tooltip = d3
@@ -190,7 +184,6 @@ const BubbleMapRenderer = ({ state }) => {
         .style("z-index", "1000");
     }
 
-    // Add bubbles
     const bubbles = g
       .selectAll(".bubble")
       .data(bubbleData)
@@ -207,16 +200,14 @@ const BubbleMapRenderer = ({ state }) => {
       })
       .attr("r", (d) => radiusScale(d.value))
       .attr("fill", (d) => {
-        // Check if there's a custom color for this specific bubble
         if (customColorOverrides[d.name]) {
           return customColorOverrides[d.name];
         }
-        // Use barColor if available, otherwise use bubbleColor or color scale
         return state.barColor || bubbleColor || colorScale(d.value);
       })
       .attr("opacity", bubbleOpacity)
       .attr("stroke", "#333")
-      .attr("stroke-width", 0.5) // Thinner stroke for smaller bubbles
+      .attr("stroke-width", 0.5)
       .style("cursor", "pointer")
       .on("mousemove", (event, d) => {
         if (!showAnnotations) return;
@@ -267,7 +258,6 @@ const BubbleMapRenderer = ({ state }) => {
         .attr("transform", `translate(${translate})scale(${scale})`)
         .style("stroke-width", `${0.5 / scale}px`);
 
-      // Scale bubbles inversely to maintain visual consistency
       bubbles
         .transition()
         .duration(750)
@@ -283,7 +273,6 @@ const BubbleMapRenderer = ({ state }) => {
         .attr("transform", `translate(0, ${topOffset})`)
         .style("stroke-width", "0.5px");
 
-      // Reset bubble sizes
       bubbles
         .transition()
         .duration(750)
@@ -295,7 +284,6 @@ const BubbleMapRenderer = ({ state }) => {
       const { transform } = event;
       g.attr("transform", `translate(0, ${topOffset}) ${transform}`);
 
-      // Adjust bubble sizes and stroke width based on zoom
       bubbles
         .attr("r", (d) => radiusScale(d.value) / transform.k)
         .attr("stroke-width", 0.5 / transform.k);
@@ -312,7 +300,6 @@ const BubbleMapRenderer = ({ state }) => {
       .lower()
       .on("click", resetZoom);
 
-    // Add title, article, and footer AFTER bubbles to ensure they're on top
     if (title) {
       svg
         .append("text")
@@ -323,7 +310,7 @@ const BubbleMapRenderer = ({ state }) => {
         .style("font-weight", "bold")
         .style("font-family", font)
         .style("fill", textColor)
-        .style("z-index", "1000") // Ensure it's on top
+        .style("z-index", "1000")
         .text(title);
     }
 
@@ -335,7 +322,7 @@ const BubbleMapRenderer = ({ state }) => {
         .attr("y", articleY)
         .attr("width", width - 40)
         .attr("height", articleMargin)
-        .style("z-index", "1000") // Ensure it's on top
+        .style("z-index", "1000")
         .append("xhtml:div")
         .style("font-size", `${articleSize}px`)
         .style("font-family", font)
@@ -347,7 +334,6 @@ const BubbleMapRenderer = ({ state }) => {
         .html(article);
     }
 
-    // Add footer
     if (isFooter && footerText) {
       svg
         .append("text")
@@ -358,7 +344,7 @@ const BubbleMapRenderer = ({ state }) => {
         .style("font-family", font)
         .style("fill", textColor)
         .style("font-weight", "normal")
-        .style("z-index", "1000") // Ensure it's on top
+        .style("z-index", "1000")
         .text(footerText);
     }
   }, [state, dimensions, customGeoData]);
