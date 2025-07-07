@@ -64,6 +64,7 @@ const BarChartColorAccordion = () => {
             <div onMouseUp={commitColorChange}>
               <HexColorPicker color={color} onChange={setColor} />
               <HexColorInput
+                data-testid="bar-color-input"
                 color={color}
                 onChange={setColor}
                 style={{ marginTop: "8px" }}
@@ -75,6 +76,7 @@ const BarChartColorAccordion = () => {
           <Box>
             <Typography>Custom Color Overrides (comma-separated):</Typography>
             <TextField
+              name="color-overrides"
               fullWidth
               size="small"
               placeholder="Label A:#ff0000, Label B:#00ff00"
@@ -91,6 +93,7 @@ const BarChartColorAccordion = () => {
             <Box>
               <Typography>Bar Opacity (0-100):</Typography>
               <TextField
+                name="bar-opacity"
                 type="number"
                 inputProps={{
                   min: 0,
@@ -115,6 +118,7 @@ const BarChartColorAccordion = () => {
             <Box>
               <Typography>Bar Spacing (0-100):</Typography>
               <TextField
+                name="bar-spacing"
                 type="number"
                 inputProps={{
                   min: 0,

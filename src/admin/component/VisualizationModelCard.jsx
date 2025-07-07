@@ -7,9 +7,9 @@ import {
   Button,
   Box,
 } from "@mui/material";
-import backend from "../../data-access/Backend"; // Adjust path as needed
+import backend from "../../data-access/Backend";
 
-const VisualizationModelCard = ({ model, onUpdated }) => {
+const VisualizationModelCard = ({ model, onUpdated, index, setModels }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: model.name,
@@ -30,7 +30,7 @@ const VisualizationModelCard = ({ model, onUpdated }) => {
         }
       );
       setIsEditing(false);
-      onUpdated(); // notify parent to refetch data
+      onUpdated();
     } catch (error) {
       console.error("Failed to update model", error);
     }
@@ -39,6 +39,9 @@ const VisualizationModelCard = ({ model, onUpdated }) => {
   const handleDelete = async (visualizationModelId) => {
     try {
       await backend.delete(`/visualization_model/${visualizationModelId}`);
+      setModels((prev) =>
+        prev.filter((m) => m.visualizationModelId !== visualizationModelId)
+      );
     } catch (error) {
       console.log(error);
     }
@@ -59,6 +62,7 @@ const VisualizationModelCard = ({ model, onUpdated }) => {
         {isEditing ? (
           <>
             <TextField
+              name={`model-${index}`}
               label="Model Name"
               value={formData.name}
               onChange={handleChange("name")}
@@ -92,6 +96,7 @@ const VisualizationModelCard = ({ model, onUpdated }) => {
             />
             <Stack direction="row" spacing={2}>
               <Button
+                name={`save-button-${index}`}
                 variant="contained"
                 sx={{ backgroundColor: "#007fa7" }}
                 onClick={handleSave}
@@ -122,6 +127,7 @@ const VisualizationModelCard = ({ model, onUpdated }) => {
               }}
             >
               <Button
+                name={`edit-button-${index}`}
                 variant="outlined"
                 sx={{
                   color: "#001f47",
@@ -134,6 +140,7 @@ const VisualizationModelCard = ({ model, onUpdated }) => {
               </Button>
 
               <Button
+                name={`delete-button-${index}`}
                 variant="contained"
                 sx={{
                   color: "white",

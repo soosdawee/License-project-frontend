@@ -56,6 +56,7 @@ const AxesAndGridsAccordion = () => {
         sx={{ display: "flex", flexDirection: "column", gap: 1 }}
       >
         <TextField
+          name="x-axis"
           label="X Axis Label"
           fullWidth
           margin="dense"
@@ -74,6 +75,7 @@ const AxesAndGridsAccordion = () => {
           }}
         />
         <TextField
+          name="y-axis"
           label="Y Axis Label"
           fullWidth
           margin="dense"
@@ -94,6 +96,7 @@ const AxesAndGridsAccordion = () => {
         <FormControlLabel
           control={
             <Checkbox
+              name="labels-visible"
               checked={state.areLabelsVisible}
               onChange={handleToggleLabels}
               sx={{
@@ -109,6 +112,7 @@ const AxesAndGridsAccordion = () => {
         <FormControlLabel
           control={
             <Checkbox
+              name="show-grids"
               checked={state.showGrids}
               onChange={handleToggleGrids}
               sx={{

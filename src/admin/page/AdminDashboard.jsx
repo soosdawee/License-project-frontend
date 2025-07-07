@@ -85,6 +85,7 @@ const AdminDashboard = () => {
               Visualization Models
             </Button>
             <Button
+              name="users-button"
               variant={selectedSection === "users" ? "contained" : "outlined"}
               onClick={() => setSelectedSection("users")}
               sx={{

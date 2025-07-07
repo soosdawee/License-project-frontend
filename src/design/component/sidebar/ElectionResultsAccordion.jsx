@@ -50,6 +50,8 @@ const ElectionResultsAccordion = () => {
           <FormControl fullWidth>
             <InputLabel>Color Palette</InputLabel>
             <Select
+              name="color-palette"
+              data-testid="color-palette-select"
               value={ColorPalettes[palette]?.name || ""}
               label="Color Palette"
               onChange={handlePaletteChange}

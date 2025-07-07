@@ -44,6 +44,7 @@ const AnnotationAccordion = () => {
         <FormControlLabel
           control={
             <Checkbox
+              name="show-annotations"
               checked={state.showAnnotations}
               onChange={handleCheckboxChange}
               sx={{
@@ -58,6 +59,7 @@ const AnnotationAccordion = () => {
         />
         {state.showAnnotations && (
           <TextField
+            name="annotation-format"
             label="Annotation Format"
             fullWidth
             margin="normal"

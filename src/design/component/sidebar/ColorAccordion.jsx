@@ -67,6 +67,7 @@ const ColorAccordion = () => {
           <div onMouseUp={commitColorChange}>
             <HexColorPicker color={color} onChange={setColor} />
             <HexColorInput
+              data-testid="background-input"
               color={color}
               onChange={setColor}
               style={{

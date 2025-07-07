@@ -78,6 +78,7 @@ const VisualizationModel = () => {
           </Typography>
 
           <Button
+            name="choose-file"
             variant="outlined"
             component="label"
             sx={{ color: "#007fa7", border: "1px solid #007fa7" }}
@@ -92,6 +93,7 @@ const VisualizationModel = () => {
           </Button>
 
           <TextField
+            name="model-name"
             label="Model Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -109,6 +111,7 @@ const VisualizationModel = () => {
           />
 
           <TextField
+            name="column-names"
             label="Column names (comma-separated)"
             value={columns}
             onChange={(e) => setColumns(e.target.value)}
@@ -126,6 +129,7 @@ const VisualizationModel = () => {
           />
 
           <Button
+            name="upload-model"
             variant="contained"
             onClick={handleUpload}
             disabled={!file || !name || !columns}

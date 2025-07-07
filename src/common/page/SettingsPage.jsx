@@ -236,6 +236,7 @@ const SettingsPage = () => {
                 </Box>
 
                 <TextField
+                  name="firstname"
                   label="First Name"
                   value={user.firstname}
                   onChange={(e) => handleFirstname(e.target.value)}
@@ -243,6 +244,7 @@ const SettingsPage = () => {
                   sx={{ margin: "0 2%", ...textSx }}
                 />
                 <TextField
+                  name="lastname"
                   label="Last Name"
                   value={user.lastname}
                   onChange={(e) => handleLastname(e.target.value)}
@@ -250,6 +252,7 @@ const SettingsPage = () => {
                   sx={{ margin: "2%", ...textSx }}
                 />
                 <TextField
+                  name="description"
                   label="Profile Description"
                   value={user.description}
                   onChange={(e) => handleDescription(e.target.value)}
@@ -271,6 +274,7 @@ const SettingsPage = () => {
                   <input type="file" hidden onChange={handleFileUpload} />
                 </Button>
                 <Button
+                  name="change-button"
                   variant="outlined"
                   onClick={handleModifications}
                   sx={{
@@ -309,6 +313,7 @@ const SettingsPage = () => {
                     Change Password
                   </Typography>
                   <TextField
+                    name="old-password"
                     label="Old Password"
                     type="password"
                     value={oldPassword}
@@ -317,6 +322,7 @@ const SettingsPage = () => {
                     sx={{ margin: "0 2%", ...textSx }}
                   />
                   <TextField
+                    name="new-password"
                     label="New Password"
                     type="password"
                     value={newPassword}
@@ -325,6 +331,7 @@ const SettingsPage = () => {
                     sx={{ margin: "0 2%", ...textSx }}
                   />
                   <TextField
+                    name="confirm-password"
                     label="Confirm New Password"
                     type="password"
                     value={confirmPassword}
@@ -333,6 +340,7 @@ const SettingsPage = () => {
                     sx={{ margin: "0 2%", ...textSx }}
                   />
                   <Button
+                    name="change-password"
                     variant="outlined"
                     onClick={handlePasswordChange}
                     sx={{
@@ -357,6 +365,7 @@ const SettingsPage = () => {
                   }}
                 >
                   <Button
+                    name="delete-button"
                     variant="contained"
                     color="error"
                     sx={{ textTransform: "none" }}

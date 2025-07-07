@@ -13,11 +13,8 @@
   height: 2em;
   position: relative;
   margin-left: 5px;
-  /* Remove background and padding */
   background: transparent;
   padding: 0;
-
-  /* Use flexbox to center dots */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,11 +22,8 @@
 }
 
 .typing__dot {
-  /* Remove float */
-  /* float: left; */
   width: 8px;
   height: 8px;
-  /* margin removed since gap is used in parent */
   background: #8d8c91;
   border-radius: 50%;
   opacity: 0;

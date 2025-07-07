@@ -82,6 +82,7 @@ const TitleAccordion = () => {
       <AccordionDetails>
         <Stack spacing={2}>
           <TextField
+            name="title"
             label="Title"
             value={localTitle}
             onChange={(e) => setLocalTitle(e.target.value)}
@@ -90,6 +91,7 @@ const TitleAccordion = () => {
             sx={textSx}
           />
           <TextField
+            name="article"
             label="Article"
             value={localArticle}
             onChange={(e) => setLocalArticle(e.target.value)}
@@ -99,6 +101,7 @@ const TitleAccordion = () => {
           />
           <Box sx={{ display: "flex", gap: 2 }}>
             <TextField
+              name="title-font"
               label="Title Font Size (px)"
               type="number"
               value={localTitleFontSize}
@@ -108,6 +111,7 @@ const TitleAccordion = () => {
               sx={{ flex: 1, ...textSx }}
             />
             <TextField
+              name="article-font"
               label="Article Font Size (px)"
               type="number"
               value={localArticleFontSize}

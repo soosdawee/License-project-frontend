@@ -120,8 +120,6 @@ const ShareState = ({ visualizationModel }) => {
     );
   };
 
-  console.log(state);
-
   return (
     <Box
       sx={{
@@ -180,6 +178,7 @@ const ShareState = ({ visualizationModel }) => {
             Save your work so you can access it in the future!
           </Typography>
           <Button
+            name="save-button"
             variant="contained"
             onClick={handleShare}
             disabled={!state.modified}

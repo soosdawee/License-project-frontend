@@ -33,11 +33,13 @@ const VisualizationModelsComponent = () => {
         <CircularProgress />
       ) : (
         <Stack spacing={4}>
-          {models.map((model) => (
+          {models.map((model, index) => (
             <VisualizationModelCard
               key={model.id}
               model={model}
               onUpdated={fetchModels}
+              index={index}
+              setModels={setModels}
             />
           ))}
         </Stack>

@@ -215,7 +215,9 @@ const DataState = ({ visualizationModel, setState }) => {
             >
               <ToggleButton value="manual">Input data manually</ToggleButton>
               <ToggleButton value="upload">Upload From Excel</ToggleButton>
-              <ToggleButton value="link">Link Google Sheets</ToggleButton>
+              <ToggleButton name="google-sheets" value="link">
+                Link Google Sheets
+              </ToggleButton>
             </ToggleButtonGroup>
 
             {inputMethod === "manual" && (
@@ -281,6 +283,7 @@ const DataState = ({ visualizationModel, setState }) => {
             {inputMethod === "link" && (
               <Box sx={{ width: "100%" }}>
                 <TextField
+                  name="sheets-link"
                   fullWidth
                   label="Google Sheets URL"
                   variant="outlined"
@@ -299,6 +302,7 @@ const DataState = ({ visualizationModel, setState }) => {
                   }}
                 />
                 <Button
+                  name="load-data"
                   onClick={handleLoadGoogleSheet}
                   variant="outlined"
                   sx={{

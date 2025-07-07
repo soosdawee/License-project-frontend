@@ -28,7 +28,7 @@ const TemplatePage = () => {
   return (
     <>
       <Navbar />
-      <Box sx={{ padding: "0 10%" }}>
+      <Box name="charts-page" sx={{ padding: "0 10%" }}>
         <Typography
           variant="h4"
           sx={{
@@ -43,13 +43,14 @@ const TemplatePage = () => {
         </Typography>
 
         <Grid container spacing={4.5} alignItems="space-between">
-          {vizType.map((viz) => (
+          {vizType.map((viz, index) => (
             <Grid
               item
               key={viz.visualizationModelId}
               sx={{ display: "flex", justifyContent: "space-between" }}
             >
               <Button
+                name={`visualization-${index}`}
                 fullWidth
                 variant="contained"
                 onClick={() => handleClick(viz.visualizationModelId)}

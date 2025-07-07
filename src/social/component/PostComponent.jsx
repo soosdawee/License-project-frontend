@@ -21,7 +21,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ReportIcon from "@mui/icons-material/Report";
 import { useNavigate } from "react-router-dom";
 
-const PostComponent = ({ visualization, setVizList, isUnderReview }) => {
+const PostComponent = ({ visualization, setVizList, isUnderReview, index }) => {
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [activeViz, setActiveViz] = useState(null);
@@ -292,6 +292,7 @@ const PostComponent = ({ visualization, setVizList, isUnderReview }) => {
           ) : (
             <>
               <Button
+                name={`like-${index}`}
                 variant="outlined"
                 sx={{
                   width: "33.3%",
@@ -337,6 +338,7 @@ const PostComponent = ({ visualization, setVizList, isUnderReview }) => {
               </Button>
 
               <Button
+                name={`comment-${index}`}
                 variant="outlined"
                 sx={{
                   width: "33.3%",

@@ -25,6 +25,7 @@ const StageButton = ({ number, text, setState, state }) => {
       }}
     >
       <Button
+        name={`stage-${number}`}
         variant="contained"
         onClick={() => setState(text)}
         sx={{

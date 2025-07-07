@@ -81,6 +81,7 @@ const RegisterForm = () => {
 
         <form onSubmit={handleSubmit}>
           <TextField
+            name="firstname"
             label="First Name"
             type="text"
             fullWidth
@@ -100,6 +101,7 @@ const RegisterForm = () => {
             onChange={(e) => setFirstName(e.target.value)}
           />
           <TextField
+            name="lastname"
             label="Last Name"
             type="text"
             fullWidth
@@ -119,6 +121,7 @@ const RegisterForm = () => {
             onChange={(e) => setLastName(e.target.value)}
           />
           <TextField
+            name="email"
             label="Email"
             type="email"
             fullWidth
@@ -138,6 +141,7 @@ const RegisterForm = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
+            name="password"
             label="Password"
             type="password"
             fullWidth

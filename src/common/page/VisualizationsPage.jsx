@@ -100,7 +100,7 @@ const VisualizationsPage = () => {
           }}
         >
           <Grid container spacing={2} justifyContent="space-between">
-            {visualizations.map((viz) => (
+            {visualizations.map((viz, index) => (
               <Grid
                 item
                 key={viz.visualizationId}
@@ -122,6 +122,7 @@ const VisualizationsPage = () => {
                   }}
                 >
                   <Button
+                    name={`visualization-${index}`}
                     fullWidth
                     variant="contained"
                     onClick={() => handleClick(viz)}
@@ -166,12 +167,13 @@ const VisualizationsPage = () => {
                   </Button>
 
                   <Button
+                    name="delete-button"
                     variant="contained"
                     size="small"
                     color="error"
                     className="delete-btn"
                     onClick={(e) => {
-                      e.stopPropagation(); // prevent triggering main button
+                      e.stopPropagation();
                       handleDelete(viz.visualizationId);
                     }}
                     sx={{

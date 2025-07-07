@@ -55,7 +55,11 @@ const LoginForm = () => {
   };
 
   return (
-    <Container maxWidth="sm" style={{ backgroundColor: "white", padding: 0 }}>
+    <Container
+      name="login-form"
+      maxWidth="sm"
+      style={{ backgroundColor: "white", padding: 0 }}
+    >
       <Box
         sx={{
           mt: 0,
@@ -103,6 +107,7 @@ const LoginForm = () => {
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
+            name="email"
             label="Email"
             type="email"
             fullWidth
@@ -118,6 +123,7 @@ const LoginForm = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
+            name="password"
             label="Password"
             type="password"
             fullWidth
@@ -166,7 +172,6 @@ const LoginForm = () => {
         </form>
       </Box>
 
-      {/* Modal for forgot password */}
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}

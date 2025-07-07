@@ -253,7 +253,7 @@ const CommentModal = ({ open, onClose, visualization }) => {
   );
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal name="comment-modal" open={open} onClose={onClose}>
       <Box
         sx={{
           position: "absolute",
@@ -341,6 +341,7 @@ const CommentModal = ({ open, onClose, visualization }) => {
             </div>
           )}
           <TextField
+            name="comment-text"
             fullWidth
             multiline
             rows={2}
@@ -354,6 +355,7 @@ const CommentModal = ({ open, onClose, visualization }) => {
 
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
             <Button
+              name="send-button"
               variant="contained"
               sx={{ backgroundColor: "#001f47", textTransform: "none" }}
               onClick={() => handleSend(visualization.visualizationId)}

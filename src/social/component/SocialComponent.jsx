@@ -22,8 +22,12 @@ const SocialComponent = () => {
   return (
     <>
       <Stack spacing={3} sx={{ p: "2% 5%", overflow: "auto" }}>
-        {vizList.map((viz) => (
-          <PostComponent visualization={viz} setVizList={setVizList} />
+        {vizList.map((viz, index) => (
+          <PostComponent
+            visualization={viz}
+            setVizList={setVizList}
+            index={index}
+          />
         ))}
       </Stack>
     </>

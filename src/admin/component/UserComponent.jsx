@@ -37,8 +37,6 @@ const UserComponent = () => {
       .catch((err) => console.error(err));
   }, []);
 
-  console.log(users);
-
   useEffect(() => {
     const term = searchTerm.toLowerCase();
     setFilteredUsers(
@@ -58,7 +56,6 @@ const UserComponent = () => {
     try {
       await backend.delete(`user/${userId}`);
 
-      // Update local state by filtering out the deleted user
       setUsers((prevUsers) =>
         prevUsers.filter((user) => user.userId !== userId)
       );
@@ -83,6 +80,7 @@ const UserComponent = () => {
   return (
     <Stack spacing={2}>
       <TextField
+        name="search-bar"
         label="Search users"
         variant="outlined"
         value={searchTerm}
@@ -105,16 +103,17 @@ const UserComponent = () => {
         justifyContent="center"
         alignItems="center"
         gap={2}
-        flexWrap="nowrap" // remove or change to 'wrap' if you want wrapping on small screens
-        overflow="auto" // enables horizontal scrolling if needed
+        flexWrap="nowrap"
+        overflow="auto"
       >
-        {filteredUsers?.map((user) => (
+        {filteredUsers?.map((user, index) => (
           <Box
             sx={{ width: "100%", color: "#007fa7" }}
             key={user.id}
             onClick={() => handleProfileVisit(user.userId)}
           >
             <Card
+              name={`card-${index}`}
               sx={{
                 "&:hover .show-on-hover": {
                   opacity: 1,
@@ -175,6 +174,7 @@ const UserComponent = () => {
                 </Typography>
 
                 <IconButton
+                  name={`user-delete-${index}`}
                   className="show-on-hover"
                   sx={{
                     opacity: 0,

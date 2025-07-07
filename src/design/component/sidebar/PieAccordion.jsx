@@ -73,6 +73,8 @@ const PieAccordion = () => {
           <FormControl fullWidth>
             <InputLabel>Color Palette</InputLabel>
             <Select
+              name="color-palette"
+              data-testid="color-palette-select"
               value={ColorPalettes[palette]?.name || ""}
               label="Color Palette"
               onChange={handlePaletteChange}
@@ -89,6 +91,7 @@ const PieAccordion = () => {
           <Box>
             <Typography>Custom Color Overrides (comma-separated):</Typography>
             <TextField
+              name="color-overrides"
               fullWidth
               size="small"
               placeholder="Label A:#ff0000, Label B:#00ff00"

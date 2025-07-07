@@ -46,6 +46,7 @@ const Navbar = () => {
         <Box sx={{ display: "flex", alignItems: "center" }}>
           {localStorage.getItem("userType") === "ADMIN" && (
             <Button
+              name="admin-dashboard"
               component={Link}
               to="/admin-dashboard"
               color="inherit"
@@ -65,6 +66,7 @@ const Navbar = () => {
             </Button>
           )}
           <Button
+            name="social-button"
             color="inherit"
             component={Link}
             to="/social"
@@ -93,7 +95,11 @@ const Navbar = () => {
           />
 
           <Box>
-            <Button color="inherit" onClick={handleMenuClick}>
+            <Button
+              name="more-button"
+              color="inherit"
+              onClick={handleMenuClick}
+            >
               <DehazeIcon />
             </Button>
             <Menu
@@ -109,10 +115,16 @@ const Navbar = () => {
                 horizontal: "right",
               }}
             >
-              <MenuItem component={Link} to={"/settings"} onClick={handleClose}>
+              <MenuItem
+                name="settings"
+                component={Link}
+                to={"/settings"}
+                onClick={handleClose}
+              >
                 Settings
               </MenuItem>
               <MenuItem
+                name="profile"
                 component={Link}
                 to={`/profile/${localStorage.getItem("userId")}`}
                 onClick={handleClose}
@@ -120,6 +132,7 @@ const Navbar = () => {
                 Profile
               </MenuItem>
               <MenuItem
+                name="my-visualizations"
                 component={Link}
                 to={`/my-visualizations/${localStorage.getItem("userId")}`}
                 onClick={handleClose}

@@ -80,6 +80,7 @@ const LandingPage = () => {
           }}
         >
           <Box
+            data-cy="tagline-box"
             sx={{
               width: "65%",
               height: "30%",
@@ -155,7 +156,6 @@ const LandingPage = () => {
         </Box>
       </Box>
 
-      {/* Additional Scrollable Content */}
       <Box
         sx={{
           width: "100%",

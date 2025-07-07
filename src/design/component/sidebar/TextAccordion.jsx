@@ -63,6 +63,8 @@ const TextColorAccordion = () => {
         <div onMouseUp={commitColorChange}>
           <HexColorPicker color={color} onChange={setColor} />
           <HexColorInput
+            name="text-color"
+            data-testid="text-color-input"
             color={color}
             onChange={setColor}
             style={{ marginTop: "8px", outlineColor: "#007393" }}
