@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+
+  react:
+    image: front_image
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+       - "3000:3000"
+    networks:
+      - front
+networks:
+  front:
+    driver: bridge
+    external: true
+
+

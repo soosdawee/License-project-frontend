@@ -39,12 +39,16 @@ const VisualizationModel = () => {
     );
 
     try {
-      await axios.post("http://localhost:8080/visualization_model", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axios.post(
+        "http://backend-service.localhost/visualization_model",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
     } catch (error) {
       console.error("Upload failed", error);
     }

@@ -16,12 +16,15 @@ const RegisterForm = () => {
     event.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8080/user/register", {
-        firstname: firstName,
-        lastname: lastName,
-        email: email,
-        userPassword: password,
-      });
+      const response = await axios.post(
+        "http://backend-service.localhost/user/register",
+        {
+          firstname: firstName,
+          lastname: lastName,
+          email: email,
+          userPassword: password,
+        }
+      );
 
       // Optionally, handle response, e.g. auto-login or redirect to login page
       navigate("/login");

@@ -5,7 +5,7 @@ const getToken = () => {
 };
 
 const backend = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: "http://backend-service.localhost",
 });
 
 backend.interceptors.request.use(

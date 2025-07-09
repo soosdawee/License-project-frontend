@@ -29,7 +29,7 @@ const ResetPasswordForm = () => {
 
     try {
       await axios.post(
-        `http://localhost:8080/user/reset_password?token=${encodeURIComponent(
+        `http://backend-service.localhost/user/reset_password?token=${encodeURIComponent(
           token
         )}&password=${encodeURIComponent(password)}`
       );

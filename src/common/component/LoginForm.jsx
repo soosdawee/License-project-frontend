@@ -23,10 +23,13 @@ const LoginForm = () => {
     event.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8080/user/login", {
-        email: email,
-        userPassword: password,
-      });
+      const response = await axios.post(
+        "http://backend-service.localhost/user/login",
+        {
+          email: email,
+          userPassword: password,
+        }
+      );
 
       localStorage.setItem("jwt", response.data.jwt);
       localStorage.setItem("userType", response.data.userType);
@@ -41,7 +44,7 @@ const LoginForm = () => {
   const handlePasswordReset = async () => {
     try {
       await axios.post(
-        `http://localhost:8080/user/forgot_password?email=${encodeURIComponent(
+        `http://backend-service.localhost/user/forgot_password?email=${encodeURIComponent(
           resetEmail
         )}`
       );

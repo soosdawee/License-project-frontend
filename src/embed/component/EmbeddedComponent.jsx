@@ -73,7 +73,7 @@ const EmbeddedComponent = ({ visualizationId, type }) => {
           );
         } else if (type === "published") {
           response = await axios.get(
-            `http://localhost:8080/visualization/published/${visualizationId}`
+            `http://backend-service.localhost/visualization/published/${visualizationId}`
           );
         } else {
           response = await backend.get(`visualization/${visualizationId}`);

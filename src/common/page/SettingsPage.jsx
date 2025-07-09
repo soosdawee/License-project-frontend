@@ -95,7 +95,7 @@ const SettingsPage = () => {
 
     try {
       const response = await axios.put(
-        "http://localhost:8080/user/profile_picture",
+        "http://backend-service.localhost/user/profile_picture",
         formData,
         {
           headers: {
