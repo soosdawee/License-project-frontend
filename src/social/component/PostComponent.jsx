@@ -74,7 +74,7 @@ const PostComponent = ({ visualization, setVizList, isUnderReview, index }) => {
     setActiveViz(null);
   };
 
-  const getElapsedTime = (timestamp) => {
+  const calculateTime = (timestamp) => {
     const now = new Date();
     const created = new Date(timestamp);
     const diffInSeconds = Math.floor((now - created) / 1000);
@@ -194,7 +194,7 @@ const PostComponent = ({ visualization, setVizList, isUnderReview, index }) => {
               </Typography>
             </Box>
             <Typography sx={{ fontSize: "0.85rem" }}>
-              {getElapsedTime(visualization.timestamp)}
+              {calculateTime(visualization.timestamp)}
             </Typography>
           </Toolbar>
         </AppBar>

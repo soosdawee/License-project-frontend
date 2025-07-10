@@ -34,7 +34,7 @@ const mapVisualizationToInitialState = (visualization) => ({
   modified: false,
   shared: visualization.isShared,
   published: visualization.isPublished,
-  sheetsLink: visualization.tableDatas?.[0]?.sheetsLink || "",
+  sheetsLink: visualization.tableDatas[0]?.sheetsLink || "",
 });
 
 export default mapVisualizationToInitialState;

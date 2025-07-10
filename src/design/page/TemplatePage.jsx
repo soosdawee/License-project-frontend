@@ -28,13 +28,15 @@ const TemplatePage = () => {
   return (
     <>
       <Navbar />
-      <Box name="charts-page" sx={{ padding: "0 10%" }}>
+      <Box
+        name="charts-page"
+        sx={{ padding: "0 10%", backgroundColor: "#f9f9f9" }}
+      >
         <Typography
           variant="h4"
           sx={{
             textAlign: "left",
             fontSize: "2.5rem",
-            margin: "1% 0",
             fontWeight: "bold",
             color: "#001f47",
           }}

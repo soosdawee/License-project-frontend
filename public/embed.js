@@ -5,7 +5,7 @@
   const iframe = document.createElement('iframe');
   iframe.src = `http://localhost:3000/visualization/${vizId}/embed`;
   iframe.width = '100%';
-  iframe.height = '500';
+  iframe.height = '600';
   iframe.style.border = 'none';
 
   scriptTag.parentNode.insertBefore(iframe, scriptTag);

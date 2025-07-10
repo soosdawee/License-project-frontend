@@ -27,7 +27,7 @@ const ShareState = ({ visualizationModel }) => {
   const chartRef = useRef();
 
   const handleShare = async () => {
-    console.log(state.showLegend);
+    console.log(state.sheetsLink);
     const payload = {
       title: state.title,
       titleSize: state.titleSize,
@@ -369,7 +369,11 @@ const ShareState = ({ visualizationModel }) => {
                 readOnly
                 value={`<iframe src="http://localhost:3000/visualization/${
                   visualizationId ?? state.visualizationId
-                }/embed" title="D3 Visualization"></iframe>`}
+                }/embed" title=${
+                  state?.title && state?.title.length > 0
+                    ? state.title
+                    : "Untitled Visualization"
+                } style="height: 600px; width: 100%; border: none;" allowtransparency="true"></iframe>`}
                 style={{
                   width: "100%",
                   border: "1px solid #ccc",
@@ -388,7 +392,11 @@ const ShareState = ({ visualizationModel }) => {
                   navigator.clipboard.writeText(
                     `<iframe src="http://localhost:3000/visualization/${
                       visualizationId ?? state.visualizationId
-                    }/embed" title="D3 Visualization"></iframe>`
+                    }/embed" title=${
+                      state?.title && state?.title.length > 0
+                        ? state.title
+                        : "Untitled Visualization"
+                    } style="height: 600px; width: 100%; border: none;" allowtransparency="true"></iframe>`
                   )
                 }
                 variant="contained"

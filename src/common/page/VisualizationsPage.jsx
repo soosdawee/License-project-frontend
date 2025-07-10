@@ -38,6 +38,21 @@ const VisualizationsPage = () => {
     }
   };
 
+  const calculateTime = (timestamp) => {
+    const now = new Date();
+    const created = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - created) / 1000);
+    const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+
+    if (diffInSeconds < 60) return rtf.format(-diffInSeconds, "second");
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) return rtf.format(-diffInMinutes, "minute");
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return rtf.format(-diffInHours, "hour");
+    const diffInDays = Math.floor(diffInHours / 24);
+    return rtf.format(-diffInDays, "day");
+  };
+
   console.log(visualizations);
 
   return (
@@ -48,6 +63,7 @@ const VisualizationsPage = () => {
         display: "flex",
         flexDirection: "column",
         overflowX: "hidden",
+        backgroundColor: "#f9f9f9",
       }}
     >
       <Box
@@ -68,6 +84,8 @@ const VisualizationsPage = () => {
           marginTop: "5%",
           padding: "0 10%",
           overflowX: "hidden",
+          height: "90%",
+          width: "100%",
         }}
       >
         <Typography
@@ -83,98 +101,93 @@ const VisualizationsPage = () => {
       </Box>
       <Box
         sx={{
-          padding: "2% 18%",
           backgroundColor: "#f9f9f9",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           overflowX: "hidden",
+          height: "100%",
+          width: "100%",
         }}
       >
         <Box
           sx={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
             justifyContent: "center",
-            overflowX: "hidden",
+            padding: "20px",
+            gap: "20px",
+            width: "90%",
           }}
         >
-          <Grid container spacing={2} justifyContent="space-between">
-            {visualizations.map((viz, index) => (
-              <Grid
-                item
-                key={viz.visualizationId}
-                xs={12}
-                md={4}
+          {visualizations.map((viz, index) => (
+            <Box
+              sx={{
+                position: "relative",
+                "&:hover .delete-btn": {
+                  opacity: 1,
+                },
+              }}
+            >
+              <Button
+                name={`visualization-${index}`}
+                fullWidth
+                variant="contained"
+                onClick={() => handleClick(viz)}
                 sx={{
+                  height: "150px",
+                  aspectRatio: 1,
+                  textTransform: "none",
+                  flexDirection: "column",
+                  gap: 1,
+                  padding: 1,
+                  backgroundColor: "white",
+                  color: "#001f47",
+                  fontWeight: "bold",
                   display: "flex",
-                  justifyContent: "center",
                   alignItems: "center",
+                  margin: "10px",
                 }}
               >
-                <Box
-                  sx={{
-                    width: "100%",
-                    position: "relative",
-                    "&:hover .delete-btn": {
-                      opacity: 1,
-                    },
-                  }}
-                >
-                  <Button
-                    name={`visualization-${index}`}
-                    fullWidth
-                    variant="contained"
-                    onClick={() => handleClick(viz)}
-                    sx={{
-                      height: "300px",
-                      aspectRatio: 1,
-                      textTransform: "none",
-                      flexDirection: "column",
-                      gap: 1,
-                      padding: 1,
-                      backgroundColor: "white",
-                      color: "#001f47",
-                      fontWeight: "bold",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    {(viz.title?.length ?? 0) > 0
-                      ? viz.title
-                      : "Untitled Visualization"}
-                  </Button>
+                <Typography sx={{ color: "#001f47", fontWeight: "bold" }}>
+                  {(viz.title?.length ?? 0) > 0
+                    ? viz.title
+                    : "Untitled Visualization"}
+                </Typography>
+                <Typography sx={{ color: "#001f47" }}>
+                  {viz.visualizationModelReducedViewDto.name}
+                </Typography>
+                <Typography sx={{ color: "#a8a8a8" }}>
+                  {calculateTime(viz.timestamp)}
+                </Typography>
+              </Button>
 
-                  <Button
-                    name="delete-button"
-                    variant="contained"
-                    size="small"
-                    color="error"
-                    className="delete-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(viz.visualizationId);
-                    }}
-                    sx={{
-                      position: "absolute",
-                      top: 8,
-                      right: 8,
-                      opacity: 0,
-                      transition: "opacity 0.3s ease",
-                      zIndex: 10,
-                      minWidth: "unset",
-                      padding: "4px 8px",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    <DeleteIcon />
-                  </Button>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
+              <Button
+                name="delete-button"
+                variant="contained"
+                size="small"
+                color="error"
+                className="delete-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(viz.visualizationId);
+                }}
+                sx={{
+                  position: "absolute",
+                  top: 15,
+                  right: 0,
+                  opacity: 0,
+                  transition: "opacity 0.3s ease",
+                  zIndex: 10,
+                  minWidth: "unset",
+                  padding: "4px 8px",
+                  fontSize: "0.75rem",
+                }}
+              >
+                <DeleteIcon />
+              </Button>
+            </Box>
+          ))}
         </Box>
       </Box>
     </Box>

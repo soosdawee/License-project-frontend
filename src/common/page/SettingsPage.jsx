@@ -142,6 +142,7 @@ const SettingsPage = () => {
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
+        backgroundColor: "#f9f9f9",
       }}
     >
       <Navbar />

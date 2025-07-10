@@ -27,12 +27,14 @@ const DataState = ({ visualizationModel, setState }) => {
       state.sheetsLink !== undefined
     ) {
       setInputMethod("link");
+      console.log(state.sheetsLink);
+      handleLoadGoogleSheet();
     }
   }, [state.sheetsLink]);
 
-  const fetchGoogleSheetData = async (sheetUrl) => {
+  const fetchGoogleSheetData = async () => {
     try {
-      const url = new URL(sheetUrl);
+      const url = new URL(state.sheetsLink);
       const parts = url.pathname.split("/");
       const sheetId = parts[3];
       const gidMatch = url.hash.match(/gid=(\d+)/);
@@ -102,7 +104,7 @@ const DataState = ({ visualizationModel, setState }) => {
         },
       });
     } else {
-      alert("Unsupported file type. Please upload a CSV or Excel file.");
+      alert("Please upload a CSV or Excel file.");
     }
   };
 

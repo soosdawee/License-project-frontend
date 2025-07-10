@@ -17,14 +17,7 @@ const EmbeddedComponent = ({ visualizationId, type }) => {
   const [hasError, setHasError] = useState(false);
 
   const fetchGoogleSheetData = async (sheetUrl) => {
-    if (
-      !sheetUrl ||
-      typeof sheetUrl !== "string" ||
-      !sheetUrl.startsWith("http")
-    ) {
-      console.error("Invalid sheet URL:", sheetUrl);
-      return null;
-    }
+    console.log(sheetUrl);
 
     try {
       const url = new URL(sheetUrl);
@@ -113,6 +106,7 @@ const EmbeddedComponent = ({ visualizationId, type }) => {
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "column",
+        background: "transparent",
       }}
     >
       {hasError ? (

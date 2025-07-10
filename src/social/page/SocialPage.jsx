@@ -19,6 +19,7 @@ const SocialPage = () => {
           height: "90%",
           justifyItems: "start",
           overflow: "hidden",
+          backgroundColor: "#f9f9f9",
         }}
       >
         <Box sx={{ width: "20%" }}>

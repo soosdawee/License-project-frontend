@@ -6,7 +6,7 @@ const EmbeddedPage = () => {
   const { id } = useParams();
 
   return (
-    <EmbeddedContextProvider>
+    <EmbeddedContextProvider sx={{ background: "transparent !important" }}>
       <EmbeddedComponent visualizationId={id} type={"published"} />
     </EmbeddedContextProvider>
   );
