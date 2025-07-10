@@ -38,6 +38,8 @@ const VisualizationsPage = () => {
     }
   };
 
+  console.log(visualizations);
+
   return (
     <Box
       sx={{
@@ -140,27 +142,6 @@ const VisualizationsPage = () => {
                       alignItems: "center",
                     }}
                   >
-                    <Box
-                      sx={{
-                        height: "100%",
-                        width: "100%",
-                        position: "relative",
-                      }}
-                    >
-                      <iframe
-                        src={`http://localhost:3000/visualization/${viz.visualizationId}/created`}
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          width: "100%",
-                          height: "100%",
-                          border: "none",
-                          pointerEvents: "none",
-                        }}
-                        allowFullScreen
-                      ></iframe>
-                    </Box>
                     {(viz.title?.length ?? 0) > 0
                       ? viz.title
                       : "Untitled Visualization"}

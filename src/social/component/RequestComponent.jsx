@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import friendsImage from "../../common/image/friends.svg";
 
-const RequestComponent = () => {
+const RequestComponent = ({ refreshKey, setRefreshKey }) => {
   const [requests, setRequests] = useState([]);
 
   const fetchRequests = async () => {
@@ -33,6 +33,9 @@ const RequestComponent = () => {
         status: action,
       });
       setRequests((prev) => prev.filter((r) => r.requestId !== requestId));
+      if (action === "ACCEPTED") {
+        setRefreshKey(refreshKey + 1);
+      }
     } catch (error) {
       console.error(`Failed to ${action} request`, error);
     }
@@ -63,11 +66,38 @@ const RequestComponent = () => {
     );
   }
 
+  const getInitials = (user) => {
+    if (!user) return null;
+    if (!user.firstname || !user.lastname) return "";
+    return (
+      user.firstname.charAt(0).toUpperCase() +
+      user.lastname.charAt(0).toUpperCase()
+    );
+  };
+
+  const getAvatarSrc = (user) => {
+    if (!user) return null;
+    return `data:image/png;base64,${user.profilePicture}`;
+  };
+
   return (
-    <Stack spacing={2} sx={{ p: 2 }}>
+    <Stack
+      spacing={2}
+      sx={{ justifyContent: "start", alignItems: "center", width: "100%" }}
+    >
+      <Box
+        sx={{
+          width: "95%",
+          backgroundColor: "#007fa7",
+          margin: "1% 5%",
+          borderRadius: "15px",
+        }}
+      >
+        <Typography sx={{ color: "white" }}>Friend Requests</Typography>
+      </Box>
       {requests.map((req) => (
-        <Card key={req.requestId}>
-          <CardContent sx={{ width: "100%" }}>
+        <Card key={req.requestId} sx={{ width: "90%" }}>
+          <CardContent sx={{ width: "90%" }}>
             <Box
               sx={{
                 display: "flex",
@@ -79,14 +109,10 @@ const RequestComponent = () => {
               }}
             >
               <Avatar
-                sx={{
-                  bgcolor: "white",
-                  color: "#001f47",
-                  border: "1px solid #001F47",
-                }}
+                src={getAvatarSrc(req)}
+                sx={{ display: "flex", alignItems: "center", gap: 2 }}
               >
-                {req.firstname[0].toUpperCase()}
-                {req.lastname[0].toUpperCase()}
+                {!req?.profilePicture && getInitials(req)}
               </Avatar>
               <Typography variant="h6">
                 {req.firstname} {req.lastname}

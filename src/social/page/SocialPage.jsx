@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { Box } from "@mui/material";
 import Navbar from "../../common/component/Navbar";
 import SocialComponent from "../component/SocialComponent";
 import RequestComponent from "../component/RequestComponent";
+import FriendsComponent from "../component/FriendsComponent";
 
 const SocialPage = () => {
+  const [refreshKey, setRefreshKey] = useState(0);
+
   return (
     <Box sx={{ height: "100vh", overflow: "auto" }}>
       <Navbar />
@@ -17,7 +21,9 @@ const SocialPage = () => {
           overflow: "hidden",
         }}
       >
-        <Box sx={{ width: "20%" }}>Friends or something</Box>
+        <Box sx={{ width: "20%" }}>
+          <FriendsComponent key={refreshKey} />
+        </Box>
         <Box
           sx={{
             width: "60%",
@@ -44,7 +50,10 @@ const SocialPage = () => {
             alignItems: "center",
           }}
         >
-          <RequestComponent />
+          <RequestComponent
+            refreshKey={refreshKey}
+            setRefreshKey={setRefreshKey}
+          />
         </Box>
       </Box>
     </Box>

@@ -1,5 +1,3 @@
-import { setShowPercentages } from "../../design/component/state/context/actions";
-
 const mapVisualizationToInitialState = (visualization) => ({
   title: visualization.title || "",
   data: visualization.tableDatas?.[0]?.data || [[], [], []],

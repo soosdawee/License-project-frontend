@@ -126,10 +126,10 @@ const TableComponent = ({ visualizationModel, isFirst }) => {
           return props;
         }
 
-        const editableHeaderIds = new Set([32, 33, 34, 35, 36, 37]);
+        const exceptions = new Set([32, 33, 34, 35, 36, 37]);
 
         if (
-          editableHeaderIds.has(visualizationModel.visualizationModelId) &&
+          exceptions.has(visualizationModel.visualizationModelId) &&
           row === 0
         ) {
           props.readOnly = false;
@@ -138,7 +138,7 @@ const TableComponent = ({ visualizationModel, isFirst }) => {
         }
 
         if (
-          editableHeaderIds.has(visualizationModel.visualizationModelId) &&
+          exceptions.has(visualizationModel.visualizationModelId) &&
           row === 0
         ) {
           props.className = "header-row-style";
