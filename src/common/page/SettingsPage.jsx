@@ -1,12 +1,4 @@
-import {
-  Box,
-  Stack,
-  Divider,
-  Typography,
-  Avatar,
-  TextField,
-  Button,
-} from "@mui/material";
+import { Box, Typography, Avatar, TextField, Button } from "@mui/material";
 import Navbar from "../component/Navbar";
 import backend from "../../data-access/Backend";
 import axios from "axios";
@@ -52,17 +44,23 @@ const SettingsPage = () => {
     navigate("/");
   };
 
-  const getInitials = () => {
-    if (!user.firstname || !user.lastname) return "";
-    return (
-      user.firstname.charAt(0).toUpperCase() +
-      user.lastname.charAt(0).toUpperCase()
-    );
+  const initialsOf = () => {
+    if (!user.firstname || !user.lastname) {
+      return "";
+    } else {
+      return (
+        user.firstname.charAt(0).toUpperCase() +
+        user.lastname.charAt(0).toUpperCase()
+      );
+    }
   };
 
-  const getAvatarSrc = () => {
-    if (!user.profilePicture) return null;
-    return `data:image/png;base64,${user.profilePicture}`;
+  const profilePictureOf = () => {
+    if (!user.profilePicture) {
+      return null;
+    } else {
+      return `data:image/png;base64,${user.profilePicture}`;
+    }
   };
 
   const handleFirstname = (value) => {
@@ -224,7 +222,7 @@ const SettingsPage = () => {
                   }}
                 >
                   <Avatar
-                    src={getAvatarSrc()}
+                    src={profilePictureOf()}
                     sx={{
                       width: 130,
                       height: 130,
@@ -232,7 +230,7 @@ const SettingsPage = () => {
                       fontSize: "4rem",
                     }}
                   >
-                    {!user.profilePicture && getInitials()}
+                    {!user.profilePicture && initialsOf()}
                   </Avatar>
                 </Box>
 

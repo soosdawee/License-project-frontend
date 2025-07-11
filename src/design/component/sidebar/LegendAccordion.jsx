@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext } from "react";
 import {
   Accordion,
   AccordionSummary,
@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { VisualizationContext } from "../state/context/VisualizationContext";
-import { setShowLegend, setTransitionTime } from "../state/context/actions";
+import { setShowLegend } from "../state/context/actions";
 
 const LegendAccordion = () => {
   const { state, dispatch } = useContext(VisualizationContext);

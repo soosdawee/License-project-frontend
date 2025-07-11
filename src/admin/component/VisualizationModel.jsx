@@ -20,7 +20,9 @@ const VisualizationModel = () => {
   };
 
   const handleUpload = async () => {
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     const token = localStorage.jwt;
 

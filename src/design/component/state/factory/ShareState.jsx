@@ -1,4 +1,4 @@
-import React, { useContext, useState, Suspense, useRef } from "react";
+import { useContext, Suspense, useRef } from "react";
 import { VisualizationContext } from "../context/VisualizationContext";
 import { Box, Button, Typography } from "@mui/material";
 import backend from "../../../../data-access/Backend";
@@ -8,7 +8,6 @@ import DownloadIcon from "@mui/icons-material/Download";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import UnpublishedIcon from "@mui/icons-material/Unpublished";
-import CheckIcon from "@mui/icons-material/Check";
 import ShareIcon from "@mui/icons-material/Share";
 import html2canvas from "html2canvas";
 import RendererFactory from "../../renderer/RendererFactory";

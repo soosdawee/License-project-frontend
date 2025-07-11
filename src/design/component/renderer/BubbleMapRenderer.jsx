@@ -7,11 +7,12 @@ import northAmericaGeoData from "../ui/northamericageo.json";
 import southAmericaGeoData from "../ui/southamericageo.json";
 import ColorPalettes from "../ui/ColorPalettes";
 
-const fallbackColorScale = ["#B9EDDD", "#87CBB9", "#569DAA", "#577D86"];
+const worstCaseColors = ["#B9EDDD", "#87CBB9", "#569DAA", "#577D86"];
 
 const BubbleMapRenderer = ({ state }) => {
   const containerRef = useRef();
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [containerWidth, setContainerWidth] = useState(600);
+  const [containerHieght, setContainerHeight] = useState(400);
 
   const getGeoData = () => {
     if (state.vizType === "ASIA_BUBBLE" || state.visualizationModelId === 45) {
@@ -44,7 +45,8 @@ const BubbleMapRenderer = ({ state }) => {
     const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
         const { width, height } = entry.contentRect;
-        setDimensions({ width, height });
+        setContainerHeight(height);
+        setContainerWidth(width);
       }
     });
     observer.observe(containerRef.current);
@@ -52,7 +54,7 @@ const BubbleMapRenderer = ({ state }) => {
   }, []);
 
   useEffect(() => {
-    if (!dimensions.width || !dimensions.height) return;
+    if (!containerWidth || !containerHieght) return;
 
     const {
       title = "",
@@ -68,11 +70,10 @@ const BubbleMapRenderer = ({ state }) => {
       showAnnotations = false,
       customAnnotation = "",
       customColors = "",
-      bubbleColor = "#3498db", // Default bubble color
-      barColor = "#3498db", // Default bar color (used for bubble coloring)
+      bubbleColor = "#3498db",
       bubbleOpacity = 0.7,
-      maxBubbleRadius = 12, // Reduced maximum bubble radius
-      minBubbleRadius = 2, // Reduced minimum bubble radius
+      maxBubbleRadius = 12,
+      minBubbleRadius = 2,
     } = state;
 
     const titleMargin = title ? titleSize * 1.5 : 0;
@@ -82,8 +83,8 @@ const BubbleMapRenderer = ({ state }) => {
     const topOffset = 20 + titleMargin + articleMargin;
     const bottomOffset = footerMargin;
 
-    const width = dimensions.width;
-    const height = dimensions.height;
+    const width = containerWidth;
+    const height = containerHieght;
 
     const svg = d3.select(containerRef.current).select("svg");
     svg.selectAll("*").remove();
@@ -113,21 +114,19 @@ const BubbleMapRenderer = ({ state }) => {
     const pathGenerator = d3.geoPath().projection(projection);
     let active = d3.select(null);
 
-    // Render the base map (all countries)
     g.selectAll("path")
       .data(customGeoData.features)
       .enter()
       .append("path")
       .attr("d", pathGenerator)
       .attr("class", "country")
-      .attr("fill", "#f0f0f0") // Light gray for all countries
+      .attr("fill", "#f0f0f0")
       .attr("stroke", "#ccc")
       .attr("stroke-width", 0.5)
       .on("click", handleZoom);
 
     const data = state?.data || [];
 
-    // Parse the bubble data (name, value, latitude, longitude, note)
     const bubbleData = data
       .map((row) => ({
         name: row[0],
@@ -161,7 +160,7 @@ const BubbleMapRenderer = ({ state }) => {
 
     const customColorOverrides = parseCustomColors(customColors);
 
-    const colors = ColorPalettes[paletteKey]?.colors || fallbackColorScale;
+    const colors = ColorPalettes[paletteKey]?.colors || worstCaseColors;
 
     const colorScale = d3
       .scaleSequential(d3.interpolateBlues)
@@ -172,15 +171,15 @@ const BubbleMapRenderer = ({ state }) => {
       tooltip = d3
         .select(containerRef.current)
         .append("div")
-        .attr("class", "tooltip")
         .style("position", "absolute")
+        .attr("class", "tooltip")
+        .style("color", "#fff")
         .style("padding", "8px 10px")
         .style("background", "rgba(0,0,0,0.8)")
-        .style("color", "#fff")
-        .style("border-radius", "4px")
         .style("pointer-events", "none")
-        .style("font-size", "12px")
         .style("visibility", "hidden")
+        .style("border-radius", "4px")
+        .style("font-size", "12px")
         .style("z-index", "1000");
     }
 
@@ -194,11 +193,11 @@ const BubbleMapRenderer = ({ state }) => {
         const coords = projection([d.longitude, d.latitude]);
         return coords ? coords[0] : 0;
       })
+      .attr("r", (d) => radiusScale(d.value))
       .attr("cy", (d) => {
         const coords = projection([d.longitude, d.latitude]);
         return coords ? coords[1] : 0;
       })
-      .attr("r", (d) => radiusScale(d.value))
       .attr("fill", (d) => {
         if (customColorOverrides[d.name]) {
           return customColorOverrides[d.name];
@@ -293,23 +292,23 @@ const BubbleMapRenderer = ({ state }) => {
 
     svg
       .append("rect")
-      .attr("class", "background")
-      .attr("width", width)
       .attr("height", height)
+      .attr("width", width)
       .attr("fill", "transparent")
+      .attr("class", "background")
       .lower()
       .on("click", resetZoom);
 
     if (title) {
       svg
         .append("text")
-        .attr("x", 20)
-        .attr("y", titleSize)
+        .style("fill", textColor)
         .attr("text-anchor", "start")
+        .style("font-family", font)
         .style("font-size", `${titleSize}px`)
         .style("font-weight", "bold")
-        .style("font-family", font)
-        .style("fill", textColor)
+        .attr("x", 20)
+        .attr("y", titleSize)
         .style("z-index", "1000")
         .text(title);
     }
@@ -324,12 +323,12 @@ const BubbleMapRenderer = ({ state }) => {
         .attr("height", articleMargin)
         .style("z-index", "1000")
         .append("xhtml:div")
-        .style("font-size", `${articleSize}px`)
         .style("font-family", font)
-        .style("color", textColor)
-        .style("line-height", `${articleSize * 1.4}px`)
-        .style("text-align", "left")
+        .style("font-size", `${articleSize}px`)
         .style("padding", "5px")
+        .style("color", textColor)
+        .style("text-align", "left")
+        .style("line-height", `${articleSize * 1.4}px`)
         .style("border-radius", "3px")
         .html(article);
     }
@@ -337,17 +336,17 @@ const BubbleMapRenderer = ({ state }) => {
     if (isFooter && footerText) {
       svg
         .append("text")
+        .style("font-weight", "normal")
+        .style("font-family", font)
+        .style("font-size", "14px")
+        .attr("text-anchor", "start")
+        .style("fill", textColor)
         .attr("x", 20)
         .attr("y", height - 15)
-        .attr("text-anchor", "start")
-        .style("font-size", "14px")
-        .style("font-family", font)
-        .style("fill", textColor)
-        .style("font-weight", "normal")
         .style("z-index", "1000")
         .text(footerText);
     }
-  }, [state, dimensions, customGeoData]);
+  }, [state, containerHieght, containerWidth, customGeoData]);
 
   const data = state?.data || [];
   const bubbleData = data
@@ -386,9 +385,7 @@ const BubbleMapRenderer = ({ state }) => {
             zIndex: 100,
           }}
         >
-          <div style={{ fontWeight: "bold", marginBottom: "8px" }}>
-            Bubble Size Legend
-          </div>
+          <div style={{ fontWeight: "bold", marginBottom: "8px" }}>Legend</div>
           <div
             style={{
               display: "flex",
@@ -399,12 +396,12 @@ const BubbleMapRenderer = ({ state }) => {
           >
             <div
               style={{
-                width: "8px",
-                height: "8px",
+                opacity: state.bubbleOpacity || 0.7,
                 backgroundColor:
                   state.barColor || state.bubbleColor || "#3498db",
                 borderRadius: "50%",
-                opacity: state.bubbleOpacity || 0.7,
+                width: "8px",
+                height: "8px",
               }}
             />
             <span>Min: {valueExtent[0]}</span>
@@ -412,12 +409,13 @@ const BubbleMapRenderer = ({ state }) => {
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <div
               style={{
-                width: "16px",
-                height: "16px",
+                opacity: state.bubbleOpacity || 0.7,
                 backgroundColor:
                   state.barColor || state.bubbleColor || "#3498db",
+                width: "16px",
+                height: "16px",
+
                 borderRadius: "50%",
-                opacity: state.bubbleOpacity || 0.7,
               }}
             />
             <span>Max: {valueExtent[1]}</span>

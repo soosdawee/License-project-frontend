@@ -16,7 +16,6 @@ import {
   setArticle,
 } from "../state/context/actions";
 import { VisualizationContext } from "../state/context/VisualizationContext";
-import { text } from "d3";
 
 const TitleAccordion = () => {
   const { state, dispatch } = useContext(VisualizationContext);

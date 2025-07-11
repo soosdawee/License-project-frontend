@@ -1,26 +1,33 @@
-import React from "react";
-import { Avatar, Typography, Box } from "@mui/material";
+import { Avatar, Box } from "@mui/material";
 
 const ProfileBackgroundComponent = ({ user, avatarSx = {} }) => {
-  if (!user) return null;
+  if (!user) {
+    return null;
+  }
 
-  const getInitials = () => {
-    if (!user.firstname || !user.lastname) return "";
-    return (
-      user.firstname.charAt(0).toUpperCase() +
-      user.lastname.charAt(0).toUpperCase()
-    );
+  const initialsOf = () => {
+    if (!user.firstname || !user.lastname) {
+      return "";
+    } else {
+      return (
+        user.firstname.charAt(0).toUpperCase() +
+        user.lastname.charAt(0).toUpperCase()
+      );
+    }
   };
 
-  const getAvatarSrc = () => {
-    if (!user.profilePicture) return null;
-    return `data:image/png;base64,${user.profilePicture}`;
+  const profilePictureOf = () => {
+    if (!user.profilePicture) {
+      return null;
+    } else {
+      return `data:image/png;base64,${user.profilePicture}`;
+    }
   };
 
   return (
     <Box sx={{ textAlign: "center" }}>
       <Avatar
-        src={getAvatarSrc()}
+        src={profilePictureOf()}
         sx={{
           width: 130,
           height: "auto",
@@ -32,7 +39,7 @@ const ProfileBackgroundComponent = ({ user, avatarSx = {} }) => {
           ...avatarSx,
         }}
       >
-        {!user.profilePicture && getInitials()}
+        {!user.profilePicture && initialsOf()}
       </Avatar>
     </Box>
   );

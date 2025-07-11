@@ -66,18 +66,23 @@ const RequestComponent = ({ refreshKey, setRefreshKey }) => {
     );
   }
 
-  const getInitials = (user) => {
+  const intialsOf = (user) => {
     if (!user) return null;
-    if (!user.firstname || !user.lastname) return "";
+    if (!user.firstname || !user.lastname) {
+      return "";
+    }
     return (
       user.firstname.charAt(0).toUpperCase() +
       user.lastname.charAt(0).toUpperCase()
     );
   };
 
-  const getAvatarSrc = (user) => {
-    if (!user) return null;
-    return `data:image/png;base64,${user.profilePicture}`;
+  const profilePictureOf = (user) => {
+    if (!user) {
+      return null;
+    } else {
+      return `data:image/png;base64,${user.profilePicture}`;
+    }
   };
 
   return (
@@ -109,10 +114,10 @@ const RequestComponent = ({ refreshKey, setRefreshKey }) => {
               }}
             >
               <Avatar
-                src={getAvatarSrc(req)}
+                src={profilePictureOf(req)}
                 sx={{ display: "flex", alignItems: "center", gap: 2 }}
               >
-                {!req?.profilePicture && getInitials(req)}
+                {!req?.profilePicture && intialsOf(req)}
               </Avatar>
               <Typography variant="h6">
                 {req.firstname} {req.lastname}

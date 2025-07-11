@@ -8,7 +8,7 @@ import ReviewedVisualizationsComponent from "../component/ReviewedVisualizationC
 const AdminDashboard = () => {
   const [selectedSection, setSelectedSection] = useState("models");
 
-  const renderContent = () => {
+  const getCondtionalContent = () => {
     switch (selectedSection) {
       case "models":
         return <VisualizationModel />;
@@ -127,7 +127,7 @@ const AdminDashboard = () => {
             overflowY: "auto",
           }}
         >
-          {renderContent()}
+          {getCondtionalContent()}
         </Box>
       </Box>
     </Box>

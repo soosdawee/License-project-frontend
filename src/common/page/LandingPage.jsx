@@ -27,7 +27,6 @@ const LandingPage = () => {
         flexDirection: "column",
       }}
     >
-      {/* Fixed Transparent Navbar */}
       <Box
         sx={{
           position: "fixed",
@@ -41,11 +40,10 @@ const LandingPage = () => {
         <TransparentNavbar />
       </Box>
 
-      {/* Hero Section */}
       <Box
         sx={{
           position: "relative",
-          height: "100vh", // full viewport height
+          height: "100vh",
           width: "100%",
           display: "flex",
           flexDirection: "row",

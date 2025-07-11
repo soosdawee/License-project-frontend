@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { Box, MenuItem, Select } from "@mui/material";
 import ColorPalettes from "../ui/ColorPalettes";
@@ -7,42 +7,49 @@ const ElectionDonutRenderer = ({ state }) => {
   const wrapperRef = useRef();
   const svgRef = useRef();
   const tooltipRef = useRef();
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [containerWidth, setContainerWidth] = useState(600);
+  const [containerHieght, setContainerHeight] = useState(400);
 
-  const headers = state.data?.[0]?.slice(1) || [];
-  const allRows = state.data?.slice(1) || [];
+  const columnHeaders = state.data?.[0]?.slice(1) || [];
+  const data = state.data?.slice(1) || [];
 
-  const rows = allRows.filter((row) => {
-    const hasValidName = row[0] && row[0].toString().trim() !== "";
-    const hasValidValues = headers.some((_, i) => {
+  const rows = data.filter((row) => {
+    const hasValidValues = columnHeaders.some((_, i) => {
       const val = Number(row[i + 1]);
       return !isNaN(val) && val > 0;
     });
-    return hasValidName && hasValidValues;
+    const areValuesValid = row[0]?.toString().trim() !== "" && row[0];
+    return areValuesValid && hasValidValues;
   });
 
   const [selectedRegion, setSelectedRegion] = useState(rows[0]?.[0] || "");
-  const [visibleParties, setVisibleParties] = useState(new Set(headers));
+  const [visibleEntities, setVisibleEntities] = useState(
+    new Set(columnHeaders)
+  );
   const selectedRow = rows.find((row) => row[0] === selectedRegion);
 
-  const allPartiesWithData = headers.filter((header, i) => {
+  const allPartiesWithData = columnHeaders.filter((header, i) => {
     const val = Number(selectedRow?.[i + 1]);
     return !isNaN(val) && val > 0;
   });
 
-  const values = headers
+  const values = columnHeaders
     .map((header, i) => ({
       party: header,
       value: Number(selectedRow?.[i + 1]) || 0,
     }))
-    .filter((d) => visibleParties.has(d.party));
+    .filter((d) => visibleEntities.has(d.party));
 
   const paletteColors =
     ColorPalettes[state.colorPalette]?.colors || ColorPalettes.vibrant.colors;
 
-  const parseCustomColors = (input) => {
+  const customColorOverrides = (input) => {
+    if (!input) {
+      return {};
+    }
+
     const result = {};
-    if (!input) return result;
+
     input.split(",").forEach((entry) => {
       const [label, color] = entry.split(":").map((s) => s.trim());
       if (label && /^#[0-9A-Fa-f]{3,6}$/.test(color)) {
@@ -55,30 +62,32 @@ const ElectionDonutRenderer = ({ state }) => {
     return result;
   };
 
-  const getContrastingTextColor = (hexColor) => {
-    hexColor = hexColor?.replace("#", "");
+  const findContrast = (hexColor) => {
+    hexColor = hexColor?.substring(1);
+
     if (hexColor?.length === 3) {
       hexColor = hexColor
         .split("")
         .map((c) => c + c)
         .join("");
     }
-    const r = parseInt(hexColor?.substr(0, 2), 16) / 255;
-    const g = parseInt(hexColor?.substr(2, 2), 16) / 255;
-    const b = parseInt(hexColor?.substr(4, 2), 16) / 255;
-    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-    return luminance > 0.5 ? "#000000" : "#ffffff";
+
+    const luminance =
+      (0.299 * parseInt(hexColor?.substr(0, 2), 16)) / 255 +
+      (0.587 * parseInt(hexColor?.substr(2, 2), 16)) / 255 +
+      (0.114 * parseInt(hexColor?.substr(4, 2), 16)) / 255;
+    return luminance < 0.5 ? "#ffffff" : "#000000";
   };
 
-  const customColorMap = parseCustomColors(state.customColors);
-  const colorMap = headers.reduce((map, header, i) => {
+  const colors = customColorOverrides(state.customColors);
+  const colorMap = columnHeaders.reduce((map, header, i) => {
     map[header] =
-      customColorMap[header?.replace(/\s+/g, "")] ||
+      colors[header?.replace(/\s+/g, "")] ||
       paletteColors[i % paletteColors.length];
     return map;
   }, {});
 
-  const generateTooltipContent = (party, value, total) => {
+  const handleAnnotation = (party, value, total) => {
     if (!state.showAnnotations) return "";
     if (state.customAnnotation && state.customAnnotation.trim() !== "") {
       let content = state.customAnnotation;
@@ -101,22 +110,28 @@ const ElectionDonutRenderer = ({ state }) => {
   };
 
   const showTooltip = (party, value, total, event) => {
-    if (!state.showAnnotations || !tooltipRef.current) return;
+    if (!state.showAnnotations || !tooltipRef.current) {
+      return;
+    }
     const tooltip = tooltipRef.current;
-    tooltip.innerHTML = generateTooltipContent(party, value, total);
+    tooltip.innerHTML = handleAnnotation(party, value, total);
     tooltip.style.display = "block";
     tooltip.style.opacity = "1";
     updateTooltipPosition(event);
   };
 
   const hideTooltip = () => {
-    if (!tooltipRef.current) return;
-    tooltipRef.current.style.display = "none";
+    if (!tooltipRef.current) {
+      return;
+    }
     tooltipRef.current.style.opacity = "0";
+    tooltipRef.current.style.display = "none";
   };
 
   const updateTooltipPosition = (event) => {
-    if (!tooltipRef.current || !wrapperRef.current) return;
+    if (!tooltipRef.current || !wrapperRef.current) {
+      return;
+    }
     const tooltip = tooltipRef.current;
     const wrapper = wrapperRef.current;
     const rect = wrapper.getBoundingClientRect();
@@ -143,49 +158,62 @@ const ElectionDonutRenderer = ({ state }) => {
   };
 
   useEffect(() => {
-    if (!state || !dimensions.width || !dimensions.height) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setContainerHeight(height);
+      setContainerWidth(width);
+    });
+    if (wrapperRef.current) observer.observe(wrapperRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!state || !containerWidth || !containerHieght) {
+      return;
+    }
 
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    const fontFamily = state.font || "Arial, sans-serif";
-    const titleFontSize = state.titleSize || 20;
-    const articleFontSize = state.articleSize || 14;
     const textColor = state.textColor || "#000000";
+    const font = state.font || "Arial, sans-serif";
+    const titleSize = state.titleSize || 20;
+    const articleSzie = state.articleSize || 14;
 
     let topOffset = 0;
     if (state.title) {
       svg
         .append("text")
         .attr("x", 10)
-        .attr("y", titleFontSize)
-        .style("font-size", `${titleFontSize}px`)
-        .style("font-weight", "bold")
-        .style("font-family", fontFamily)
+        .attr("y", titleSize)
         .style("fill", textColor)
+        .style("font-size", `${titleSize}px`)
+        .style("font-family", font)
+        .style("font-weight", "bold")
         .text(state.title);
-      topOffset += titleFontSize + 10;
+      topOffset += titleSize + 10;
     }
 
+    //SZITU
     if (state.article) {
-      const articleHeight = articleFontSize * 2.5;
+      const articleHeight = articleSzie * 2.5;
       svg
         .append("foreignObject")
         .attr("x", 10)
         .attr("y", topOffset)
-        .attr("width", dimensions.width - 20)
+        .attr("width", containerWidth - 20)
         .attr("height", articleHeight)
         .append("xhtml:div")
-        .style("font-size", `${articleFontSize}px`)
-        .style("font-family", fontFamily)
         .style("color", textColor)
-        .style("line-height", `${articleFontSize * 1.5}px`)
+        .style("font-family", font)
+        .style("line-height", `${articleSzie * 1.5}px`)
+        .style("font-size", `${articleSzie}px`)
         .style("text-align", "left")
         .html(state.article);
       topOffset += articleHeight + 10;
     }
 
-    const bottomOffset = state.isFooter ? articleFontSize * 3 + 10 : 0;
+    const bottomOffset = state.isFooter ? articleSzie * 2 : 0;
     const margin = {
       top: topOffset + 20,
       right: 30,
@@ -193,31 +221,28 @@ const ElectionDonutRenderer = ({ state }) => {
       left: 30,
     };
 
-    const width = dimensions.width - margin.left - margin.right;
-    const height = dimensions.height - margin.top - margin.bottom;
+    const width = containerWidth - margin.left - margin.right;
+    const height = containerHieght - margin.top - margin.bottom;
 
     const g = svg
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Calculate donut dimensions - half circle centered and maximized
-    const centerX = width / 2; // Center horizontally
-    const centerY = height; // Position near bottom to maximize semicircle size
-    const radius = Math.min(width / 2, height - 40); // Maximum radius that fits
+    const centerX = width / 2;
+    const centerY = height;
+    const radius = Math.min(width / 2, height - 40);
     const innerRadius = radius * 0.4;
 
     const total = d3.sum(values, (d) => d.value);
     const filteredValues = values.filter((d) => d.value > 0);
 
-    // Create pie generator for half donut (semicircle) centered and maximized
     const pie = d3
       .pie()
       .value((d) => d.value)
-      .startAngle(-Math.PI / 2) // Start at top (-90 degrees)
-      .endAngle(Math.PI / 2) // End at bottom (90 degrees) - half circle
+      .startAngle(-Math.PI / 2)
+      .endAngle(Math.PI / 2)
       .sort(null);
 
-    // Create arc generator
     const arc = d3.arc().innerRadius(innerRadius).outerRadius(radius);
 
     const arcHover = d3
@@ -225,7 +250,6 @@ const ElectionDonutRenderer = ({ state }) => {
       .innerRadius(innerRadius)
       .outerRadius(radius + 5);
 
-    // Create the donut segments
     const arcs = g
       .selectAll(".arc")
       .data(pie(filteredValues))
@@ -234,17 +258,15 @@ const ElectionDonutRenderer = ({ state }) => {
       .attr("class", "arc")
       .attr("transform", `translate(${centerX}, ${centerY})`);
 
-    // Add the segments
     const paths = arcs
       .append("path")
       .attr("d", arc)
       .attr("fill", (d) => colorMap[d.data.party])
       .attr("opacity", 0.9)
       .style("cursor", state.showAnnotations ? "pointer" : "default")
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 2);
+      .attr("stroke-width", 2)
+      .attr("stroke", "#fff");
 
-    // Add animations
     paths
       .transition()
       .duration(800)
@@ -259,41 +281,35 @@ const ElectionDonutRenderer = ({ state }) => {
         };
       });
 
-    // Add labels
     arcs.each(function (d) {
       const arcGroup = d3.select(this);
       const [labelX, labelY] = arc.centroid(d);
       const segmentColor = colorMap[d.data.party];
-      const labelColor = getContrastingTextColor(segmentColor);
+      const lableColour = findContrast(segmentColor);
 
-      // Only add labels if segment is large enough
       const segmentAngle = d.endAngle - d.startAngle;
       if (segmentAngle > 0.1) {
-        // Minimum angle threshold
-
-        // Party name
         arcGroup
           .append("text")
+          .style("opacity", 0)
           .attr("transform", `translate(${labelX}, ${labelY - 7})`)
           .attr("text-anchor", "middle")
-          .attr("fill", labelColor)
-          .style("font-size", "12px")
+          .attr("fill", lableColour)
           .style("font-weight", "bold")
-          .style("opacity", 0)
+          .style("font-size", "12px")
           .text(d.data.party)
           .transition()
           .duration(400)
           .delay(600)
           .style("opacity", 1);
 
-        // Percentage
         arcGroup
           .append("text")
-          .attr("transform", `translate(${labelX}, ${labelY + 7})`)
-          .attr("text-anchor", "middle")
-          .attr("fill", labelColor)
-          .style("font-size", "11px")
           .style("opacity", 0)
+          .attr("text-anchor", "middle")
+          .attr("transform", `translate(${labelX}, ${labelY + 7})`)
+          .attr("fill", lableColour)
+          .style("font-size", "11px")
           .text(`${((d.data.value / total) * 100).toFixed(1)}%`)
           .transition()
           .duration(400)
@@ -302,7 +318,6 @@ const ElectionDonutRenderer = ({ state }) => {
       }
     });
 
-    // Add hover effects and tooltips
     if (state.showAnnotations) {
       arcs
         .on("mouseenter", function (event, d) {
@@ -330,7 +345,6 @@ const ElectionDonutRenderer = ({ state }) => {
         });
     }
 
-    // Add interactive legend for filtering parties (only if showLegend is enabled)
     if (state.showLegend) {
       const legend = g
         .append("g")
@@ -351,8 +365,8 @@ const ElectionDonutRenderer = ({ state }) => {
         .attr("width", 10)
         .attr("height", 10)
         .attr("fill", (d) => colorMap[d])
-        .attr("opacity", (d) => (visibleParties.has(d) ? 0.9 : 0.3))
-        .attr("stroke", (d) => (visibleParties.has(d) ? "none" : "#666"))
+        .attr("opacity", (d) => (visibleEntities.has(d) ? 0.9 : 0.3))
+        .attr("stroke", (d) => (visibleEntities.has(d) ? "none" : "#666"))
         .attr("stroke-width", 1);
 
       legendItems
@@ -360,26 +374,25 @@ const ElectionDonutRenderer = ({ state }) => {
         .attr("x", 20)
         .attr("y", 6)
         .attr("dy", "0.35em")
+        .style("font-family", font)
         .style("font-size", "12px")
-        .style("font-family", fontFamily)
-        .style("fill", (d) => (visibleParties.has(d) ? textColor : "#999"))
+        .style("fill", (d) => (visibleEntities.has(d) ? textColor : "#999"))
         .style("font-weight", (d) =>
-          visibleParties.has(d) ? "normal" : "lighter"
+          visibleEntities.has(d) ? "normal" : "lighter"
         )
         .text((d) => {
-          const partyValue = selectedRow?.[headers.indexOf(d) + 1] || 0;
+          const partyValue = selectedRow?.[columnHeaders.indexOf(d) + 1] || 0;
           return `${d} (${Number(partyValue).toLocaleString()})`;
         });
 
-      // Add click handlers for legend items
       legendItems.on("click", function (event, d) {
-        const newVisibleParties = new Set(visibleParties);
+        const newVisibleParties = new Set(visibleEntities);
         if (newVisibleParties.has(d)) {
           newVisibleParties.delete(d);
         } else {
           newVisibleParties.add(d);
         }
-        setVisibleParties(newVisibleParties);
+        setVisibleEntities(newVisibleParties);
       });
     }
 
@@ -387,34 +400,26 @@ const ElectionDonutRenderer = ({ state }) => {
       svg
         .append("foreignObject")
         .attr("x", 10)
-        .attr("y", dimensions.height - bottomOffset + 10)
-        .attr("width", dimensions.width - 20)
-        .attr("height", articleFontSize * 3)
+        .attr("y", containerHieght - bottomOffset + 10)
+        .attr("width", containerWidth - 20)
+        .attr("height", articleSzie * 3)
         .append("xhtml:div")
-        .style("font-size", `${articleFontSize}px`)
-        .style("font-family", fontFamily)
+        .style("font-family", font)
+        .style("font-size", `${articleSzie - 3}px`)
+        .style("line-height", `${articleSzie * 1.5}px`)
         .style("color", textColor)
-        .style("line-height", `${articleFontSize * 1.5}px`)
         .style("text-align", "left")
         .html(state.footerText);
     }
   }, [
     state,
-    dimensions,
+    containerHieght,
+    containerWidth,
     selectedRegion,
-    customColorMap,
+    colors,
     colorMap,
-    visibleParties,
+    visibleEntities,
   ]);
-
-  useEffect(() => {
-    const observer = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
-      setDimensions({ width, height });
-    });
-    if (wrapperRef.current) observer.observe(wrapperRef.current);
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <Box

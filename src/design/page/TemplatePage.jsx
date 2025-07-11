@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button, Typography, Box, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import backend from "../../data-access/Backend";
@@ -30,7 +30,7 @@ const TemplatePage = () => {
       <Navbar />
       <Box
         name="charts-page"
-        sx={{ padding: "0 10%", backgroundColor: "#f9f9f9" }}
+        sx={{ padding: "0 10%", backgroundColor: "#f9f9f9", height: "90.1%" }}
       >
         <Typography
           variant="h4"
@@ -39,6 +39,7 @@ const TemplatePage = () => {
             fontSize: "2.5rem",
             fontWeight: "bold",
             color: "#001f47",
+            height: "10%",
           }}
         >
           Choose a chart or a map!

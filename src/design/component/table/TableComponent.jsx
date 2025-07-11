@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useContext, useMemo } from "react";
+import { useEffect, useRef, useContext, useMemo } from "react";
 import { HotTable } from "@handsontable/react";
 import "handsontable/dist/handsontable.full.min.css";
 import { registerAllModules } from "handsontable/registry";
@@ -12,8 +12,10 @@ const estimateTextWidth = (text, font = "14px Arial") => {
   return context.measureText(text).width + 20;
 };
 
-const calculateColWidths = (data, columnHeaders) => {
-  if (!Array.isArray(data) || data.length === 0) return [];
+const getWidthsOfColumns = (data, columnHeaders) => {
+  if (!Array.isArray(data) || data.length === 0) {
+    return [];
+  }
 
   const numCols = data[0].length;
   const widths = new Array(numCols).fill(50);
@@ -52,12 +54,14 @@ const TableComponent = ({ visualizationModel, isFirst }) => {
   }, []);
 
   const colWidths = useMemo(
-    () => calculateColWidths(state.data, visualizationModel.columnNames),
+    () => getWidthsOfColumns(state.data, visualizationModel.columnNames),
     [state.data, visualizationModel.columnNames]
   );
 
   const columnSettings = useMemo(() => {
-    if (!visualizationModel.columnNames) return [];
+    if (!visualizationModel.columnNames) {
+      return [];
+    }
 
     return visualizationModel.columnNames.map((header) => {
       const lower = header.toLowerCase();
@@ -108,9 +112,13 @@ const TableComponent = ({ visualizationModel, isFirst }) => {
         overflow: "hidden",
       }}
       afterChange={(changes, source) => {
-        if (source === "loadData" || !changes || isReadOnly) return;
+        if (source === "loadData" || !changes || isReadOnly) {
+          return;
+        }
         const hotInstance = hotTableRef.current?.hotInstance;
-        if (!hotInstance) return;
+        if (!hotInstance) {
+          return;
+        }
         const rawData = hotInstance.getData();
         if (isFirst) {
           dispatch(setData(rawData));

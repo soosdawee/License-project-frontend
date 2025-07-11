@@ -5,24 +5,25 @@ import { PlayArrow, Pause } from "@mui/icons-material";
 import ColorPalettes from "../ui/ColorPalettes";
 
 const RaceRenderer = ({ state }) => {
-  const wrapperRef = useRef();
-  const svgRef = useRef();
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const containerRef = useRef();
+  const ref = useRef();
+  const [containerWidth, setContainerWidth] = useState(600);
+  const [containerHieght, setContainerHeight] = useState(400);
   const [valueIndex, setValueIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeFilters, setActiveFilters] = useState(new Set());
 
-  const rawHeaders = state.data?.[0]?.slice(2) || [];
-  const rows = state.data?.slice(1) || [];
+  const rawColumnHeaders = state.data?.[0]?.slice(2) || [];
+  const content = state.data?.slice(1) || [];
 
   const allFilters = Array.from(
-    new Set(rows.map((row) => row[1]).filter(Boolean))
+    new Set(content.map((row) => row[1]).filter(Boolean))
   );
   useEffect(() => {
     setActiveFilters(new Set(allFilters));
   }, [state.data]);
 
-  const dataSeries = rows
+  const series = content
     .map(([name, filter, ...values]) => ({
       name,
       filter,
@@ -33,26 +34,24 @@ const RaceRenderer = ({ state }) => {
     .filter((d) => d.name && d.name.trim() !== "")
     .filter((d) => d.values.some((v) => typeof v === "number" && !isNaN(v)));
 
-  const validColumnIndices = rawHeaders
+  const columnHeaders = rawColumnHeaders
     .map((header, i) => ({
       index: i,
       hasHeader: !!header && header.trim() !== "",
-      hasValue: dataSeries.some(
+      hasValue: series.some(
         (d) => typeof d.values[i] === "number" && !isNaN(d.values[i])
       ),
     }))
     .filter((col) => col.hasHeader && col.hasValue)
     .map((col) => col.index);
 
-  const headers = validColumnIndices.map((i) => rawHeaders[i]);
-  const valueColumnCount = validColumnIndices.length;
-  const selectedIndex = validColumnIndices[valueIndex];
+  const headers = columnHeaders.map((i) => rawColumnHeaders[i]);
+  const valueColumnCount = columnHeaders.length;
+  const selectedIndex = columnHeaders[valueIndex];
 
-  const filteredDataSeries = dataSeries.filter((d) =>
-    activeFilters.has(d.filter)
-  );
+  const filtered = series.filter((d) => activeFilters.has(d.filter));
 
-  const currentData = filteredDataSeries
+  const currentData = filtered
     .map((d) => ({
       name: d.name,
       value: d.values[selectedIndex] ?? null,
@@ -61,31 +60,34 @@ const RaceRenderer = ({ state }) => {
     .filter((d) => typeof d.value === "number" && !isNaN(d.value))
     .sort((a, b) => b.value - a.value);
 
-  const allSeriesNames = dataSeries.map((d) => d.name);
+  const allSeries = series.map((d) => d.name);
 
   const paletteColors =
     ColorPalettes[state.colorPalette]?.colors || ColorPalettes.vibrant.colors;
 
   const colorMapping = {};
-  allSeriesNames.forEach((name, index) => {
+  allSeries.forEach((name, index) => {
     colorMapping[name] = paletteColors[index % paletteColors.length];
   });
 
   useEffect(() => {
     const observer = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect;
-      setDimensions({ width, height });
+      setContainerHeight(height);
+      setContainerWidth(width);
     });
-    if (wrapperRef.current) observer.observe(wrapperRef.current);
+    if (containerRef.current) observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    if (!state || !dimensions.width || !dimensions.height) return;
+    if (!state || !containerWidth || !containerHieght) {
+      return;
+    }
 
-    const svg = d3.select(svgRef.current);
-    const width = dimensions.width;
-    const height = dimensions.height;
+    const svg = d3.select(ref.current);
+    const width = containerWidth;
+    const height = containerHieght;
 
     const titleHeight = state.title ? (state.titleSize || 40) + 10 : 0;
     const articleHeight = state.article ? 70 : 0;
@@ -102,14 +104,14 @@ const RaceRenderer = ({ state }) => {
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
-    const fontFamily = state.font || "Arial, sans-serif";
-    const textColor = state.textColor || "#000000";
-    const titleFontSize = state.titleSize || 40;
-    const articleFontSize = state.articleSize || 16;
     const barSpacing = Math.min(Math.max(state.barSpacing / 100, 0), 1);
     const barOpacity = Math.min(Math.max(state.opacity / 100, 0), 1);
+    const font = state.font || "Arial, sans-serif";
+    const textColor = state.textColor || "#000000";
+    const titleSzie = state.titleSize || 40;
+    const articleSize = state.articleSize || 16;
 
-    const customColorMap = (state.customBarColors || "")
+    const customColors = (state.customBarColors || "")
       .split(",")
       .reduce((acc, pair) => {
         const [key, color] = pair.split(":").map((s) => s.trim());
@@ -160,7 +162,7 @@ const RaceRenderer = ({ state }) => {
       .call(d3.axisLeft(y))
       .selectAll("text")
       .style("fill", textColor)
-      .style("font-family", fontFamily);
+      .style("font-family", font);
 
     group
       .append("g")
@@ -169,7 +171,7 @@ const RaceRenderer = ({ state }) => {
       .call(d3.axisBottom(x).ticks(5))
       .selectAll("text")
       .style("fill", textColor)
-      .style("font-family", fontFamily);
+      .style("font-family", font);
 
     const bars = group.selectAll("rect.bar").data(currentData, (d) => d.name);
 
@@ -185,7 +187,7 @@ const RaceRenderer = ({ state }) => {
           .attr(
             "fill",
             (d) =>
-              customColorMap[d.name] ||
+              customColors[d.name] ||
               colorMapping[d.name] ||
               state.barColor ||
               "#600002"
@@ -204,7 +206,7 @@ const RaceRenderer = ({ state }) => {
           .attr(
             "fill",
             (d) =>
-              customColorMap[d.name] ||
+              customColors[d.name] ||
               colorMapping[d.name] ||
               state.barColor ||
               "#600002"
@@ -220,11 +222,11 @@ const RaceRenderer = ({ state }) => {
         .append("text")
         .attr("class", "static-text")
         .attr("x", 20)
-        .attr("y", titleFontSize)
-        .style("font-size", `${titleFontSize}px`)
-        .style("font-weight", "bold")
-        .style("font-family", fontFamily)
+        .attr("y", titleSzie)
         .style("fill", textColor)
+        .style("font-size", `${titleSzie}px`)
+        .style("font-family", font)
+        .style("font-weight", "bold")
         .text(state.title);
     }
 
@@ -232,14 +234,14 @@ const RaceRenderer = ({ state }) => {
       svg
         .append("foreignObject")
         .attr("class", "static-text")
-        .attr("x", 20)
-        .attr("y", titleFontSize + 10)
         .attr("width", width - 40)
         .attr("height", 80)
+        .attr("x", 20)
+        .attr("y", titleSzie + 10)
         .append("xhtml:div")
-        .style("font-size", `${articleFontSize}px`)
-        .style("font-family", fontFamily)
         .style("color", textColor)
+        .style("font-family", font)
+        .style("font-size", `${articleSize}px`)
         .style("line-height", "0.75")
         .style("display", "block")
         .style("text-align", "left")
@@ -252,9 +254,9 @@ const RaceRenderer = ({ state }) => {
         .attr("class", "static-text")
         .attr("x", 10)
         .attr("y", height - 10)
-        .style("font-size", "12px")
-        .style("font-family", fontFamily)
         .style("fill", textColor)
+        .style("font-family", font)
+        .style("font-size", "12px")
         .text(state.footerText);
     }
 
@@ -279,19 +281,19 @@ const RaceRenderer = ({ state }) => {
           .attr("transform", `translate(0, ${i * legendSpacing})`)
           .style("cursor", "pointer")
           .on("click", () => {
-            const newFilters = new Set(activeFilters);
-            if (newFilters.has(filterVal)) {
-              newFilters.delete(filterVal);
+            const modifiedFilter = new Set(activeFilters);
+            if (modifiedFilter.has(filterVal)) {
+              modifiedFilter.delete(filterVal);
             } else {
-              newFilters.add(filterVal);
+              modifiedFilter.add(filterVal);
             }
-            setActiveFilters(newFilters);
+            setActiveFilters(modifiedFilter);
           });
 
         g.append("rect")
+          .attr("fill", isActive ? "#444" : "#ccc")
           .attr("width", 14)
           .attr("height", 14)
-          .attr("fill", isActive ? "#444" : "#ccc")
           .attr("stroke", "#000")
           .attr("stroke-width", 0.5);
 
@@ -299,12 +301,19 @@ const RaceRenderer = ({ state }) => {
           .attr("x", 18)
           .attr("y", 12)
           .text(filterVal)
-          .style("font-size", "12px")
-          .style("font-family", fontFamily)
-          .style("fill", textColor);
+          .style("fill", textColor)
+          .style("font-family", font)
+          .style("font-size", "12px");
       });
     }
-  }, [state, valueIndex, dimensions, colorMapping, activeFilters]);
+  }, [
+    state,
+    valueIndex,
+    containerWidth,
+    containerHieght,
+    colorMapping,
+    activeFilters,
+  ]);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -319,9 +328,9 @@ const RaceRenderer = ({ state }) => {
   return (
     <Box
       sx={{ width: "100%", height: "100%", position: "relative" }}
-      ref={wrapperRef}
+      ref={containerRef}
     >
-      <svg ref={svgRef} width={dimensions.width} height={dimensions.height} />
+      <svg ref={ref} width={containerWidth} height={containerHieght} />
 
       <Box
         sx={{

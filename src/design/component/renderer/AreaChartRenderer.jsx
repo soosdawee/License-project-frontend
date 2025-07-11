@@ -5,28 +5,34 @@ import ColorPalettes from "../ui/ColorPalettes";
 
 const AreaChartRenderer = ({ state }) => {
   const ref = useRef();
-  const containerRef = useRef();
-  const [containerWidth, setContainerWidth] = useState(600);
-  const [containerHeight, setContainerHeight] = useState(400);
+  const parentRef = useRef();
   const [disabledAreas, setDisabledAreas] = useState(new Set());
+  const [containerWidth, setContainerWidth] = useState(600);
+  const [containerHieght, setContainerHeight] = useState(400);
 
-  const interpolateAnnotation = (template, d, context = {}) =>
-    template
+  const handleAnnotation = (t, d, c = {}) =>
+    t
       .replace(/{name}/g, d.data?.name ?? d.label)
       .replace(/{value}/g, d.data?.value ?? d.value)
-      .replace(/{title}/g, context.title || "");
+      .replace(/{title}/g, c.title || "");
 
   const toggleArea = (name) => {
     setDisabledAreas((prev) => {
-      const updated = new Set(prev);
-      updated.has(name) ? updated.delete(name) : updated.add(name);
-      return updated;
+      const result = new Set(prev);
+      if (result.has(name)) {
+        result.delete(name);
+      } else {
+        result.add(name);
+      }
+      return result;
     });
   };
 
-  const parseCustomColors = (input) => {
+  const cutomColorOverrides = (input) => {
     const result = {};
-    if (!input) return result;
+    if (!input) {
+      return result;
+    }
     input.split(",").forEach((entry) => {
       const [label, color] = entry.split(":").map((s) => s.trim());
       if (label && /^#[0-9A-Fa-f]{3,6}$/.test(color)) result[label] = color;
@@ -35,8 +41,8 @@ const AreaChartRenderer = ({ state }) => {
   };
 
   useEffect(() => {
-    if (!containerRef.current) return;
-    const resizeObserver = new ResizeObserver((entries) => {
+    if (!parentRef.current) return;
+    const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
         if (entry.contentRect) {
           setContainerWidth(entry.contentRect.width);
@@ -44,45 +50,45 @@ const AreaChartRenderer = ({ state }) => {
         }
       }
     });
-    resizeObserver.observe(containerRef.current);
-    return () => resizeObserver.disconnect();
+    observer.observe(parentRef.current);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
     if (!state.data || state.data?.length < 2) return;
 
-    const fontFamily = state.font || "Arial, sans-serif";
-    const titleFontSize = state.titleSize || 40;
-    const articleFontSize = state.articleSize || 16;
-    const textColor = state.textColor || "#000000";
     const opacity = Math.min(Math.max(state.opacity / 100, 0), 1);
+    const font = state.font || "Arial, sans-serif";
+    const textColor = state.textColor || "#000000";
+    const titleSize = state.titleSize || 40;
+    const articleSize = state.articleSize || 16;
 
     const margin = {
       top:
-        0.05 * containerHeight +
-        (state.title ? titleFontSize + 10 : 0) +
-        (state.article ? articleFontSize * 2 + 10 : 0) +
+        0.05 * containerHieght +
+        (state.title ? titleSize + 20 : 0) +
+        (state.article ? articleSize * 2 + 10 : 0) +
         (state.showLegend ? 40 : 0),
       right: 0.05 * containerWidth,
       bottom:
-        0.1 * containerHeight +
+        0.1 * containerHieght +
         (state.areLabelsVisible ? 20 : 0) +
         (state.isFooter ? 40 : 0),
-      left: 0.13 * containerWidth + (state.areLabelsVisible ? 30 : 0),
+      left: 0.1 * containerWidth + (state.areLabelsVisible ? 30 : 0),
     };
 
     const innerWidth = containerWidth - margin.left - margin.right;
-    const innerHeight = containerHeight - margin.top - margin.bottom;
+    const innerHeight = containerHieght - margin.top - margin.bottom;
 
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
 
-    svg.attr("width", containerWidth).attr("height", containerHeight);
+    svg.attr("width", containerWidth).attr("height", containerHieght);
 
     svg
       .append("rect")
       .attr("width", containerWidth)
-      .attr("height", containerHeight)
+      .attr("height", containerHieght)
       .attr(
         "fill",
         state.backgroundColor === "transparent" ? "none" : state.backgroundColor
@@ -93,8 +99,8 @@ const AreaChartRenderer = ({ state }) => {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const headers = state.data[0];
-    const series = headers.slice(1);
+    const columnHeaders = state.data[0];
+    const series = columnHeaders.slice(1);
 
     const data = state.data
       .slice(1)
@@ -122,10 +128,10 @@ const AreaChartRenderer = ({ state }) => {
       .nice()
       .range([innerHeight, 0]);
 
-    const colorMap = parseCustomColors(state.customColors);
+    const colors = cutomColorOverrides(state.customColors);
     const selectedPalette =
       ColorPalettes[state.colorPalette] || ColorPalettes.vibrant;
-    const fallbackColorScale = d3
+    const colorScaleWorstCase = d3
       .scaleOrdinal(selectedPalette.colors)
       .domain(series);
 
@@ -156,11 +162,11 @@ const AreaChartRenderer = ({ state }) => {
     if (state.areLabelsVisible) {
       g.append("text")
         .attr("text-anchor", "middle")
+        .style("fill", textColor)
         .attr("x", innerWidth / 2)
         .attr("y", innerHeight + 45)
+        .style("font-family", font)
         .style("font-size", "14px")
-        .style("fill", textColor)
-        .style("font-family", fontFamily)
         .text(state.xAxisLabel || "X Axis");
 
       g.append("text")
@@ -169,9 +175,9 @@ const AreaChartRenderer = ({ state }) => {
           "transform",
           `translate(${-margin.left + 30},${innerHeight / 2}) rotate(-90)`
         )
-        .style("font-size", "14px")
         .style("fill", textColor)
-        .style("font-family", fontFamily)
+        .style("font-family", font)
+        .style("font-size", "14px")
         .text(state.yAxisLabel || "Y Axis");
     }
 
@@ -179,22 +185,24 @@ const AreaChartRenderer = ({ state }) => {
       .select("body")
       .append("div")
       .style("position", "absolute")
+      .style("pointer-events", "none")
+      .style("padding", "8px")
       .style("background", "#ffffff")
       .style("border", "1px solid #ccc")
-      .style("color", "#000000")
-      .style("padding", "8px")
-      .style("border-radius", "4px")
-      .style("pointer-events", "none")
+      .style("font-family", font)
       .style("font-size", "0.9rem")
-      .style("display", "none")
-      .style("font-family", fontFamily);
+      .style("color", "#000000")
+      .style("border-radius", "4px")
+      .style("display", "none");
 
     series.forEach((key) => {
-      if (disabledAreas.has(key)) return;
+      if (disabledAreas.has(key)) {
+        return;
+      }
       const filteredData = data.filter((d) => d[key] !== 0);
       if (filteredData.length === 0) return;
 
-      const color = colorMap[key] || fallbackColorScale(key);
+      const color = colors[key] || colorScaleWorstCase(key);
 
       const area = d3
         .area()
@@ -212,8 +220,8 @@ const AreaChartRenderer = ({ state }) => {
       const totalLength = path.node().getTotalLength();
       path
         .attr("stroke", color)
-        .attr("stroke-width", 2)
         .attr("stroke-opacity", opacity)
+        .attr("stroke-width", 2)
         .attr("stroke-dasharray", totalLength + " " + totalLength)
         .attr("stroke-dashoffset", totalLength)
         .transition()
@@ -226,12 +234,12 @@ const AreaChartRenderer = ({ state }) => {
           .attr("transform", `translate(${margin.left}, ${margin.top - 30})`);
 
         const legendItems = series
-          .filter((key) => {
-            return data.some((d) => d[key] !== 0 && d[key] !== undefined);
+          .filter((k) => {
+            return data.some((d) => d[k] !== 0 && d[k] !== undefined);
           })
-          .map((key) => ({
-            name: key,
-            color: colorMap[key] || fallbackColorScale(key),
+          .map((k) => ({
+            name: k,
+            color: colors[key] || colorScaleWorstCase(k),
           }));
 
         let xOffset = -90;
@@ -258,14 +266,13 @@ const AreaChartRenderer = ({ state }) => {
             .append("text")
             .attr("x", 16)
             .attr("y", 2)
-            .style("fill", textColor)
-            .style("font-family", fontFamily)
+            .style("font-family", font)
             .style("font-size", `${fontSize}px`)
+            .style("fill", textColor)
             .text(item.name)
             .attr("opacity", disabledAreas.has(item.name) ? 0.3 : 1);
 
-          const textWidth = text.node().getComputedTextLength();
-          xOffset += textWidth + 12 + padding + 8;
+          xOffset += text.node().getComputedTextLength() + 12 + padding + 8;
         });
       }
 
@@ -280,7 +287,7 @@ const AreaChartRenderer = ({ state }) => {
             if (state.showAnnotations) {
               tooltip
                 .html(
-                  `<div>${interpolateAnnotation(
+                  `<div>${handleAnnotation(
                     state.customAnnotation || "{name}: {value}",
                     {
                       data: {
@@ -306,30 +313,30 @@ const AreaChartRenderer = ({ state }) => {
     if (state.title) {
       svg
         .append("text")
-        .attr("x", 50)
-        .attr("y", titleFontSize)
+        .attr("x", 60)
+        .attr("y", titleSize)
         .attr("text-anchor", "middle")
-        .style("font-size", `${titleFontSize}px`)
+        .style("font-size", `${titleSize}px`)
         .style("font-weight", "bold")
-        .style("font-family", fontFamily)
+        .style("font-family", font)
         .style("fill", textColor)
         .text(state.title);
     }
 
     if (state.article) {
-      const articleY = state.title ? titleFontSize + 10 : 20;
+      const articleY = state.title ? titleSize + 10 : 20;
       const maxArticleWidth = containerWidth - 40;
-      const lineHeight = articleFontSize * 1.5;
+      const lineHeight = articleSize * 1.5;
 
       svg
         .append("foreignObject")
         .attr("x", 20)
         .attr("y", articleY)
         .attr("width", maxArticleWidth)
-        .attr("height", articleFontSize * 3)
+        .attr("height", articleSize * 3)
         .append("xhtml:div")
-        .style("font-size", `${articleFontSize}px`)
-        .style("font-family", fontFamily)
+        .style("font-size", `${articleSize}px`)
+        .style("font-family", font)
         .style("color", textColor)
         .style("line-height", `${lineHeight}px`)
         .style("display", "block")
@@ -341,20 +348,20 @@ const AreaChartRenderer = ({ state }) => {
       svg
         .append("text")
         .attr("x", 35)
-        .attr("y", containerHeight - 10)
+        .attr("y", containerHieght - 10)
+        .style("font-family", font)
+        .style("fill", textColor)
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
-        .style("font-family", fontFamily)
-        .style("fill", textColor)
         .text(state.footerText);
     }
 
     return () => tooltip.remove();
-  }, [state, containerWidth, containerHeight, disabledAreas]);
+  }, [state, containerHieght, containerWidth, disabledAreas]);
 
   return (
     <Box
-      ref={containerRef}
+      ref={parentRef}
       sx={{ width: "100%", height: "100%", position: "relative" }}
     >
       <svg

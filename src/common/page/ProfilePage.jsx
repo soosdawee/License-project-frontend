@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { Box, Stack, Divider, Typography, Avatar } from "@mui/material";
+import { Box, Stack, Typography, Avatar } from "@mui/material";
 import Navbar from "../component/Navbar";
 import backend from "../../data-access/Backend";
 import { useState, useEffect } from "react";
@@ -39,17 +39,23 @@ const ProfilePage = () => {
     fetchData();
   }, [id]);
 
-  const getInitials = (user) => {
-    if (!user.firstname || !user.lastname) return "";
-    return (
-      user.firstname.charAt(0).toUpperCase() +
-      user.lastname.charAt(0).toUpperCase()
-    );
+  const initialsOf = () => {
+    if (!user.firstname || !user.lastname) {
+      return "";
+    } else {
+      return (
+        user.firstname.charAt(0).toUpperCase() +
+        user.lastname.charAt(0).toUpperCase()
+      );
+    }
   };
 
-  const getAvatarSrc = (user) => {
-    if (!user.profilePicture) return null;
-    return `data:image/png;base64,${user.profilePicture}`;
+  const profilePictureOf = () => {
+    if (!user.profilePicture) {
+      return null;
+    } else {
+      return `data:image/png;base64,${user.profilePicture}`;
+    }
   };
 
   const handleRouting = (userId) => {
@@ -171,7 +177,7 @@ const ProfilePage = () => {
                   }}
                 >
                   <Avatar
-                    src={getAvatarSrc(fr)}
+                    src={profilePictureOf(fr)}
                     sx={{
                       width: "5%",
                       height: "auto",
@@ -182,7 +188,7 @@ const ProfilePage = () => {
                       border: "2px solid #001f47",
                     }}
                   >
-                    {!fr.profilePicture && getInitials(fr)}
+                    {!fr.profilePicture && initialsOf(fr)}
                   </Avatar>
                   <Typography>
                     {fr.firstname} {fr.lastname}

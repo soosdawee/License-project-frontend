@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import ResetPasswordForm from "../component/ResetPasswordForm";
 import LandinIllustration from "../image/landing_illustration.svg";
 

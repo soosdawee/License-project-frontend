@@ -1,4 +1,3 @@
-import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
@@ -16,7 +15,6 @@ const TransparentNavbar = () => {
         overflow: "hidden",
       }}
     >
-      {/* Gradient Blur Layer */}
       <Box
         sx={{
           position: "absolute",

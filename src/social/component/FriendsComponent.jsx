@@ -20,18 +20,23 @@ const FriendsComponent = () => {
     getFriends();
   }, []);
 
-  const getInitials = (user) => {
+  const initialsOf = (user) => {
     if (!user) return null;
-    if (!user.firstname || !user.lastname) return "";
+    if (!user.firstname || !user.lastname) {
+      return "";
+    }
     return (
       user.firstname.charAt(0).toUpperCase() +
       user.lastname.charAt(0).toUpperCase()
     );
   };
 
-  const getAvatarSrc = (user) => {
-    if (!user) return null;
-    return `data:image/png;base64,${user.profilePicture}`;
+  const profilePictureOf = (user) => {
+    if (!user) {
+      return null;
+    } else {
+      return `data:image/png;base64,${user.profilePicture}`;
+    }
   };
 
   return (
@@ -69,10 +74,10 @@ const FriendsComponent = () => {
               }}
             >
               <Avatar
-                src={getAvatarSrc(fr)}
+                src={profilePictureOf(fr)}
                 sx={{ display: "flex", alignItems: "center", gap: 2 }}
               >
-                {!fr?.profilePicture && getInitials(fr)}
+                {!fr?.profilePicture && initialsOf(fr)}
               </Avatar>
               <Typography variant="h6">
                 {fr.firstname} {fr.lastname}

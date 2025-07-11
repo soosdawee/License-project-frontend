@@ -1,32 +1,35 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { Box } from "@mui/material";
 
 const BarChartRenderer = ({ state }) => {
   const wrapperRef = useRef();
   const svgRef = useRef();
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [containerWidth, setContainerWidth] = useState(600);
+  const [containerHieght, setContainerHeight] = useState(400);
 
-  // Responsive resize handling
   useEffect(() => {
-    if (!wrapperRef.current) return;
+    if (!wrapperRef.current) {
+      return;
+    }
     const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
         const { width, height } = entry.contentRect;
-        setDimensions({ width, height });
+        setContainerWidth(width);
+        setContainerHeight(height);
       }
     });
     observer.observe(wrapperRef.current);
     return () => observer.disconnect();
   }, []);
 
-  const interpolateAnnotation = (template, d) =>
+  const handleAnnotation = (template, d) =>
     template
       .replace(/{name}/g, d.name)
       .replace(/{value}/g, d.value)
       .replace(/{note}/g, d.note || "");
 
-  const parseCustomBarColors = (input) => {
+  const customColorOverrides = (input) => {
     const result = {};
     if (!input) return result;
     input.split(",").forEach((entry) => {
@@ -37,16 +40,17 @@ const BarChartRenderer = ({ state }) => {
   };
 
   useEffect(() => {
-    const width = Math.max(dimensions.width, 300);
-    const height = Math.max(dimensions.height, 200);
+    const width = Math.max(containerWidth, 300);
+    const height = Math.max(containerHieght, 200);
 
-    if (!state.data || state.data.length === 0 || width === 0 || height === 0)
+    if (!state.data || state.data.length === 0 || width === 0 || height === 0) {
       return;
+    }
 
-    const fontFamily = state.font || "Arial, sans-serif";
-    const titleFontSize = state.titleSize || 40;
-    const articleFontSize = state.articleSize || 16;
     const textColor = state.textColor || "#000000";
+    const font = state.font || "Arial, sans-serif";
+    const titleSize = state.titleSize || 40;
+    const articleSize = state.articleSize || 16;
 
     const formattedData = state.data
       .filter((row) => row[0] !== "" && row[0] !== null && !isNaN(row[1]))
@@ -69,30 +73,30 @@ const BarChartRenderer = ({ state }) => {
       .select("body")
       .append("div")
       .attr("class", "tooltip")
+      .style("color", "#000000")
       .style("position", "absolute")
       .style("background", "#ffffff")
-      .style("border", "1px solid #ccc")
-      .style("color", "#000000")
-      .style("padding", "8px")
-      .style("border-radius", "4px")
       .style("pointer-events", "none")
+      .style("border-radius", "4px")
       .style("font-size", "0.9rem")
       .style("display", "none")
-      .style("font-family", fontFamily);
+      .style("border", "1px solid #ccc")
+      .style("padding", "8px")
+      .style("font-family", font);
 
-    const titleMargin = state.title ? titleFontSize * 1.5 : 0;
+    const titleMargin = state.title ? titleSize * 1.5 : 0;
     const articleMargin = state.article ? 70 : 0;
 
-    const yAxisLabelMargin =
-      state.areLabelsVisible && state.yAxisLabel ? 20 : 0;
-    const xAxisLabelMargin =
-      state.areLabelsVisible && state.xAxisLabel ? 20 : 0;
+    const marginYAxisLable =
+      state.areLabelsVisible && state.yAxisLabel ? 15 : 0;
+    const marginXAxisLabel =
+      state.areLabelsVisible && state.xAxisLabel ? 15 : 0;
 
     const margin = {
       top: 20 + titleMargin + articleMargin,
       right: 60,
-      bottom: 50 + xAxisLabelMargin,
-      left: 90 + yAxisLabelMargin,
+      bottom: 50 + marginXAxisLabel,
+      left: 90 + marginYAxisLable,
     };
 
     const innerWidth = width - margin.left - margin.right;
@@ -102,7 +106,7 @@ const BarChartRenderer = ({ state }) => {
     const defaultBarColor = state.barColor || "#60002";
     const barOpacity = Math.min(Math.max(state.opacity / 100, 0), 1);
 
-    const customColorMap = parseCustomBarColors(state.customBarColors);
+    const colours = customColorOverrides(state.customBarColors);
 
     const x = d3
       .scaleBand()
@@ -122,7 +126,7 @@ const BarChartRenderer = ({ state }) => {
     g.append("g")
       .call(yAxis)
       .selectAll("text")
-      .style("font-family", fontFamily)
+      .style("font-family", font)
       .style("fill", textColor);
 
     if (state.showGrids) {
@@ -144,32 +148,8 @@ const BarChartRenderer = ({ state }) => {
       .attr("transform", `translate(0,${innerHeight})`)
       .call(d3.axisBottom(x))
       .selectAll("text")
-      .style("font-family", fontFamily)
+      .style("font-family", font)
       .style("fill", textColor);
-
-    if (state.areLabelsVisible) {
-      if (state.yAxisLabel)
-        svg
-          .append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("x", -height / 2)
-          .attr("y", 15)
-          .attr("text-anchor", "middle")
-          .style("font-size", "12px")
-          .style("font-family", fontFamily)
-          .style("fill", textColor)
-          .text(state.yAxisLabel);
-      if (state.xAxisLabel)
-        svg
-          .append("text")
-          .attr("x", width / 2)
-          .attr("y", height - 5)
-          .attr("text-anchor", "middle")
-          .style("font-size", "12px")
-          .style("font-family", fontFamily)
-          .style("fill", textColor)
-          .text(state.xAxisLabel);
-    }
 
     g.selectAll("rect.bar")
       .data(formattedData)
@@ -179,13 +159,13 @@ const BarChartRenderer = ({ state }) => {
       .attr("y", innerHeight)
       .attr("width", x.bandwidth())
       .attr("height", 0)
-      .attr("fill", (d) => customColorMap[d.name] || defaultBarColor)
+      .attr("fill", (d) => colours[d.name] || defaultBarColor)
       .attr("fill-opacity", barOpacity)
       .on("mouseover", (event, d) => {
         if (state.showAnnotations) {
           tooltip
             .html(
-              `<div>${interpolateAnnotation(
+              `<div>${handleAnnotation(
                 state.customAnnotation || "{name}: {value}",
                 d
               )}</div>`
@@ -212,19 +192,43 @@ const BarChartRenderer = ({ state }) => {
       svg
         .append("text")
         .attr("x", 20)
-        .attr("y", titleFontSize)
+        .attr("y", titleSize)
         .attr("text-anchor", "start")
-        .style("font-size", `${titleFontSize}px`)
+        .style("font-size", `${titleSize}px`)
         .style("font-weight", "bold")
-        .style("font-family", fontFamily)
+        .style("font-family", font)
         .style("fill", textColor)
         .text(state.title);
     }
 
+    if (state.areLabelsVisible) {
+      if (state.yAxisLabel)
+        svg
+          .append("text")
+          .attr("text-anchor", "middle")
+          .attr("transform", "rotate(-90)")
+          .attr("x", -height / 2)
+          .attr("y", 30)
+          .style("fill", textColor)
+          .style("font-size", "12px")
+          .style("font-family", font)
+          .text(state.yAxisLabel);
+      if (state.xAxisLabel)
+        svg
+          .append("text")
+          .style("fill", textColor)
+          .attr("x", width / 2)
+          .attr("y", height - 20)
+          .style("font-size", "12px")
+          .attr("text-anchor", "middle")
+          .style("font-family", font)
+          .text(state.xAxisLabel);
+    }
+
     if (state.article) {
-      const articleY = state.title ? titleFontSize * 1.2 + 10 : 20;
+      const articleY = state.title ? titleSize * 1.2 + 10 : 20;
       const maxArticleWidth = width - 40;
-      const lineHeight = articleFontSize * 1.5;
+      const lineHeight = articleSize * 1.5;
 
       svg
         .append("foreignObject")
@@ -233,12 +237,12 @@ const BarChartRenderer = ({ state }) => {
         .attr("width", maxArticleWidth)
         .attr("height", 100)
         .append("xhtml:div")
-        .style("font-size", `${articleFontSize}px`)
-        .style("font-family", fontFamily)
+        .style("font-family", font)
+        .style("display", "block")
+        .style("font-size", `${articleSize}px`)
+        .style("text-align", "left")
         .style("color", textColor)
         .style("line-height", `${lineHeight}px`)
-        .style("display", "block")
-        .style("text-align", "left")
         .html(state.article);
     }
 
@@ -249,7 +253,7 @@ const BarChartRenderer = ({ state }) => {
         .attr("y", height - 10)
         .attr("text-anchor", "start")
         .style("font-size", "12px")
-        .style("font-family", fontFamily)
+        .style("font-family", font)
         .style("fill", textColor)
         .text(state.footerText);
     }
@@ -257,11 +261,11 @@ const BarChartRenderer = ({ state }) => {
     return () => {
       tooltip.remove();
     };
-  }, [state, dimensions]);
+  }, [state, containerHieght, containerWidth]);
 
   return (
     <Box sx={{ width: "100%", height: "100%" }} ref={wrapperRef}>
-      <svg ref={svgRef} width={dimensions.width} height={dimensions.height} />
+      <svg ref={svgRef} width={containerWidth} height={containerHieght} />
     </Box>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import StageButton from "../component/ui/StageButton";
 import Navbar from "../../common/component/Navbar";
 import { Box } from "@mui/material";

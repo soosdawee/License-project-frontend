@@ -21,24 +21,26 @@ const EmbeddedComponent = ({ visualizationId, type }) => {
 
     try {
       const url = new URL(sheetUrl);
-      const parts = url.pathname.split("/");
-      const sheetId = parts[3];
+      const subParts = url.pathname.split("/");
+      const identifier = subParts[3];
       const gidMatch = url.hash.match(/gid=(\d+)/);
       const gid = gidMatch ? gidMatch[1] : "0";
 
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}&_=${Date.now()}`;
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${identifier}/export?format=csv&gid=${gid}&_=${Date.now()}`;
       const response = await fetch(csvUrl);
-      if (!response.ok) throw new Error("Failed to fetch Google Sheet");
+      if (!response.ok) {
+        throw new Error("Failed to fetch Google Sheet");
+      }
 
       const csvText = await response.text();
 
       return new Promise((resolve, reject) => {
         Papa.parse(csvText, {
           complete: (results) => {
-            const cleanData = results.data.filter((row) =>
+            const cleaned = results.data.filter((row) =>
               row.some((cell) => cell !== "")
             );
-            resolve(cleanData);
+            resolve(cleaned);
           },
           error: (err) => reject(err),
         });

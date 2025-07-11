@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import DataState from "./DataState";
 import CustomizationState from "./CustomizationState";
 import ShareState from "./ShareState";

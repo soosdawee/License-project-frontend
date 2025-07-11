@@ -46,7 +46,7 @@ const BarChartColorAccordion = () => {
     if (e.key === "Enter") confirmFn();
   };
 
-  const commitColorChange = () => {
+  const handleChangedColor = () => {
     if (state.barColor !== color) {
       dispatch(setBarColor(color));
     }
@@ -58,17 +58,24 @@ const BarChartColorAccordion = () => {
         <Typography>Bar Appearance</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Box display="flex" flexDirection="column" gap={2}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            alignItems: "center",
+          }}
+        >
           <Box>
             <Typography>Default Bar Color:</Typography>
-            <div onMouseUp={commitColorChange}>
+            <div onMouseUp={handleChangedColor}>
               <HexColorPicker color={color} onChange={setColor} />
               <HexColorInput
                 data-testid="bar-color-input"
                 color={color}
                 onChange={setColor}
                 style={{ marginTop: "8px" }}
-                onBlur={commitColorChange}
+                onBlur={handleChangedColor}
               />
             </div>
           </Box>

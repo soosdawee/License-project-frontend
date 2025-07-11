@@ -39,7 +39,7 @@ const RaceAccordion = () => {
         <Typography>Race Appearance</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Box display="flex" flexDirection="column" gap={2}>
+        <Box style={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <FormControl fullWidth>
             <InputLabel>Color Palette</InputLabel>
             <Select

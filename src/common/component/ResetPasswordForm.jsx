@@ -14,7 +14,6 @@ const ResetPasswordForm = () => {
   useEffect(() => {
     if (!token) {
       alert("Missing or invalid token.");
-      //      navigate("/login");
       console.log(token);
     }
   }, [token, navigate]);

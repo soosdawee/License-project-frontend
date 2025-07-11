@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -6,24 +6,23 @@ import Logo from "../image/datavuelogo_dark.svg";
 import { Link as RouterLink } from "react-router-dom";
 
 const RegisterForm = () => {
+  const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8080/user/register", {
+      await axios.post("http://localhost:8080/user/register", {
         firstname: firstName,
         lastname: lastName,
         email: email,
         userPassword: password,
       });
 
-      // Optionally, handle response, e.g. auto-login or redirect to login page
       navigate("/login");
     } catch (error) {
       console.log("Failed registration\n", error);

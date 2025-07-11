@@ -7,20 +7,20 @@ const ElectionResultsRenderer = ({ state }) => {
   const wrapperRef = useRef();
   const svgRef = useRef();
   const tooltipRef = useRef();
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [containerWidth, setContainerWidth] = useState(600);
+  const [containerHieght, setContainerHeight] = useState(400);
 
-  const headers = state.data?.[0]?.slice(1) || []; // party names
-  const allRows = state.data?.slice(1) || [];
+  const columnHeaders = state.data?.[0]?.slice(1) || [];
+  const content = state.data?.slice(1) || [];
   const allHistoricalRows = state.historical?.slice(1) || [];
 
-  // Filter out rows with empty name or all zero/invalid party values
-  const rows = allRows.filter((row) => {
-    const hasValidName = row[0] && row[0].toString().trim() !== "";
-    const hasValidValues = headers.some((_, i) => {
+  const rows = content.filter((row) => {
+    const areValuesValid = columnHeaders.some((_, i) => {
       const val = Number(row[i + 1]);
       return !isNaN(val) && val > 0;
     });
-    return hasValidName && hasValidValues;
+    const isNameValid = row[0] && row[0].toString().trim() !== "";
+    return isNameValid && areValuesValid;
   });
 
   const [selectedRegion, setSelectedRegion] = useState(rows[0]?.[0] || "");
@@ -29,7 +29,7 @@ const ElectionResultsRenderer = ({ state }) => {
     (row) => row[0] === selectedRegion
   );
 
-  const values = headers.map((header, i) => ({
+  const values = columnHeaders.map((header, i) => ({
     party: header,
     value: Number(selectedRow?.[i + 1]) || 0,
     historicalValue: Number(selectedHistoricalRow?.[i + 1]) || 0,
@@ -38,41 +38,47 @@ const ElectionResultsRenderer = ({ state }) => {
   const paletteColors =
     ColorPalettes[state.colorPalette]?.colors || ColorPalettes.vibrant.colors;
 
-  const parseCustomColors = (input) => {
+  const customColorOverrides = (input) => {
+    if (!input) {
+      return {};
+    }
+
     const result = {};
-    if (!input) return result;
+
     input.split(",").forEach((entry) => {
       const [label, color] = entry.split(":").map((s) => s.trim());
       if (label && /^#[0-9A-Fa-f]{3,6}$/.test(color)) {
         result[label] = color;
       }
     });
+
     return result;
   };
 
-  const getContrastingTextColor = (hexColor) => {
-    hexColor = hexColor.replace("#", "");
-    if (hexColor.length === 3) {
+  const findContrast = (hexColor) => {
+    hexColor = hexColor?.substring(1);
+
+    if (hexColor?.length === 3) {
       hexColor = hexColor
         .split("")
         .map((c) => c + c)
         .join("");
     }
-    const r = parseInt(hexColor.substr(0, 2), 16) / 255;
-    const g = parseInt(hexColor.substr(2, 2), 16) / 255;
-    const b = parseInt(hexColor.substr(4, 2), 16) / 255;
-    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-    return luminance > 0.5 ? "#000000" : "#ffffff";
+
+    const luminance =
+      (0.299 * parseInt(hexColor?.substr(0, 2), 16)) / 255 +
+      (0.587 * parseInt(hexColor?.substr(2, 2), 16)) / 255 +
+      (0.114 * parseInt(hexColor?.substr(4, 2), 16)) / 255;
+    return luminance < 0.5 ? "#ffffff" : "#000000";
   };
 
-  const customColorMap = parseCustomColors(state.customColors);
-  const colorMap = headers.reduce((map, header, i) => {
-    map[header] =
-      customColorMap[header] || paletteColors[i % paletteColors.length];
+  const colors = customColorOverrides(state.customColors);
+  const colorMap = columnHeaders.reduce((map, header, i) => {
+    map[header] = colors[header] || paletteColors[i % paletteColors.length];
     return map;
   }, {});
 
-  const generateTooltipContent = (party, value, total) => {
+  const handleAnnotation = (party, value, total) => {
     if (!state.showAnnotations) return "";
     if (state.customAnnotation && state.customAnnotation.trim() !== "") {
       let content = state.customAnnotation;
@@ -85,7 +91,7 @@ const ElectionResultsRenderer = ({ state }) => {
       content = content.replace(/\{votes\}/g, value.toLocaleString());
       content = content.replace(/\{total\}/g, total.toLocaleString());
 
-      headers.forEach((header, index) => {
+      columnHeaders.forEach((header, index) => {
         const columnValue = selectedRow?.[index + 1] || 0;
         content = content.replace(
           new RegExp(`\\{value${index + 1}\\}`, "g"),
@@ -108,7 +114,7 @@ const ElectionResultsRenderer = ({ state }) => {
   const showTooltip = (party, value, total, event) => {
     if (!state.showAnnotations || !tooltipRef.current) return;
     const tooltip = tooltipRef.current;
-    tooltip.innerHTML = generateTooltipContent(party, value, total);
+    tooltip.innerHTML = handleAnnotation(party, value, total);
     tooltip.style.display = "block";
     tooltip.style.opacity = "1";
     updateTooltipPosition(event);
@@ -149,56 +155,68 @@ const ElectionResultsRenderer = ({ state }) => {
 
   const createArrowPath = (direction) => {
     if (direction === "up") {
-      return "M0,8 L4,0 L8,8 Z"; // Upward arrow
+      return "M0,8 L4,0 L8,8 Z";
     } else {
-      return "M0,0 L4,8 L8,0 Z"; // Downward arrow
+      return "M0,0 L4,8 L8,0 Z";
     }
   };
 
   useEffect(() => {
-    if (!state || !dimensions.width || !dimensions.height) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setContainerHeight(height);
+      setContainerWidth(width);
+    });
+    if (wrapperRef.current) observer.observe(wrapperRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!state || !containerWidth || !containerHieght) {
+      return;
+    }
 
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    const fontFamily = state.font || "Arial, sans-serif";
-    const titleFontSize = state.titleSize || 20;
-    const articleFontSize = state.articleSize || 14;
+    const font = state.font || "Arial, sans-serif";
     const textColor = state.textColor || "#000000";
+    const titleSzie = state.titleSize || 20;
+    const articelSize = state.articleSize || 14;
 
     let topOffset = 0;
     if (state.title) {
       svg
         .append("text")
         .attr("x", 10)
-        .attr("y", titleFontSize)
-        .style("font-size", `${titleFontSize}px`)
-        .style("font-weight", "bold")
-        .style("font-family", fontFamily)
+        .attr("y", titleSzie)
+        .style("font-size", `${titleSzie}px`)
         .style("fill", textColor)
+        .style("font-family", font)
+        .style("font-weight", "bold")
         .text(state.title);
-      topOffset += titleFontSize + 10;
+      topOffset += titleSzie + 10;
     }
 
     if (state.article) {
-      const articleHeight = articleFontSize * 2.5;
+      const articleHeight = articelSize * 2.5;
       svg
         .append("foreignObject")
         .attr("x", 10)
         .attr("y", topOffset)
-        .attr("width", dimensions.width - 20)
+        .attr("width", containerWidth - 20)
         .attr("height", articleHeight)
         .append("xhtml:div")
-        .style("font-size", `${articleFontSize}px`)
-        .style("font-family", fontFamily)
         .style("color", textColor)
-        .style("line-height", `${articleFontSize * 1.5}px`)
+        .style("line-height", `${articelSize * 1.5}px`)
+        .style("font-family", font)
+        .style("font-size", `${articelSize}px`)
         .style("text-align", "left")
         .html(state.article);
       topOffset += articleHeight + 10;
     }
 
-    const bottomOffset = state.isFooter ? articleFontSize * 3 + 10 : 0;
+    const bottomOffset = state.isFooter ? articelSize * 2 + 5 : 0;
     const margin = {
       top: topOffset + 10,
       right: 30,
@@ -206,8 +224,8 @@ const ElectionResultsRenderer = ({ state }) => {
       left: 30,
     };
 
-    const width = dimensions.width - margin.left - margin.right;
-    const height = dimensions.height - margin.top - margin.bottom;
+    const width = containerWidth - margin.left - margin.right;
+    const height = containerHieght - margin.top - margin.bottom;
 
     const g = svg
       .append("g")
@@ -220,18 +238,18 @@ const ElectionResultsRenderer = ({ state }) => {
     values.forEach((d, index) => {
       if (!d.value || d.value <= 0) return;
 
-      const barWidth = x(d.value);
-      const barGroup = g.append("g");
-      const barColor = colorMap[d.party];
-      const textColor = getContrastingTextColor(barColor);
+      const rectangleWidth = x(d.value);
+      const rectangleGroup = g.append("g");
+      const regtangleColor = colorMap[d.party];
+      const textColor = findContrast(regtangleColor);
 
-      const bar = barGroup
+      const bar = rectangleGroup
         .append("rect")
         .attr("x", xOffset)
         .attr("y", height)
-        .attr("width", barWidth)
+        .attr("width", rectangleWidth)
         .attr("height", 0)
-        .attr("fill", barColor)
+        .attr("fill", regtangleColor)
         .attr("opacity", 0.9)
         .style("cursor", state.showAnnotations ? "pointer" : "default")
         .transition()
@@ -241,13 +259,13 @@ const ElectionResultsRenderer = ({ state }) => {
         .attr("height", height);
 
       if (state.showAnnotations) {
-        const hoverRect = barGroup
+        const hoverRect = rectangleGroup
           .append("rect")
           .attr("x", xOffset)
           .attr("y", 0)
-          .attr("width", barWidth)
-          .attr("height", height)
           .attr("fill", "transparent")
+          .attr("width", rectangleWidth)
+          .attr("height", height)
           .style("cursor", "pointer");
 
         hoverRect
@@ -275,12 +293,12 @@ const ElectionResultsRenderer = ({ state }) => {
       const labelY = height * 0.2 + 5;
       const lineSpacing = 14;
 
-      barGroup
+      rectangleGroup
         .append("text")
-        .attr("x", xOffset + barWidth / 2)
+        .attr("fill", textColor)
+        .attr("x", xOffset + rectangleWidth / 2)
         .attr("y", labelY)
         .attr("text-anchor", "middle")
-        .attr("fill", textColor)
         .style("font-size", "13px")
         .style("opacity", 0)
         .text(d.party)
@@ -289,12 +307,12 @@ const ElectionResultsRenderer = ({ state }) => {
         .delay(300)
         .style("opacity", 1);
 
-      barGroup
+      rectangleGroup
         .append("text")
-        .attr("x", xOffset + barWidth / 2)
+        .attr("fill", textColor)
+        .attr("x", xOffset + rectangleWidth / 2)
         .attr("y", labelY + lineSpacing)
         .attr("text-anchor", "middle")
-        .attr("fill", textColor)
         .style("font-size", "13px")
         .style("opacity", 0)
         .text(`${((d.value / total) * 100).toFixed(1)}%`)
@@ -303,17 +321,16 @@ const ElectionResultsRenderer = ({ state }) => {
         .delay(400)
         .style("opacity", 1);
 
-      // Add trend arrow if historical data exists and is different
       if (d.historicalValue > 0 && d.historicalValue !== d.value) {
         const arrowDirection = d.historicalValue > d.value ? "down" : "up";
-        const arrowColor = arrowDirection === "up" ? "#22c55e" : "#ef4444"; // Green for up, red for down
+        const arrowColor = arrowDirection === "up" ? "#22c55e" : "#ef4444";
 
-        barGroup
+        rectangleGroup
           .append("path")
           .attr("d", createArrowPath(arrowDirection))
           .attr(
             "transform",
-            `translate(${xOffset + barWidth / 2 - 4}, ${
+            `translate(${xOffset + rectangleWidth / 2 - 4}, ${
               labelY + lineSpacing * 2
             })`
           )
@@ -325,34 +342,32 @@ const ElectionResultsRenderer = ({ state }) => {
           .style("opacity", 1);
       }
 
-      xOffset += barWidth;
+      xOffset += rectangleWidth;
     });
 
     if (state.isFooter) {
       svg
         .append("foreignObject")
         .attr("x", 10)
-        .attr("y", dimensions.height - bottomOffset + 10)
-        .attr("width", dimensions.width - 20)
-        .attr("height", articleFontSize * 3)
+        .attr("y", containerHieght - bottomOffset + 10)
+        .attr("width", containerWidth - 20)
+        .attr("height", articelSize * 3)
         .append("xhtml:div")
-        .style("font-size", `${articleFontSize}px`)
-        .style("font-family", fontFamily)
         .style("color", textColor)
-        .style("line-height", `${articleFontSize * 1.5}px`)
+        .style("font-size", `${articelSize}px`)
+        .style("font-family", font)
+        .style("line-height", `${articelSize * 1.5}px`)
         .style("text-align", "left")
         .html(state.footerText);
     }
-  }, [state, dimensions, selectedRegion, customColorMap, colorMap]);
-
-  useEffect(() => {
-    const observer = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
-      setDimensions({ width, height });
-    });
-    if (wrapperRef.current) observer.observe(wrapperRef.current);
-    return () => observer.disconnect();
-  }, []);
+  }, [
+    state,
+    containerHieght,
+    containerWidth,
+    selectedRegion,
+    colors,
+    colorMap,
+  ]);
 
   return (
     <Box

@@ -15,7 +15,6 @@ import { Client } from "@stomp/stompjs";
 import backend from "../../data-access/Backend";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { GlobalStyles } from "@mui/material";
 
 const CommentModal = ({ open, onClose, visualization }) => {
   const [comments, setComments] = useState([]);
@@ -26,7 +25,9 @@ const CommentModal = ({ open, onClose, visualization }) => {
   const stompClientRef = useRef(null);
 
   useEffect(() => {
-    if (!open || !visualization) return;
+    if (!open || !visualization) {
+      return;
+    }
 
     const connectWebSocket = () => {
       const token = localStorage.getItem("jwt");
@@ -106,24 +107,24 @@ const CommentModal = ({ open, onClose, visualization }) => {
     });
   };
 
-  const getElapsedTime = (timestamp) => {
+  const calculateTime = (timestamp) => {
     const now = new Date();
     const created = new Date(timestamp);
-    const diffInSeconds = Math.floor((now - created) / 1000);
+    const secs = Math.floor((now - created) / 1000);
     const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
-    if (diffInSeconds < 60) return rtf.format(-diffInSeconds, "second");
-    const minutes = Math.floor(diffInSeconds / 60);
-    if (minutes < 60) return rtf.format(-minutes, "minute");
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return rtf.format(-hours, "hour");
-    const days = Math.floor(hours / 24);
+    if (secs <= 59) return rtf.format(-secs, "second");
+    const mins = Math.floor(secs / 60);
+    if (mins <= 59) return rtf.format(-mins, "minute");
+    const hous = Math.floor(mins / 60);
+    if (hous <= 23) return rtf.format(-hous, "hour");
+    const days = Math.floor(hous / 24);
     return rtf.format(-days, "day");
   };
 
-  const buildCommentTree = (comments) => {
+  const buildCommentStructure = (comments) => {
     const map = {};
-    const roots = [];
+    const levelZeroes = [];
 
     comments.forEach((comment) => {
       map[comment.commentId] = { ...comment, replies: [] };
@@ -133,11 +134,11 @@ const CommentModal = ({ open, onClose, visualization }) => {
       if (comment.parentId) {
         map[comment.parentId]?.replies.push(map[comment.commentId]);
       } else {
-        roots.push(map[comment.commentId]);
+        levelZeroes.push(map[comment.commentId]);
       }
     });
 
-    return roots;
+    return levelZeroes;
   };
 
   const handleReply = (comment) => {
@@ -206,7 +207,7 @@ const CommentModal = ({ open, onClose, visualization }) => {
                 color: "#a8a8a8",
               }}
             >
-              {getElapsedTime(comment.createdAt)}
+              {calculateTime(comment.createdAt)}
             </Typography>
           </Box>
 
@@ -297,7 +298,7 @@ const CommentModal = ({ open, onClose, visualization }) => {
         <Box sx={{ flexGrow: 1, overflowY: "auto", pr: 1, mb: 2 }}>
           {comments.length > 0 ? (
             <List sx={{ py: 0 }}>
-              {buildCommentTree(comments).map((comment) => (
+              {buildCommentStructure(comments).map((comment) => (
                 <CommentItem
                   key={comment.commentId}
                   comment={comment}

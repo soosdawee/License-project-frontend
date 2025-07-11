@@ -10,7 +10,7 @@ const LineChartRenderer = ({ state }) => {
   const [containerHeight, setContainerHeight] = useState(400);
   const [disabledLines, setDisabledLines] = useState(new Set());
 
-  const interpolateAnnotation = (template, d, context = {}) =>
+  const handleAnnotations = (template, d, context = {}) =>
     template
       .replace(/{name}/g, d.data?.name ?? d.label)
       .replace(/{value}/g, d.data?.value ?? d.value)
@@ -18,13 +18,17 @@ const LineChartRenderer = ({ state }) => {
 
   const toggleLine = (name) => {
     setDisabledLines((prev) => {
-      const updated = new Set(prev);
-      updated.has(name) ? updated.delete(name) : updated.add(name);
-      return updated;
+      const result = new Set(prev);
+      if (result.has(name)) {
+        result.delete(name);
+      } else {
+        result.add(name);
+      }
+      return result;
     });
   };
 
-  const parseCustomColors = (input) => {
+  const getCustomColors = (input) => {
     const result = {};
     if (!input) return result;
     input.split(",").forEach((entry) => {
@@ -35,9 +39,11 @@ const LineChartRenderer = ({ state }) => {
   };
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) {
+      return;
+    }
 
-    const resizeObserver = new ResizeObserver((entries) => {
+    const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
         if (entry.contentRect) {
           setContainerWidth(entry.contentRect.width);
@@ -46,32 +52,30 @@ const LineChartRenderer = ({ state }) => {
       }
     });
 
-    resizeObserver.observe(containerRef.current);
-    return () => resizeObserver.disconnect();
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
     if (!state.data || state.data?.length < 2) return;
 
-    const fontFamily = state.font || "Arial, sans-serif";
-    const titleFontSize = state.titleSize || 40;
-    const articleFontSize = state.articleSize || 16;
     const textColor = state.textColor || "#000000";
     const opacity = Math.min(Math.max(state.opacity / 100, 0), 1);
+    const font = state.font || "Arial, sans-serif";
+    const titleSize = state.titleSize || 40;
+    const articleSize = state.articleSize || 16;
 
-    // Calculate dynamic margins based on presence of title, article, legend, and labels
     const margin = {
       top:
         30 +
-        (state.title ? titleFontSize + 10 : 0) +
-        (state.article ? articleFontSize * 2 + 10 : 0) +
+        (state.title ? titleSize + 10 : 0) +
+        (state.article ? articleSize * 2 + 10 : 0) +
         (state.showLegend ? 40 : 0),
       right: 20,
       bottom: 50 + (state.areLabelsVisible ? 20 : 0),
       left: 60 + (state.areLabelsVisible ? 20 : 0),
     };
 
-    // Inner width and height based on container size and margins
     const innerWidth = containerWidth - margin.left - margin.right;
     const innerHeight = containerHeight - margin.top - margin.bottom;
 
@@ -82,8 +86,8 @@ const LineChartRenderer = ({ state }) => {
 
     svg
       .append("rect")
-      .attr("width", containerWidth)
       .attr("height", containerHeight)
+      .attr("width", containerWidth)
       .attr(
         "fill",
         state.backgroundColor === "transparent" ? "none" : state.backgroundColor
@@ -94,8 +98,8 @@ const LineChartRenderer = ({ state }) => {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const headers = state.data[0];
-    const lines = headers.slice(1);
+    const columnHeaders = state.data[0];
+    const lines = columnHeaders.slice(1);
 
     const data = state.data.slice(1).map((row) => {
       const obj = { label: row[0] };
@@ -105,13 +109,13 @@ const LineChartRenderer = ({ state }) => {
       return obj;
     });
 
-    const filteredData = data.filter((d) =>
+    const filtered = data.filter((d) =>
       lines.some((line) => !disabledLines.has(line) && d[line] !== 0)
     );
 
     const x = d3
       .scalePoint()
-      .domain(filteredData.map((d) => d.label))
+      .domain(filtered.map((d) => d.label))
       .range([0, innerWidth]);
 
     const y = d3
@@ -120,10 +124,10 @@ const LineChartRenderer = ({ state }) => {
       .nice()
       .range([innerHeight, 0]);
 
-    const colorMap = parseCustomColors(state.customColors);
+    const colors = getCustomColors(state.customColors);
     const selectedPalette =
       ColorPalettes[state.colorPalette] || ColorPalettes.vibrant;
-    const fallbackColorScale = d3
+    const worstCaseColors = d3
       .scaleOrdinal(selectedPalette.colors)
       .domain(lines);
 
@@ -163,13 +167,13 @@ const LineChartRenderer = ({ state }) => {
 
     if (state.areLabelsVisible) {
       g.append("text")
+        .style("fill", textColor)
         .attr("class", "x-axis-label")
         .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-family", font)
         .attr("x", innerWidth / 2)
         .attr("y", innerHeight + 45)
-        .style("font-size", "14px")
-        .style("fill", textColor)
-        .style("font-family", fontFamily)
         .text(state.xAxisLabel || "X Axis");
 
       g.append("text")
@@ -179,9 +183,9 @@ const LineChartRenderer = ({ state }) => {
           "transform",
           `translate(${-margin.left + 30},${innerHeight / 2}) rotate(-90)`
         )
-        .style("font-size", "14px")
         .style("fill", textColor)
-        .style("font-family", fontFamily)
+        .style("font-family", font)
+        .style("font-size", "14px")
         .text(state.yAxisLabel || "Y Axis");
     }
 
@@ -190,32 +194,36 @@ const LineChartRenderer = ({ state }) => {
       .append("div")
       .attr("class", "tooltip")
       .style("position", "absolute")
+      .style("pointer-events", "none")
       .style("background", "#ffffff")
       .style("border", "1px solid #ccc")
       .style("color", "#000000")
-      .style("padding", "8px")
       .style("border-radius", "4px")
-      .style("pointer-events", "none")
+      .style("font-family", font)
       .style("font-size", "0.9rem")
-      .style("display", "none")
-      .style("font-family", fontFamily);
+      .style("padding", "8px")
+      .style("display", "none");
 
     lines.forEach((key) => {
-      if (disabledLines.has(key)) return;
+      if (disabledLines.has(key)) {
+        return;
+      }
 
       const filteredData = data.filter((d) => d[key] !== 0);
-      if (filteredData.length === 0) return;
+      if (filteredData.length === 0) {
+        return;
+      }
 
-      const color = colorMap[key] || fallbackColorScale(key);
+      const color = colors[key] || worstCaseColors(key);
       const line = lineGenerator(key);
 
       const path = g
         .append("path")
         .datum(filteredData)
+        .attr("stroke-width", 2)
         .attr("fill", "none")
         .attr("stroke", color)
         .attr("stroke-opacity", opacity)
-        .attr("stroke-width", 2)
         .attr("d", line);
 
       const totalLength = path.node().getTotalLength();
@@ -237,7 +245,7 @@ const LineChartRenderer = ({ state }) => {
             if (state.showAnnotations) {
               tooltip
                 .html(
-                  `<div>${interpolateAnnotation(
+                  `<div>${handleAnnotations(
                     state.customAnnotation || "{name}: {value}",
                     {
                       data: {
@@ -264,39 +272,51 @@ const LineChartRenderer = ({ state }) => {
       svg
         .append("text")
         .attr("x", 20)
-        .attr("y", titleFontSize)
-        .style("font-size", `${titleFontSize}px`)
+        .attr("y", titleSize)
+        .style("font-size", `${titleSize}px`)
         .style("font-weight", "bold")
-        .style("font-family", fontFamily)
+        .style("font-family", font)
         .style("fill", textColor)
         .text(state.title);
     }
 
     if (state.article) {
-      const articleY = state.title ? titleFontSize + 10 : 20;
+      const articleY = state.title ? titleSize + 10 : 20;
       const maxArticleWidth = containerWidth - 40;
-      const lineHeight = articleFontSize * 1.5;
+      const lineHeight = articleSize * 1.5;
 
       svg
         .append("foreignObject")
         .attr("x", 20)
         .attr("y", articleY)
         .attr("width", maxArticleWidth)
-        .attr("height", articleFontSize * 3)
+        .attr("height", articleSize * 3)
         .append("xhtml:div")
-        .style("font-size", `${articleFontSize}px`)
-        .style("font-family", fontFamily)
         .style("color", textColor)
-        .style("line-height", `${lineHeight}px`)
+        .style("font-family", font)
+        .style("font-size", `${articleSize}px`)
         .style("display", "block")
+        .style("line-height", `${lineHeight}px`)
         .style("text-align", "left")
         .html(state.article);
     }
 
+    if (state.isFooter && state.footerText) {
+      svg
+        .append("text")
+        .attr("x", 35)
+        .attr("y", containerHeight - 10)
+        .style("font-family", font)
+        .style("fill", textColor)
+        .attr("text-anchor", "middle")
+        .style("font-size", "12px")
+        .text(state.footerText);
+    }
+
     if (state.showLegend) {
       let legendY = 20;
-      if (state.title) legendY += titleFontSize + 10;
-      if (state.article) legendY += articleFontSize * 2 + 10;
+      if (state.title) legendY += titleSize + 10;
+      if (state.article) legendY += articleSize * 2 + 10;
 
       const legend = svg
         .append("g")
@@ -307,10 +327,12 @@ const LineChartRenderer = ({ state }) => {
       const maxLegendWidth = containerWidth - 40;
 
       lines.forEach((lineName) => {
-        if (lineName === null) return;
+        if (lineName === null) {
+          return;
+        }
         const isActive = !disabledLines.has(lineName);
-        const color = colorMap[lineName] || fallbackColorScale(lineName);
-        const textWidth = lineName?.length * (articleFontSize * 0.6) + 7;
+        const color = colors[lineName] || worstCaseColors(lineName);
+        const textWidth = lineName?.length * (articleSize * 0.6) + 7;
 
         if (xOffset + textWidth > maxLegendWidth) {
           xOffset = 0;
@@ -323,10 +345,10 @@ const LineChartRenderer = ({ state }) => {
 
         legendItem
           .append("rect")
-          .attr("width", 12)
-          .attr("height", 12)
           .attr("fill", color)
           .attr("stroke", isActive ? "black" : "none")
+          .attr("width", 12)
+          .attr("height", 12)
           .attr("cursor", "pointer")
           .on("click", () => toggleLine(lineName));
 
@@ -335,10 +357,10 @@ const LineChartRenderer = ({ state }) => {
           .attr("x", 18)
           .attr("y", 10)
           .text(lineName)
-          .style("font-size", `${articleFontSize - 4}px`)
-          .style("font-family", fontFamily)
-          .style("cursor", "pointer")
           .style("fill", isActive ? textColor : "#ccc")
+          .style("font-family", font)
+          .style("font-size", `${articleSize - 4}px`)
+          .style("cursor", "pointer")
           .on("click", () => toggleLine(lineName));
 
         xOffset += textWidth + 15;

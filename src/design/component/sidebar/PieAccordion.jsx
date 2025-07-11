@@ -29,11 +29,11 @@ const clampValue = (val) => Math.max(0, Math.min(100, parseInt(val) || 0));
 const PieAccordion = () => {
   const { state, dispatch } = useContext(VisualizationContext);
 
-  const [overrides, setOverrides] = useState(state.customColors || "");
+  const [colorsCustom, setColorsCustom] = useState(state.customColors || "");
   const [opacity, setLocalOpacity] = useState(state.opacity || 100);
   const [palette, setPalette] = useState(state.colorPalette || "vibrant");
 
-  const confirmOpacity = () => {
+  const handleOpacitu = () => {
     const clamped = clampValue(opacity);
     if (clamped !== state.opacity) {
       dispatch(setOpacity(clamped));
@@ -69,7 +69,12 @@ const PieAccordion = () => {
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Box display="flex" flexDirection="column" gap={2}>
+        <Box
+          display="flex"
+          flexDirection="column"
+          gap={2}
+          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+        >
           <FormControl fullWidth>
             <InputLabel>Color Palette</InputLabel>
             <Select
@@ -95,11 +100,11 @@ const PieAccordion = () => {
               fullWidth
               size="small"
               placeholder="Label A:#ff0000, Label B:#00ff00"
-              value={overrides}
-              onChange={(e) => setOverrides(e.target.value)}
-              onBlur={() => dispatch(setCustomColors(overrides))}
+              value={colorsCustom}
+              onChange={(e) => setColorsCustom(e.target.value)}
+              onBlur={() => dispatch(setCustomColors(colorsCustom))}
               onKeyDown={(e) =>
-                handleKeyPress(e, () => dispatch(setCustomColors(overrides)))
+                handleKeyPress(e, () => dispatch(setCustomColors(colorsCustom)))
               }
             />
           </Box>
@@ -124,8 +129,8 @@ const PieAccordion = () => {
                   }}
                   value={opacity}
                   onChange={(e) => setLocalOpacity(e.target.value)}
-                  onBlur={confirmOpacity}
-                  onKeyDown={(e) => handleKeyPress(e, confirmOpacity)}
+                  onBlur={handleOpacitu}
+                  onKeyDown={(e) => handleKeyPress(e, handleOpacitu)}
                 />
               </Box>
               <FormControlLabel

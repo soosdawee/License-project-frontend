@@ -5,17 +5,17 @@ import VisualizationModelCard from "./VisualizationModelCard"; // Adjust path
 
 const VisualizationModelsComponent = () => {
   const [models, setModels] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchModels = async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const result = await backend.get("/visualization_model");
       setModels(result.data);
     } catch (error) {
       console.error("Failed to fetch models", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -25,11 +25,11 @@ const VisualizationModelsComponent = () => {
 
   return (
     <Box sx={{ p: 4 }}>
-      <Typography variant="h5" fontWeight="bold" mb={4}>
+      <Typography variant="h5" sx={{ fontWeight: "bold", marginBottom: 4 }}>
         All Visualization Models
       </Typography>
 
-      {loading ? (
+      {isLoading ? (
         <CircularProgress />
       ) : (
         <Stack spacing={4}>

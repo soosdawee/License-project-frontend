@@ -28,12 +28,11 @@ const clampValue = (val) => Math.max(0, Math.min(100, parseInt(val) || 0));
 
 const AreaAccordion = () => {
   const { state, dispatch } = useContext(VisualizationContext);
-
-  const [overrides, setOverrides] = useState(state.customColors || "");
+  const [colorsCustom, setColorsCursom] = useState(state.customColors || "");
   const [opacity, setLocalOpacity] = useState(state.opacity || 100);
   const [palette, setPalette] = useState(state.colorPalette || "vibrant");
 
-  const confirmOpacity = () => {
+  const ensureOpacityWithinBound = () => {
     const clamped = clampValue(opacity);
     if (clamped !== state.opacity) {
       dispatch(setOpacity(clamped));
@@ -90,24 +89,22 @@ const AreaAccordion = () => {
               fullWidth
               size="small"
               placeholder="Label A:#ff0000, Label B:#00ff00"
-              value={overrides}
-              onChange={(e) => setOverrides(e.target.value)}
-              onBlur={() => dispatch(setCustomColors(overrides))}
+              value={colorsCustom}
+              onChange={(e) => setColorsCursom(e.target.value)}
+              onBlur={() => dispatch(setCustomColors(colorsCustom))}
               onKeyDown={(e) =>
-                handleKeyPress(e, () => dispatch(setCustomColors(overrides)))
+                handleKeyPress(e, () => dispatch(setCustomColors(colorsCustom)))
               }
             />
           </Box>
           {state.vizType === "PIE_CHART" && (
             <Box display="flex" gap={2} alignItems="center">
               <Box>
-                <Typography>Opacity (0-100):</Typography>
+                <Typography>Opacity:</Typography>
                 <TextField
-                  type="number"
                   inputProps={{
                     min: 0,
                     max: 100,
-                    style: { MozAppearance: "textfield" },
                   }}
                   sx={{
                     "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
@@ -119,8 +116,8 @@ const AreaAccordion = () => {
                   }}
                   value={opacity}
                   onChange={(e) => setLocalOpacity(e.target.value)}
-                  onBlur={confirmOpacity}
-                  onKeyDown={(e) => handleKeyPress(e, confirmOpacity)}
+                  onBlur={ensureOpacityWithinBound}
+                  onKeyDown={(e) => handleKeyPress(e, ensureOpacityWithinBound)}
                 />
               </Box>
               <FormControlLabel
@@ -136,7 +133,7 @@ const AreaAccordion = () => {
                     }}
                   />
                 }
-                label="Show %"
+                label="Show percentages"
                 sx={{ marginLeft: "auto" }}
               />
             </Box>

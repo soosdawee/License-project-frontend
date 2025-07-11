@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import LoginForm from "../component/LoginForm";
 import LandinIllustration from "../image/login_illustration.svg";
 

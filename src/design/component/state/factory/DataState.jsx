@@ -34,26 +34,30 @@ const DataState = ({ visualizationModel, setState }) => {
 
   const fetchGoogleSheetData = async () => {
     try {
-      const url = new URL(state.sheetsLink);
-      const parts = url.pathname.split("/");
-      const sheetId = parts[3];
+      const url = new URL(
+        googleSheetURL.length == 0 ? state.sheetsLink : googleSheetURL
+      );
+      const subparts = url.pathname.split("/");
+      const identifier = subparts[3];
       const gidMatch = url.hash.match(/gid=(\d+)/);
       const gid = gidMatch ? gidMatch[1] : "0";
 
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${identifier}/export?format=csv&gid=${gid}`;
 
       const response = await fetch(csvUrl);
-      if (!response.ok) throw new Error("Failed to fetch Google Sheet");
+      if (!response.ok) {
+        throw new Error("Failed to fetch Google Sheet");
+      }
 
       const csvText = await response.text();
 
       return new Promise((resolve, reject) => {
         Papa.parse(csvText, {
-          complete: (results) => {
-            const cleanData = results.data.filter((row) =>
+          complete: (res) => {
+            const cleaned = res.data.filter((row) =>
               row.some((cell) => cell !== "")
             );
-            resolve(cleanData);
+            resolve(cleaned);
           },
           error: (err) => reject(err),
         });
@@ -74,27 +78,29 @@ const DataState = ({ visualizationModel, setState }) => {
   };
 
   const handleFileUpload = (file) => {
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     setUploadedFileName(file.name);
 
-    const reader = new FileReader();
-    const fileExtension = file.name.split(".").pop().toLowerCase();
+    const fileReader = new FileReader();
+    const extension = file.name.split(".").pop().toLowerCase();
 
-    if (fileExtension === "xlsx" || fileExtension === "xls") {
-      reader.onload = (evt) => {
+    if (extension === "xlsx" || extension === "xls") {
+      fileReader.onload = (evt) => {
         const data = new Uint8Array(evt.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-        const cleanData = jsonData.filter((row) =>
-          row.some((cell) => cell !== null && cell !== "")
+        const project = XLSX.read(data, { type: "array" });
+        const sheetName = project.SheetNames[0];
+        const table = project.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(table, { header: 1 });
+        const cleaned = jsonData.filter((row) =>
+          row.some((cell) => cell !== "" && cell !== null)
         );
-        dispatch(setData(cleanData));
+        dispatch(setData(cleaned));
       };
-      reader.readAsArrayBuffer(file);
-    } else if (fileExtension === "csv") {
+      fileReader.readAsArrayBuffer(file);
+    } else if (extension === "csv") {
       Papa.parse(file, {
         complete: (results) => {
           const data = results.data.filter((row) =>
@@ -108,20 +114,20 @@ const DataState = ({ visualizationModel, setState }) => {
     }
   };
 
-  const onInputChange = (e) => {
+  const handleInputChange = (e) => {
     const file = e.target.files[0];
     handleFileUpload(file);
   };
 
-  const onDragOver = (e) => {
+  const handleDragOver = (e) => {
     e.preventDefault();
     setDragOver(true);
   };
-  const onDragLeave = (e) => {
+  const handleDragLeave = (e) => {
     e.preventDefault();
     setDragOver(false);
   };
-  const onDrop = (e) => {
+  const handleOnDrop = (e) => {
     e.preventDefault();
     setDragOver(false);
     const file = e.dataTransfer.files[0];
@@ -235,9 +241,9 @@ const DataState = ({ visualizationModel, setState }) => {
             {inputMethod === "upload" && (
               <>
                 <Box
-                  onDragOver={onDragOver}
-                  onDragLeave={onDragLeave}
-                  onDrop={onDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleOnDrop}
                   onClick={() => document.getElementById("file-upload").click()}
                   sx={{
                     width: "100%",
@@ -275,7 +281,7 @@ const DataState = ({ visualizationModel, setState }) => {
                   id="file-upload"
                   type="file"
                   accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                  onChange={onInputChange}
+                  onChange={handleInputChange}
                   ref={fileInputRef}
                   style={{ display: "none" }}
                 />

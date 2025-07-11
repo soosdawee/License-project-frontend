@@ -64,17 +64,23 @@ const UserComponent = () => {
     }
   };
 
-  const getInitials = (user) => {
-    if (!user.firstname || !user.lastname) return "";
-    return (
-      user.firstname.charAt(0).toUpperCase() +
-      user.lastname.charAt(0).toUpperCase()
-    );
+  const initialsOf = (user) => {
+    if (!user.firstname || !user.lastname) {
+      return "";
+    } else {
+      return (
+        user.firstname.charAt(0).toUpperCase() +
+        user.lastname.charAt(0).toUpperCase()
+      );
+    }
   };
 
-  const getAvatarSrc = (user) => {
-    if (!user.profilePicture) return null;
-    return `data:image/png;base64,${user.profilePicture}`;
+  const profilePictureOf = (user) => {
+    if (!user.profilePicture) {
+      return null;
+    } else {
+      return `data:image/png;base64,${user.profilePicture}`;
+    }
   };
 
   return (
@@ -131,7 +137,7 @@ const UserComponent = () => {
                 }}
               >
                 <Avatar
-                  src={getAvatarSrc(user)}
+                  src={profilePictureOf(user)}
                   sx={{
                     width: "5%",
                     height: "auto",
@@ -142,7 +148,7 @@ const UserComponent = () => {
                     border: "2px solid #001f47",
                   }}
                 >
-                  {!user.profilePicture && getInitials(user)}
+                  {!user.profilePicture && initialsOf(user)}
                 </Avatar>
 
                 <Typography

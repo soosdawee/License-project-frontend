@@ -20,7 +20,7 @@ import ColorPalettes from "../ui/ColorPalettes";
 const ElectionResultsAccordion = () => {
   const { state, dispatch } = useContext(VisualizationContext);
 
-  const [overrides, setOverrides] = useState(state.customColors || "");
+  const [colorsCustom, setColorsCustom] = useState(state.customColors || "");
   const [palette, setPalette] = useState(state.colorPalette || "vibrant");
 
   const handleKeyPress = (e, confirmFn) => {
@@ -71,11 +71,11 @@ const ElectionResultsAccordion = () => {
               fullWidth
               size="small"
               placeholder="Label A:#ff0000, Label B:#00ff00"
-              value={overrides}
-              onChange={(e) => setOverrides(e.target.value)}
-              onBlur={() => dispatch(setCustomColors(overrides))}
+              value={colorsCustom}
+              onChange={(e) => setColorsCustom(e.target.value)}
+              onBlur={() => dispatch(setCustomColors(colorsCustom))}
               onKeyDown={(e) =>
-                handleKeyPress(e, () => dispatch(setCustomColors(overrides)))
+                handleKeyPress(e, () => dispatch(setCustomColors(colorsCustom)))
               }
             />
           </Box>

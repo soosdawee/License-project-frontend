@@ -29,11 +29,11 @@ const clampValue = (val) => Math.max(0, Math.min(100, parseInt(val) || 0));
 const ScatterAccordion = () => {
   const { state, dispatch } = useContext(VisualizationContext);
 
-  const [overrides, setOverrides] = useState(state.customColors || "");
+  const [colorsCustom, setColorsCustom] = useState(state.customColors || "");
   const [opacity, setLocalOpacity] = useState(state.opacity || 100);
   const [palette, setPalette] = useState(state.colorPalette || "vibrant");
 
-  const confirmOpacity = () => {
+  const handleOpacity = () => {
     const clamped = clampValue(opacity);
     if (clamped !== state.opacity) {
       dispatch(setOpacity(clamped));
@@ -67,7 +67,7 @@ const ScatterAccordion = () => {
         <Typography>Scatter Appearence</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Box display="flex" flexDirection="column" gap={2}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <FormControl fullWidth>
             <InputLabel>Color Palette</InputLabel>
             <Select
@@ -90,11 +90,11 @@ const ScatterAccordion = () => {
               fullWidth
               size="small"
               placeholder="Label A:#ff0000, Label B:#00ff00"
-              value={overrides}
-              onChange={(e) => setOverrides(e.target.value)}
-              onBlur={() => dispatch(setCustomColors(overrides))}
+              value={colorsCustom}
+              onChange={(e) => setColorsCustom(e.target.value)}
+              onBlur={() => dispatch(setCustomColors(colorsCustom))}
               onKeyDown={(e) =>
-                handleKeyPress(e, () => dispatch(setCustomColors(overrides)))
+                handleKeyPress(e, () => dispatch(setCustomColors(colorsCustom)))
               }
             />
           </Box>
@@ -107,7 +107,6 @@ const ScatterAccordion = () => {
                   inputProps={{
                     min: 0,
                     max: 100,
-                    style: { MozAppearance: "textfield" },
                   }}
                   sx={{
                     "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
@@ -119,8 +118,8 @@ const ScatterAccordion = () => {
                   }}
                   value={opacity}
                   onChange={(e) => setLocalOpacity(e.target.value)}
-                  onBlur={confirmOpacity}
-                  onKeyDown={(e) => handleKeyPress(e, confirmOpacity)}
+                  onBlur={handleOpacity}
+                  onKeyDown={(e) => handleKeyPress(e, handleOpacity)}
                 />
               </Box>
               <FormControlLabel
