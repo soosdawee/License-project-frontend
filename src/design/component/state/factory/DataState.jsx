@@ -18,7 +18,7 @@ const DataState = ({ visualizationModel, setState }) => {
   const [inputMethod, setInputMethod] = useState("manual");
   const [dragOver, setDragOver] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
-  const [googleSheetURL, setGoogleSheetURL] = useState(state.sheetsLink);
+  const [googleSheetURL, setGoogleSheetURL] = useState("");
 
   useEffect(() => {
     if (
@@ -27,7 +27,7 @@ const DataState = ({ visualizationModel, setState }) => {
       state.sheetsLink !== undefined
     ) {
       setInputMethod("link");
-      console.log(state.sheetsLink);
+      setGoogleSheetURL(state.sheetsLink);
       handleLoadGoogleSheet();
     }
   }, [state.sheetsLink]);

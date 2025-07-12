@@ -4,59 +4,13 @@ import { Box, Typography } from "@mui/material";
 import axios from "axios";
 import RendererFactory from "../../design/component/renderer/RendererFactory";
 import mapVisualizationToInitialState from "../context/Mapper";
-import {
-  initializeVisualization,
-  setData,
-} from "../../design/component/state/context/actions";
-import Papa from "papaparse";
+import { initializeVisualization } from "../../design/component/state/context/actions";
 import backend from "../../data-access/Backend";
 import RenderingFailed from "../../common/image/rendering_failed.svg";
 
 const EmbeddedComponent = ({ visualizationId, type }) => {
   const { state, dispatch } = useContext(EmbeddedContext);
   const [hasError, setHasError] = useState(false);
-
-  const fetchGoogleSheetData = async (sheetUrl) => {
-    console.log(sheetUrl);
-
-    try {
-      const url = new URL(sheetUrl);
-      const subParts = url.pathname.split("/");
-      const identifier = subParts[3];
-      const gidMatch = url.hash.match(/gid=(\d+)/);
-      const gid = gidMatch ? gidMatch[1] : "0";
-
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${identifier}/export?format=csv&gid=${gid}&_=${Date.now()}`;
-      const response = await fetch(csvUrl);
-      if (!response.ok) {
-        throw new Error("Failed to fetch Google Sheet");
-      }
-
-      const csvText = await response.text();
-
-      return new Promise((resolve, reject) => {
-        Papa.parse(csvText, {
-          complete: (results) => {
-            const cleaned = results.data.filter((row) =>
-              row.some((cell) => cell !== "")
-            );
-            resolve(cleaned);
-          },
-          error: (err) => reject(err),
-        });
-      });
-    } catch (err) {
-      console.error("fetchGoogleSheetData error:", err);
-      alert("Error loading Google Sheet");
-      return null;
-    }
-  };
-
-  const handleLoadGoogleSheet = async () => {
-    const data = await fetchGoogleSheetData(state.sheetsLink);
-    console.log(data);
-    dispatch(setData(data));
-  };
 
   useEffect(() => {
     const fetchVisualization = async () => {
@@ -73,6 +27,7 @@ const EmbeddedComponent = ({ visualizationId, type }) => {
         } else {
           response = await backend.get(`visualization/${visualizationId}`);
         }
+
         dispatch(
           initializeVisualization(mapVisualizationToInitialState(response.data))
         );
@@ -84,17 +39,6 @@ const EmbeddedComponent = ({ visualizationId, type }) => {
 
     fetchVisualization();
   }, [visualizationId]);
-
-  useEffect(() => {
-    if (
-      state.visualizationModelId != null &&
-      state.sheetsLink &&
-      typeof state.sheetsLink === "string" &&
-      state.sheetsLink.trim() !== ""
-    ) {
-      handleLoadGoogleSheet();
-    }
-  }, [state.sheetsLink]);
 
   return (
     <Box
