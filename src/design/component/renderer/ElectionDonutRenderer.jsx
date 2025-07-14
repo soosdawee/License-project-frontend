@@ -357,7 +357,7 @@ const ElectionDonutRenderer = ({ state }) => {
         .enter()
         .append("g")
         .attr("class", "legend-item")
-        .attr("transform", (d, i) => `translate(${i * 100}, 0)`)
+        .attr("transform", (d, i) => `translate(${i * 85}, 0)`)
         .style("cursor", "pointer");
 
       legendItems
@@ -371,7 +371,7 @@ const ElectionDonutRenderer = ({ state }) => {
 
       legendItems
         .append("text")
-        .attr("x", 20)
+        .attr("x", 15)
         .attr("y", 6)
         .attr("dy", "0.35em")
         .style("font-family", font)

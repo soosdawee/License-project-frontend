@@ -26,7 +26,7 @@ const ShareState = ({ visualizationModel }) => {
   const chartRef = useRef();
 
   const handleShare = async () => {
-    console.log(state.sheetsLink);
+    console.log(state);
     const payload = {
       title: state.title,
       titleSize: state.titleSize,

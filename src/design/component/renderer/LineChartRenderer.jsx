@@ -304,7 +304,7 @@ const LineChartRenderer = ({ state }) => {
     if (state.isFooter && state.footerText) {
       svg
         .append("text")
-        .attr("x", 35)
+        .attr("x", 70)
         .attr("y", containerHeight - 10)
         .style("font-family", font)
         .style("fill", textColor)
